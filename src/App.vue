@@ -23,10 +23,10 @@
       </b-navbar>
     </header>
     <!-- Begin page content -->
-    <b-container fluid class="d-flex flex-column cf100 h-100">
-      <b-row class="z100 h-100">
-        <b-col class="h-100">
-          <b-tabs class="h-100">
+    <b-container fluid class="d-flex flex-column cf100">
+      <b-row class="z100">
+        <b-col>
+          <b-tabs>
             <b-tab title="Авторы" active>
               <AuthorsTab />
             </b-tab>
@@ -113,7 +113,7 @@
   }
   
   .fix-height {
-    height: calc(100vh - 225px);
+    height: calc(100vh - 240px);
   }
   
   .sidebar {
