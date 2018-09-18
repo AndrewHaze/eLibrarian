@@ -19,7 +19,7 @@
             </b-nav-item-dropdown>
           </b-navbar-nav>
         </b-collapse>
-        <b-navbar-brand href="#">eLibrarian v.0.0.1</b-navbar-brand>
+        <b-navbar-brand>eLibrarian v.0.0.1</b-navbar-brand>
       </b-navbar>
     </header>
     <!-- Begin page content -->
