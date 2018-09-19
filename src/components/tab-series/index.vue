@@ -7,5 +7,6 @@
 
 <script>
 export default {
+  name: 'tab-series',
 };
 </script>

@@ -25,10 +25,10 @@
           </b-table>
       </b-col>
       <b-col class="content">
-        <BooksList
+        <books-list
               v-bind:key="selectedItem.id"
               v-bind:selectedItem="selectedItem">
-        </BooksList>
+        </books-list>
       </b-col>
     </b-row>
   </section>
@@ -37,7 +37,7 @@
 
 <script>
 import axios from "axios";
-import BooksList from "./BooksList.vue";
+import BooksList from "../books-list";
 
 const instance = axios.create({
   responseType: "json",
@@ -83,6 +83,7 @@ var list = [
 ];
 
 export default {
+  name: 'tab-authors',
   components: {
     BooksList
   },
@@ -120,7 +121,7 @@ export default {
       items: list
     };
   },
-  mounted() {
+  mounted: function() {
     axios
       .post("/static/test.php", { str: "1234" })
       .then(response => {

@@ -8,6 +8,7 @@
 
 <script>
 export default {
+  name: 'books-list',
   props: ["selectedItem"],
   data: function() {
     return {};
