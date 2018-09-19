@@ -13,10 +13,6 @@
               <b-dropdown-item href="#">RU</b-dropdown-item>
               <b-dropdown-item href="#">FA</b-dropdown-item>
             </b-nav-item-dropdown>
-            <b-nav-item-dropdown text="Пользователь">
-              <b-dropdown-item href="#">Account</b-dropdown-item>
-              <b-dropdown-item href="#">Settings</b-dropdown-item>
-            </b-nav-item-dropdown>
           </b-navbar-nav>
         </b-collapse>
         <b-navbar-brand href="#">eLibrarian v.0.0.1</b-navbar-brand>
@@ -24,21 +20,7 @@
     </header>
     <!-- Begin page content -->
     <b-container fluid class="d-flex flex-column cf100">
-      <b-row class="z100">
-        <b-col>
-          <b-tabs>
-            <b-tab title="Авторы" active>
-              <AuthorsTab />
-            </b-tab>
-            <b-tab title="Жанры">
-              <GenresTab />
-            </b-tab>
-            <b-tab title="Серии">
-              <SeriesTab />
-            </b-tab>
-          </b-tabs>
-        </b-col>
-      </b-row>
+        <router-view/>
       <!--  -->
     </b-container>
     <footer class="footer">
@@ -50,89 +32,56 @@
 </template>
 
 <script>
-  import AuthorsTab from "./components/AuthorsTab.vue";
-  import GenresTab from "./components/GenresTab.vue";
-  import SeriesTab from "./components/SeriesTab.vue";
-  
-  export default {
-    components: {
-      AuthorsTab,
-      GenresTab,
-      SeriesTab
+import { USER_REQUEST } from "./store/actions/user";
+
+export default {
+  created: function() {
+    if (this.$store.getters.isAuthenticated) {
+      this.$store.dispatch(USER_REQUEST);
     }
-  };
+  }
+};
 </script>
 
 <style lang="scss">
-  html {
-    position: relative;
-    min-height: 100%;
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+  height: calc(100vh - 60px);
+  box-sizing: border-box;
+  & > div {
+    height: 100%;
   }
-  
-  body {
-    /* Margin bottom by footer height */
-    margin-bottom: 60px;
-    height: calc(100vh - 60px);
-    box-sizing: border-box;
-    &>div {
-      height: 100%;
-    }
-  }
-  
-  .footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    /* Set the fixed height of the footer here */
-    height: 60px;
-    line-height: 60px;
-    /* Vertically center the text there */
-    color: lightgrey;
-    background-color: #343a40;
-  }
-  
-  
-  /* Custom page CSS
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  line-height: 60px;
+  /* Vertically center the text there */
+  color: lightgrey;
+  background-color: #343a40;
+}
+
+/* Custom page CSS
         -------------------------------------------------- */
-  
-  
-  /* Not required for template or sticky footer method. */
-  
-  .footer>.container {
-    padding-right: 15px;
-    padding-left: 15px;
-  }
-  
-  code {
-    font-size: 80%;
-  }
-  
-  .cf100 {
-    padding: 75px 15px 0;
-    box-sizing: border-box;
-  }
-  
-  .fix-height {
-    height: calc(100vh - 225px);
-  }
-  
-  .sidebar {
-    display: flex;
-    flex-flow: column nowrap;
-    -ms-flex: 0 0 230px;
-    flex: 0 0 230px;
-    /*border-right: 1px solid #dee2e6;*/
-    height: 100%;
-    overflow-y: auto;
-  }
-  
-  .content {
-    height: 100%;
-    overflow-y: auto;
-  }
-  
-  .control-element {
-    cursor: pointer;
-    user-select: none;
-  }
+
+/* Not required for template or sticky footer method. */
+
+.footer > .container {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+code {
+  font-size: 80%;
+}
 </style>
