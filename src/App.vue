@@ -19,7 +19,7 @@
       </b-navbar>
     </header>
     <!-- Begin page content -->
-    <b-container fluid class="d-flex flex-column cf100">
+    <b-container fluid class="d-flex flex-column cf100 h-100">
       <router-view/>
       <!--  -->
     </b-container>
@@ -30,7 +30,6 @@
             <b-img :src="require('./assets/owner.png')" height="29" class="mr-1" />
             <b-dropdown id="ddown1" dropup right v-bind:text="name" size="sm">
               <b-dropdown-item class="m0" v-if="isAuthenticated" @click="logout">Выйти</b-dropdown-item>
-              <b-dropdown-item v-if="!isAuthenticated && !authLoading"><router-link to="/login">Войти</router-link></b-dropdown-item>
             </b-dropdown>
           </b-col>
         </b-row>
@@ -79,6 +78,10 @@ body {
   & > div {
     height: 100%;
   }
+}
+
+section {
+  height: 100%;
 }
 
 .cf100 {
