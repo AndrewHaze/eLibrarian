@@ -1,48 +1,56 @@
-/**
-* Created by vouill on 11/13/17.
-*/
-
 <template>
-  <div>
-    <form class="login" @submit.prevent="login">
-      <h1>Sign in</h1>
-      <label>User name</label>
-      <input required v-model="username" type="text" placeholder="Snoopy"/>
-      <label>Password</label>
-      <input required v-model="password" type="password" placeholder="Password"/>
-      <hr/>
-      <button type="submit">Login</button>
-    </form>
+  <div class="d-flex h-100 justify-content-center align-items-center">
+    <b-form @submit.prevent="login" class="login-form">
+      <h2 class="text-center">Войти в систему</h2>
+      <h6 class="text-center">Пожалуйста введите своий логин и пароль</h6>
+      <b-form-group id="loginInputGroup" label="Логин:" label-for="loginInput">
+        <b-form-input id="loginInput" type="text" v-model="username" required placeholder="Введите имя пользователя">
+        </b-form-input>
+      </b-form-group>
+      <b-form-group id="passwordInputGroup" label="Пароль:" label-for="passwordInput">
+        <b-form-input id="passwordInput" type="password" v-model="password" required placeholder="Введите пароль">
+        </b-form-input>
+      </b-form-group>
+      <b-button type="submit" variant="primary" class="btn-block">Войти</b-button>
+    </b-form>
   </div>
 </template>
 
 <style lang="scss">
-  .login {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    padding: 10px;
+  .login-form {
+    width: 25rem;
+    padding-bottom: 10rem;
   }
 </style>
 
 <script>
-  import {AUTH_REQUEST} from '../../store/actions/auth'
-
+  import {
+    AUTH_REQUEST
+  } from "../../store/actions/auth";
+  
   export default {
-    name: 'login',
-    data () {
+    name: "login",
+    data() {
       return {
-        username: 'dogo',
-        password: 'dogy',
-      }
+        username: "",
+        password: ""
+      };
     },
     methods: {
-      login: function () {
-        const { username, password } = this
-        this.$store.dispatch(AUTH_REQUEST, { username, password }).then(() => {
-          this.$router.push('/')
-        })
+      login: function() {
+        const {
+          username,
+          password
+        } = this;
+        this.$store
+          .dispatch(AUTH_REQUEST, {
+            username,
+            password
+          })
+          .then(() => {
+            this.$router.push("/");
+          });
       }
-    },
-  }
+    }
+  };
 </script>
