@@ -51,17 +51,17 @@ export default {
     }
   },
   methods: {
-      logout: function () {
-        this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push('/login'))
-      }
-    },
-    computed: {
-      ...mapGetters(['getProfile', 'isAuthenticated', 'isProfileLoaded']),
-      ...mapState({
-        authLoading: state => state.auth.status === 'loading',
-        name: state => `${state.user.profile.title} ${state.user.profile.name}`,
-      })
+    logout: function() {
+      this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push("/login"));
     }
+  },
+  computed: {
+    ...mapGetters(["getProfile", "isAuthenticated", "isProfileLoaded"]),
+    ...mapState({
+      authLoading: state => state.auth.status === "loading",
+      name: state => `${state.user.profile.title} ${state.user.profile.name}`
+    })
+  }
 };
 </script>
 
@@ -79,6 +79,11 @@ body {
   & > div {
     height: 100%;
   }
+}
+
+.cf100 {
+  padding: 75px 15px 0;
+  box-sizing: border-box;
 }
 
 .footer {
