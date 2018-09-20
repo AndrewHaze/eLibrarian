@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <loading v-if="loading"/>
+  <section>
+    <loading v-if="loading" />
     <div v-if="isAuthenticated">
       <b-row class="z100">
         <b-col>
@@ -18,20 +18,13 @@
         </b-col>
       </b-row>
     </div>
-    <div v-if="!isAuthenticated && authStatus !== 'loading'">
-      <h1>Welcome to DogeBook !</h1>
-      <p>When meeting new doge friends is harder than ever, Dogebook closes the gap between all paws in the world</p>
+    <div v-if="!isAuthenticated && authStatus !== 'loading'" class="h-100">
       <login/>
     </div>
-  </div>
+  </section>
 </template>
 
 <style lang="scss">
-  .cf100 {
-    padding: 75px 15px 0;
-    box-sizing: border-box;
-  }
-  
   .fix-height {
     height: calc(100vh - 225px);
   }
@@ -58,12 +51,14 @@
 </style>
 
 <script>
-  import { mapGetters } from 'vuex';
+  import {
+    mapGetters
+  } from 'vuex';
   import Login from '../login';
   import AuthorsTab from "../tab-authors";
   import GenresTab from "../tab-genres";
   import SeriesTab from "../tab-series";
-
+  
   export default {
     name: 'home',
     components: {
@@ -74,12 +69,12 @@
     },
     computed: {
       ...mapGetters(['isAuthenticated', 'authStatus']),
-      loading: function () {
+      loading: function() {
         return this.authStatus === 'loading' && !this.isAuthenticated
       }
     },
-    data () {
-      return ({ })
+    data() {
+      return ({})
     },
   }
 </script>
