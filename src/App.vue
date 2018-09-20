@@ -29,8 +29,8 @@
           <b-col class="text-right" v-if="isProfileLoaded">
             <b-img :src="require('./assets/owner.png')" height="29" class="mr-1" />
             <b-dropdown id="ddown1" dropup right v-bind:text="name" size="sm">
-              <b-dropdown-item class="m0" v-if="isAuthenticated" @click="logout">Logout</b-dropdown-item>
-              <b-dropdown-item v-if="!isAuthenticated && !authLoading"><router-link to="/login">Login</router-link></b-dropdown-item>
+              <b-dropdown-item class="m0" v-if="isAuthenticated" @click="logout">Выйти</b-dropdown-item>
+              <b-dropdown-item v-if="!isAuthenticated && !authLoading"><router-link to="/login">Войти</router-link></b-dropdown-item>
             </b-dropdown>
           </b-col>
         </b-row>
