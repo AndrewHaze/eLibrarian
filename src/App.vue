@@ -5,7 +5,7 @@
       <b-navbar type="dark" variant="dark fixed-top" toggleable>
         <b-navbar-toggle target="nav_dropdown_collapse"></b-navbar-toggle>
         <b-collapse is-nav id="nav_dropdown_collapse">
-          <b-navbar-nav>
+          <b-navbar-nav v-if="isProfileLoaded">
             <!-- Navbar dropdowns -->
             <b-nav-item-dropdown text="Файл">
               <b-dropdown-item href="#">EN</b-dropdown-item>
@@ -20,26 +20,48 @@
     </header>
     <!-- Begin page content -->
     <b-container fluid class="d-flex flex-column cf100">
-        <router-view/>
+      <router-view/>
       <!--  -->
     </b-container>
     <footer class="footer">
-      <div class="container">
-        <span class="text-muted">Place sticky footer content here.</span>
-      </div>
+      <b-container fluid>
+        <b-row>
+          <b-col class="text-right" v-if="isProfileLoaded">
+            <b-img :src="require('./assets/owner.png')" height="29" class="mr-1" />
+            <b-dropdown id="ddown1" dropup right v-bind:text="name" size="sm">
+              <b-dropdown-item class="m0" v-if="isAuthenticated" @click="logout">Logout</b-dropdown-item>
+              <b-dropdown-item v-if="!isAuthenticated && !authLoading"><router-link to="/login">Login</router-link></b-dropdown-item>
+            </b-dropdown>
+          </b-col>
+        </b-row>
+      </b-container>
     </footer>
   </div>
 </template>
 
 <script>
 import { USER_REQUEST } from "./store/actions/user";
+import { mapGetters, mapState } from "vuex";
+import { AUTH_LOGOUT } from "./store/actions/auth";
 
 export default {
   created: function() {
     if (this.$store.getters.isAuthenticated) {
       this.$store.dispatch(USER_REQUEST);
     }
-  }
+  },
+  methods: {
+      logout: function () {
+        this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push('/login'))
+      }
+    },
+    computed: {
+      ...mapGetters(['getProfile', 'isAuthenticated', 'isProfileLoaded']),
+      ...mapState({
+        authLoading: state => state.auth.status === 'loading',
+        name: state => `${state.user.profile.title} ${state.user.profile.name}`,
+      })
+    }
 };
 </script>
 
@@ -65,16 +87,11 @@ body {
   width: 100%;
   /* Set the fixed height of the footer here */
   height: 60px;
-  line-height: 60px;
   /* Vertically center the text there */
   color: lightgrey;
   background-color: #343a40;
+  padding: 16px 0;
 }
-
-/* Custom page CSS
-        -------------------------------------------------- */
-
-/* Not required for template or sticky footer method. */
 
 .footer > .container {
   padding-right: 15px;
