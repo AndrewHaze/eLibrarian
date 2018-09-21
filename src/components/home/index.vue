@@ -32,8 +32,7 @@
   .sidebar {
     display: flex;
     flex-flow: column nowrap;
-    -ms-flex: 0 0 230px;
-    flex: 0 0 230px;
+    flex: 0 0 230px !important;
     /*border-right: 1px solid #dee2e6;*/
     height: 100%;
     overflow-y: auto;
