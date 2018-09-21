@@ -39,6 +39,8 @@
 import axios from "axios";
 import BooksList from "../books-list";
 
+const dn = "l.mgr.loc";
+
 const instance = axios.create({
   responseType: "json",
   headers: {
@@ -52,7 +54,7 @@ const instance = axios.create({
 const str = JSON.stringify("1234");
 
 var list = [
-  {
+  /*  {
     id: 1,
     books: 1,
     author: "Акунин",
@@ -79,11 +81,11 @@ var list = [
     author: "AdamПs",
     isActive: false,
     _rowVariant: ""
-  }
+  }*/
 ];
 
 export default {
-  name: 'tab-authors',
+  name: "tab-authors",
   components: {
     BooksList
   },
@@ -122,19 +124,51 @@ export default {
     };
   },
   mounted: function() {
-    axios
-      .post("/static/test.php", { str: "1234" })
-      .then(response => {
-        list = response.data;
-        this.items = list;
-      })
-      .catch(error => {
-        console.log(error);
-        this.errored = true;
-      })
-      .finally(() => (this.loading = false));
+    const self = this;
+    this.callApi("/static/api.php", "1234", function(rd) {
+      list = rd;
+      self.items = list;
+    });
   },
   methods: {
+    setServerError(m, d) {
+      console.log("******* db_api call *******");
+      console.log(m);
+      console.log(d);
+      console.log("***************************");
+      return;
+    },
+    callApi(url, prms, callback) {
+      axios({
+        method: "post",
+        url: url,
+        data: prms
+      })
+        .then(response => {
+          // в response.data получаем JSON,
+          // в моем случае сервер формирует обязательные поля success,error,buffer
+          // в buffer  перед выдачей JSON снимается html-вывод, возможно это отладочная информация,
+          // которую выдает backend, возможно PHP-warnings
+          let dt = response.data;
+          //if (!dt.success) {
+          if (!dt) {  
+            this.setServerError(dt.error, dt.buffer);
+          } else {
+            // ну и, собственно, сам вызов колбека, который происходит только в случае успешного приема данных
+            this.setServerError("No errors", "No messages"); // это функция, которая в data выставляет определенные поля
+            //в результате чего ошибки выводятся прямо на странице, удобно для отладки
+            callback(dt);
+          }
+        })
+        .catch(error => {
+          // эту часть вызывает сам axios при возникновении серверных ошибок, то есть все, что не 200 OK
+          // позволяет увидеть, в частности, ошибку 500, вернее сам факт ее возникновения, если она обрабатывается
+          // "стандартным" методом апача - пустая страница и все
+          this.setServerError(error.message, error.stack);
+          this.errored = true;
+        })
+        .finally(() => (this.loading = false));
+    },
     myRowClickHandler(item) {
       //сбросим атрибуты по всему массиву
       list.forEach(function(entry) {
