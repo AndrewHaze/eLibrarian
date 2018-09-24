@@ -52,6 +52,7 @@ export default {
     return {
       selected: "*",
       options: [
+        //Рыба фильтра авторов
         { text: "*", value: "*" },
         { text: "А", value: "А" },
         { text: "Б", value: "Б" },
@@ -84,7 +85,7 @@ export default {
   },
   mounted: function() {
     const self = this;
-    this.callApi(prefix + "/static/api.php", "1234", function(rd) {
+    this.callApi(prefix + "/static/api.php", {cmd: 'a_list', dat: ""}, function(rd) {
       list = rd;
       self.items = list;
     });
@@ -105,23 +106,15 @@ export default {
       })
         .then(response => {
           // в response.data получаем JSON,
-          // в моем случае сервер формирует обязательные поля success,error,buffer
-          // в buffer  перед выдачей JSON снимается html-вывод, возможно это отладочная информация,
-          // которую выдает backend, возможно PHP-warnings
+          // сервер формирует обязательные поля data,success,error
           let rspData = response.data;
           if (!rspData.success) {
-            this.setServerError(rspData.error);
+            this.setServerError(rspData.error, "");
           } else {
-            // ну и, собственно, сам вызов колбека, который происходит только в случае успешного приема данных
-            this.setServerError("No errors", "No messages"); // это функция, которая в data выставляет определенные поля
-            //в результате чего ошибки выводятся прямо на странице, удобно для отладки
             callback(rspData.data);
           }
         })
         .catch(error => {
-          // эту часть вызывает сам axios при возникновении серверных ошибок, то есть все, что не 200 OK
-          // позволяет увидеть, в частности, ошибку 500, вернее сам факт ее возникновения, если она обрабатывается
-          // "стандартным" методом апача - пустая страница и все
           this.setServerError(error.message, error.stack);
           this.errored = true;
         })
