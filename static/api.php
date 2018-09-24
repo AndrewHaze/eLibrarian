@@ -1,5 +1,5 @@
 <?php
-function cors() {
+function set_cors() {
     // Allow from any origin
     if (isset($_SERVER['HTTP_ORIGIN'])) {
         // Decide if the origin in $_SERVER['HTTP_ORIGIN'] is one
@@ -33,7 +33,7 @@ $authors = array(
 	),
 	array(
 		"id" => 2,
-        "books" => 2,
+        "books" => 5,
         "author" => "Бушков",
 		"isActive" => false,
 		"_rowVariant" => ""
@@ -46,5 +46,11 @@ $authors = array(
 		"_rowVariant" => ""
 	)
 );
-cors();
-echo json_encode($authors);
+
+set_cors();
+
+$res=array('data'=>array(),'success'=>true,'error'=>'');
+$res['data'] = $authors;
+
+
+echo json_encode($res);
