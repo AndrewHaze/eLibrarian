@@ -27,6 +27,25 @@ function set_cors()
     }
 }
 
+$chars = array(
+    array(
+        "text" => '*',
+        "value" => '*',
+    ),
+    array(
+        "text" => 'А',
+        "value" => 'А',
+    ),
+    array(
+        "text" => 'Б',
+        "value" => 'Б',
+    ),
+    array(
+        "text" => 'П',
+        "value" => 'П',
+    ),
+);
+
 $authors = array(
     array(
         "id" => 1,
@@ -49,6 +68,13 @@ $authors = array(
         "isActive" => false,
         "_rowVariant" => "",
     ),
+    array(
+        "id" => 4,
+        "books" => 12,
+        "author" => "Панов",
+        "isActive" => false,
+        "_rowVariant" => "",
+    ),
 );
 
 set_cors();
@@ -59,17 +85,19 @@ $_POST = json_decode(file_get_contents('php://input'), true);
 
 if (isset($_POST["cmd"])) {
     switch ($_POST['cmd']) {
+        case 'с_list':
+            $res['data'] = $chars;
+            break;
         case 'a_list':
             $res['data'] = $authors;
-            echo json_encode($res);
             break;
         default:
             $res['success'] = false;
             $res['error'] = 'Unknown command';
-            echo json_encode($res);
     }
 } else {
     $res['success'] = false;
     $res['error'] = 'No command';
-    echo json_encode($res);
 }
+
+echo json_encode($res);
