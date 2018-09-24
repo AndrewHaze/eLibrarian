@@ -39,50 +39,9 @@
 import axios from "axios";
 import BooksList from "../books-list";
 
-const dn = "l.mgr.loc";
+const prefix = "http://l.mgr.loc";
 
-const instance = axios.create({
-  responseType: "json",
-  headers: {
-    Accept: "application/json",
-    "Content-Type": "application/json",
-    Authorization: "test",
-    "X-Test": "testing"
-  }
-});
-
-const str = JSON.stringify("1234");
-
-var list = [
-  /*  {
-    id: 1,
-    books: 1,
-    author: "Акунин",
-    isActive: false,
-    _rowVariant: ""
-  },
-  {
-    id: 2,
-    books: 2,
-    author: "Бушков",
-    isActive: false,
-    _rowVariant: ""
-  },
-  {
-    id: 3,
-    books: 3,
-    author: "Пехов",
-    isActive: false,
-    _rowVariant: ""
-  },
-  {
-    id: 4,
-    books: 0,
-    author: "AdamПs",
-    isActive: false,
-    _rowVariant: ""
-  }*/
-];
+var list = [];
 
 export default {
   name: "tab-authors",
@@ -125,7 +84,7 @@ export default {
   },
   mounted: function() {
     const self = this;
-    this.callApi("http://l.mgr.loc/static/api.php", "1234", function(rd) {
+    this.callApi(prefix + "/static/api.php", "1234", function(rd) {
       list = rd;
       self.items = list;
     });
