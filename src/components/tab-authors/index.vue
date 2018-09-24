@@ -125,7 +125,7 @@ export default {
   },
   mounted: function() {
     const self = this;
-    this.callApi("/static/api.php", "1234", function(rd) {
+    this.callApi("http://l.mgr.loc/static/api.php", "1234", function(rd) {
       list = rd;
       self.items = list;
     });
@@ -149,15 +149,14 @@ export default {
           // в моем случае сервер формирует обязательные поля success,error,buffer
           // в buffer  перед выдачей JSON снимается html-вывод, возможно это отладочная информация,
           // которую выдает backend, возможно PHP-warnings
-          let dt = response.data;
-          //if (!dt.success) {
-          if (!dt) {  
-            this.setServerError(dt.error, dt.buffer);
+          let rspData = response.data;
+          if (!rspData.success) {
+            this.setServerError(rspData.error);
           } else {
             // ну и, собственно, сам вызов колбека, который происходит только в случае успешного приема данных
             this.setServerError("No errors", "No messages"); // это функция, которая в data выставляет определенные поля
             //в результате чего ошибки выводятся прямо на странице, удобно для отладки
-            callback(dt);
+            callback(rspData.data);
           }
         })
         .catch(error => {
