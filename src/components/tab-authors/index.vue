@@ -18,6 +18,7 @@
       <b-col class="sidebar ml-3 p-0">
         <b-table  outlined 
                   hover 
+                   :sort-by.sync="sortBy"
                   :items="items" 
                   :fields="fields" 
                   :filter="filter"
@@ -41,7 +42,10 @@ import BooksList from "../books-list";
 
 const prefix = "http://l.mgr.loc";
 
-var list = [];
+//Массив фильтра авторов
+var с_list = [];
+//Массив авторов
+var a_list = [];
 
 export default {
   name: "tab-authors",
@@ -51,13 +55,7 @@ export default {
   data: function() {
     return {
       selected: "*",
-      options: [
-        //Рыба фильтра авторов
-        { text: "*", value: "*" },
-        { text: "А", value: "А" },
-        { text: "Б", value: "Б" },
-        { text: "В", value: "В" }
-      ],
+      options: с_list,
       filter: null,
       selectedItem: "",
       info: null,
@@ -80,15 +78,27 @@ export default {
       ],
       sortBy: "author",
       sortDesc: false,
-      items: list
+      items: a_list
     };
   },
   mounted: function() {
     const self = this;
-    this.callApi(prefix + "/static/api.php", {cmd: 'a_list', dat: ""}, function(rd) {
-      list = rd;
-      self.items = list;
-    });
+    this.callApi(
+      prefix + "/static/api.php",
+      { cmd: "с_list", dat: "" },
+      function(rd) {
+        с_list = rd;
+        self.options = с_list;
+      }
+    );
+    this.callApi(
+      prefix + "/static/api.php",
+      { cmd: "a_list", dat: "" },
+      function(rd) {
+        a_list = rd;
+        self.items = a_list;
+      }
+    );
   },
   methods: {
     setServerError(m, d) {
@@ -122,7 +132,7 @@ export default {
     },
     myRowClickHandler(item) {
       //сбросим атрибуты по всему массиву
-      list.forEach(function(entry) {
+      a_list.forEach(function(entry) {
         entry._rowVariant = "";
         entry.isActive = false;
       });
@@ -137,7 +147,7 @@ export default {
         var expr = new RegExp("(?:^|\\s)([" + arg + "][.]*)", "gi");
         this.filter = expr;
       }
-      list.forEach(function(entry) {
+      a_list.forEach(function(entry) {
         entry._rowVariant = "";
         entry.isActive = false;
       });
