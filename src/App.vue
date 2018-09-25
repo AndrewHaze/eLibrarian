@@ -58,7 +58,7 @@ export default {
     ...mapGetters(["getProfile", "isAuthenticated", "isProfileLoaded"]),
     ...mapState({
       authLoading: state => state.auth.status === "loading",
-      name: state => `${state.user.profile.title} ${state.user.profile.name}`
+      name: state => `${state.user.profile.name}`
     })
   }
 };
@@ -109,4 +109,9 @@ section {
 code {
   font-size: 80%;
 }
+
+#ddown1 > button {
+  min-width: 80px;
+} 
+
 </style>
