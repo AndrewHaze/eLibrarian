@@ -1,14 +1,24 @@
-const mocks = {
-  'auth': { 'POST': { token: 'This-is-a-mocked-token' } },
-  'user/me': { 'GET': { name: 'doggo', title: 'sir' } }
-}
-
-const apiCall = ({url, method, ...args}) => new Promise((resolve, reject) => {
+const apiCall = ({
+  url,
+  data,
+  method,
+  ...args
+}) => new Promise((resolve, reject) => {
   setTimeout(() => {
     try {
-      resolve(mocks[url][method || 'GET'])
-      console.log(`Mocked '${url}' - ${method || 'GET'}`)
-      console.log('response: ', mocks[url][method || 'GET'])
+      if (method === 'POST') {
+        const curentUserName = data.username;
+        resolve({
+          token: '$2y$10$.vGA1O9wmRjrwAVXD98HNOgsNpDczlqm3Jq7KnEd1rVAGv3Fykk1a',
+          login: curentUserName
+        })
+
+      } else {
+        const login = localStorage.getItem('user-login') || 'unkown';
+        resolve({
+          name: login
+        })
+      }
     } catch (err) {
       reject(new Error(err))
     }
