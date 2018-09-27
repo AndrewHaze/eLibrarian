@@ -3,11 +3,12 @@ import { AUTH_REQUEST, AUTH_ERROR, AUTH_SUCCESS, AUTH_LOGOUT } from '../actions/
 import { USER_REQUEST } from '../actions/user';
 import apiCall from '../../utils/api';
 
-const state = { token: localStorage.getItem('user-token') || '', status: '', hasLoadedOnce: false }
+const state = { token: sessionStorage.getItem('user-token') || '', status: '', owner: '', hasLoadedOnce: false }
 
 const getters = {
   isAuthenticated: state => !!state.token,
   authStatus: state => state.status,
+  ownerName: state => state.owner,
 }
 
 const actions = {
@@ -16,8 +17,8 @@ const actions = {
       commit(AUTH_REQUEST)
       apiCall({url: 'auth', data: user, method: 'POST'})
       .then(resp => {
-        localStorage.setItem('user-token', resp.token)
-        localStorage.setItem('user-login', resp.login)
+        sessionStorage.setItem('user-token', resp.token)
+        sessionStorage.setItem('user-login', resp.login)
         // Here set the header of your ajax library to the token value.
         // example with axios
         // axios.defaults.headers.common['Authorization'] = resp.token
@@ -27,8 +28,8 @@ const actions = {
       })
       .catch(err => {
         commit(AUTH_ERROR, err)
-        localStorage.removeItem('user-token')
-        localStorage.removeItem('user-login')
+        sessionStorage.removeItem('user-token')
+        sessionStorage.removeItem('user-login')
         reject(err)
       })
     })
@@ -36,8 +37,8 @@ const actions = {
   [AUTH_LOGOUT]: ({commit, dispatch}) => {
     return new Promise((resolve, reject) => {
       commit(AUTH_LOGOUT)
-      localStorage.removeItem('user-token')
-      localStorage.removeItem('user-login')
+      sessionStorage.removeItem('user-token')
+      sessionStorage.removeItem('user-login')
       resolve()
     })
   }
@@ -49,6 +50,7 @@ const mutations = {
   },
   [AUTH_SUCCESS]: (state, resp) => {
     state.status = 'success'
+    state.owner = resp.login
     state.token = resp.token
     state.hasLoadedOnce = true
   },
@@ -58,6 +60,7 @@ const mutations = {
   },
   [AUTH_LOGOUT]: (state) => {
     state.token = ''
+    state.owner = ''
   }
 }
 
