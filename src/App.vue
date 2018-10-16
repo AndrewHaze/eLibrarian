@@ -51,7 +51,6 @@
   } from "./store/actions/auth";
   
   export default {
-
     created: function() {
       if (this.$store.getters.isAuthenticated) {
         this.$store.dispatch(USER_REQUEST);
@@ -69,7 +68,7 @@
         name: state => `${state.user.profile.name}`
         //name: state => `${state.auth.owner}`
       }),
-      
+  
     }
   };
 </script>
