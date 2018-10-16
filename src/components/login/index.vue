@@ -33,6 +33,7 @@
 </style>
 
 <script>
+import store from "../../store";
 import { AUTH_REQUEST } from "../../store/actions/auth";
 
 
@@ -41,13 +42,33 @@ export default {
   data() {
     return {
       username: "",
-      password: ""
+      password: "",
+      
     };
+  },
+  created: function() {
+    const self = this;
+    //Вызов функции из глобального миксина
+    this.callApi(
+      this.$store.getters.prefix + "/static/api.php",
+      {
+        cmd: "connect",
+        dat: ""
+      },
+      function(rd) {
+        store.state.connect = rd;
+        
+      }
+    );
+    console.log(store.state.connect);
+    if (store.state.connect) {
+        console.log('connect');
+    }
   },
   methods: {
     login: function() {
       const { username, password } = this;
-      
+
       this.$store
         .dispatch(AUTH_REQUEST, {
           username,
