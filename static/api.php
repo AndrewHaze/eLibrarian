@@ -56,7 +56,7 @@ $authors = array(
     ),
     array(
         "id" => 2,
-        "books" => 5,
+        "books" => 15,
         "author" => "Бушков",
         "isActive" => false,
         "_rowVariant" => "",
@@ -81,10 +81,32 @@ set_cors();
 
 $res = array("data" => array(), "success" => true, "error" => "");
 
+
+//$pdo = null;
+
 $_POST = json_decode(file_get_contents('php://input'), true);
 
 if (isset($_POST["cmd"])) {
     switch ($_POST['cmd']) {
+        case 'connect':
+            $host = '127.0.0.1';
+            $db = 'elib';
+            $user = 'root';
+            $pass = '';
+            $charset = 'utf8';
+
+            $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+            $opt = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false,
+            ];
+            $pdo = new PDO($dsn, $user, $pass, $opt);
+            if ($pdo) {
+                $res['data'] = "true";
+                $connect = true;
+            }
+            break;
         case 'с_list':
             $res['data'] = $chars;
             break;
