@@ -18,7 +18,7 @@
       <b-col class="sidebar ml-3 p-0">
         <b-table  outlined 
                   hover 
-                   :sort-by.sync="sortBy"
+                  :sort-by.sync="sortBy"
                   :items="items" 
                   :fields="fields" 
                   :filter="filter"
@@ -37,10 +37,8 @@
 
 
 <script>
-import axios from "axios";
 import BooksList from "../books-list";
-
-const prefix = "http://l.mgr.loc";
+import store from '../../store';
 
 //Массив фильтра авторов
 var с_list = [];
@@ -78,24 +76,25 @@ export default {
       ],
       sortBy: "author",
       sortDesc: false,
-      items: a_list
+      items: a_list,
     };
   },
   mounted: function() {
     const self = this;
+    //Вызов функции из глобального миксина
     this.callApi(
-      prefix + "/static/api.php",
+      this.$store.getters.prefix + "/static/api.php",
       { cmd: "с_list", dat: "" },
       function(rd) {
-        с_list = rd;
+        с_list = rd; //возвр. данные (Responce)
         self.options = с_list;
       }
     );
     this.callApi(
-      prefix + "/static/api.php",
+      this.$store.getters.prefix + "/static/api.php",
       { cmd: "a_list", dat: "" },
       function(rd) {
-        a_list = rd;
+        a_list = rd; //возвр. данные (Responce)
         self.items = a_list;
       }
     );
@@ -107,28 +106,6 @@ export default {
       console.log(d);
       console.log("***************************");
       return;
-    },
-    callApi(url, prms, callback) {
-      axios({
-        method: "post",
-        url: url,
-        data: prms
-      })
-        .then(response => {
-          // в response.data получаем JSON,
-          // сервер формирует обязательные поля data,success,error
-          let rspData = response.data;
-          if (!rspData.success) {
-            this.setServerError(rspData.error, "");
-          } else {
-            callback(rspData.data);
-          }
-        })
-        .catch(error => {
-          this.setServerError(error.message, error.stack);
-          this.errored = true;
-        })
-        .finally(() => (this.loading = false));
     },
     myRowClickHandler(item) {
       //сбросим атрибуты по всему массиву
