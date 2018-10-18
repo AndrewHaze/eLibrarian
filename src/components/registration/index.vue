@@ -1,22 +1,30 @@
 <template>
   <div class="d-flex h-100 justify-content-center align-items-center">
-    <b-form @submit.prevent="login" class="login-form" validated: true>
+    <b-form @submit.prevent="register" class="login-form" validated: true>
       <h2 class="text-center">Зарегистрироваться</h2>
       <h6 class="text-center">Пожалуйста введите логин и пароль</h6>
       <b-form-group id="loginInputGroup" label="Логин:" label-for="loginInput">
-        <b-form-input id="loginInput" type="text" v-model="username" required placeholder="Введите имя пользователя">
+        <b-form-input id="loginInput" type="text" :state="loginState" v-model="username" placeholder="Введите имя пользователя">
         </b-form-input>
+        <b-form-invalid-feedback id="inputLiveFeedback1">
+          <!-- This will only be shown if the preceeding input has an invalid state -->
+          {{ usernameErrorMessage }}
+        </b-form-invalid-feedback>
       </b-form-group>
       <b-form-group id="passwordInputGroup" label="Пароль:" label-for="passwordInput">
-        <b-form-input id="passwordInput" type="password" v-model="password" required placeholder="Введите пароль">
+        <b-form-input id="passwordInput" type="password" :state="passwordState" v-model="password" placeholder="Введите пароль">
         </b-form-input>
+        <b-form-invalid-feedback id="inputLiveFeedback2">
+          <!-- This will only be shown if the preceeding input has an invalid state -->
+          {{ passwordErrorMessage }}
+        </b-form-invalid-feedback>
       </b-form-group>
       <b-form-row>
         <b-col>
           <b-button type="submit" variant="primary" class="btn-block">Зарегистрироваться</b-button>
         </b-col>
       </b-form-row>
-      <b-form-row class="mt-2">
+      <b-form-row v-if="$store.getters.login_form" class="mt-2">
         <b-col class="text-center">
           <b-link to="login">Войти</b-link>
         </b-col>
@@ -33,6 +41,7 @@
 </style>
 
 <script>
+  import store from "../../store";
   import {
     AUTH_REQUEST
   } from "../../store/actions/auth";
@@ -42,23 +51,66 @@
     data() {
       return {
         username: "",
-        password: ""
+        usernameErrorMessage: "Пожалуйста заполните это поле",
+        loginState: null,
+        password: "",
+        passwordErrorMessage: "Пожалуйста заполните это поле",
+        passwordState: null,
       };
     },
     methods: {
-      login: function() {
+      register: function() {
         const {
           username,
           password
         } = this;
-        this.$store
-          .dispatch(AUTH_REQUEST, {
-            username,
-            password
-          })
-          .then(() => {
-            this.$router.push("/");
-          });
+
+        let flag;
+        let problems = false;
+
+        this.loginState = null;
+        this.passwordState = null;
+
+        if (username.length < 1) {
+          problems = true;
+          this.loginState = false;
+        } else {
+          problems = false;
+          this.loginState = true;
+        }
+        if (password.length < 1) {
+          problems = true;
+          this.passwordState = false;
+        } else {
+          problems = false;
+          this.passwordState = true;
+        }
+        if (problems) return;
+        //Вызов функции из глобального миксина
+        this.callApi(
+          this.$store.getters.prefix + "/static/api.php", {
+            cmd: "first", //проверяем наличие зарег. пользователей
+            dat: username
+          },
+          function(rd) {
+            flag = rd;
+            console.log('flag');
+          } 
+        );
+        if (flag) {
+          this.$store
+            .dispatch(AUTH_REQUEST, {
+              username,
+              password
+            })
+            .then(() => {
+              this.$router.push("/");
+            });
+        } else {
+           this.loginState = false;
+           this.passwordState = true;
+           this.usernameErrorMessage = "Пользователь с таким именем уже существует!";
+        }
       }
     }
   };
