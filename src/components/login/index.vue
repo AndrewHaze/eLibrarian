@@ -78,12 +78,46 @@
       );
     },
     methods: {
-      login: function() {
+      verification: function() {
         const {
           username,
           password
         } = this;
+        const self = this;
+        this.callApi(
+          this.$store.getters.prefix + "/static/api.php", {
+            cmd: "verification", //проверяем наличие зарег. пользователей
+            usr: username,
+            psw: password
+          },
+          function(rd) {
+            if (rd) {
+              console.log('yes');
+              self.$store
+                .dispatch(AUTH_REQUEST, {
+                  username,
+                  password
+                })
+                .then(() => {
+                  self.$router.push("/");
+                });
+            } else {
+              self.loginState = true;
+              self.passwordState = false;
+              self.passwordErrorMessage =
+                "Неправильный пароль!";
+            }
+          }
+        );
   
+      },
+      login: function() {
+        const self = this;
+        const {
+          username,
+          password
+        } = this;
+        let flag;
         let problems = false;
         if (username.length < 1) {
           problems = true;
@@ -101,14 +135,24 @@
         }
         if (problems) return;
   
-        this.$store
-          .dispatch(AUTH_REQUEST, {
-            username,
-            password
-          })
-          .then(() => {
-            this.$router.push("/");
-          });
+        //Вызов функции из глобального миксина
+        this.callApi(
+          this.$store.getters.prefix + "/static/api.php", {
+            cmd: "exist", //проверяем наличие зарег. пользователей
+            dat: username
+          },
+          function(rd) {
+            if (rd) {
+              self.loginState = false;
+              self.passwordState = true;
+              self.usernameErrorMessage =
+                "Пользователь с таким именем не существует!";
+            } else {
+              self.verification();
+  
+            }
+          }
+        );
       }
     }
   };
