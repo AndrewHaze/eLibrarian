@@ -109,18 +109,21 @@ if (isset($_POST["cmd"])) {
             if ($pdo) {
                 $stmt = $pdo->query("SELECT COUNT(*) FROM users;");
                 $count = $stmt->fetchColumn();
-            }
-            if ($count > 0) {
-                $res["data"] = false;
+                if ($count > 0) {
+                    $res["data"] = false;
+                } else {
+                    $res["data"] = true;
+                }
             } else {
-                $res["data"] = true;
+                $res["success"] = false;
+                $res["error"] = "PDO Error";
             }
             break;
         case "exist":
             $pdo = pdo_connect();
             if ($pdo) {
-                $username = $_POST["username"];
-                $stmt = $dbh->prepare('SELECT COUNT(*) FROM users WHERE users=:login');
+                $username = $_POST["dat"];
+                $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE login = :login');
                 $stmt->bindValue(':login', $username, PDO::PARAM_INT);
                 $stmt->execute();
                 $count = $stmt->fetchColumn();
@@ -129,7 +132,48 @@ if (isset($_POST["cmd"])) {
                 } else {
                     $res["data"] = true;
                 }
+            } else {
+                $res["success"] = false;
+                $res["error"] = "PDO Error";
             }
+            break;
+        case "register":
+            $pdo = pdo_connect();
+            if ($pdo) {
+                $username = $_POST["usr"];
+                $password = $_POST["psw"];
+                $hash = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = $pdo->prepare('INSERT INTO `users` (`id`, `login`, `hash`) VALUES (NULL, :login, :hash);');
+                $stmt->bindValue(':login', $username, PDO::PARAM_INT);
+                $stmt->bindValue(':hash', $hash, PDO::PARAM_INT);
+                $stmt->execute();
+            } else {
+                $res["success"] = false;
+                $res["error"] = "PDO Error";
+            }
+            break;
+        case "verification":
+            $pdo = pdo_connect();
+            if ($pdo) {
+                $username = $_POST["usr"];
+                $password = $_POST["psw"];
+                $hash = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = $pdo->prepare('SELECT hash FROM users WHERE login = :login ');
+                $stmt->bindValue(':login', $username, PDO::PARAM_INT);
+                $stmt->execute();
+                $hash = $stmt->fetchColumn();
+                if (password_verify ($password , $hash)) {
+                    $res["data"] = true;
+                } else {
+                    $res["data"] = false;
+                }
+            } else {
+                $res["success"] = false;
+                $res["error"] = "PDO Error";
+            }
+            break;
+        case "test":
+            $res["data"] = $_POST["dat"];
             break;
         case "с_list":
             $res["data"] = $chars;
