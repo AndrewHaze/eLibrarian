@@ -55,22 +55,47 @@
         loginState: null,
         password: "",
         passwordErrorMessage: "Пожалуйста заполните это поле",
-        passwordState: null,
+        passwordState: null
       };
     },
     methods: {
+      regFinish: function() {
+        const {
+          username,
+          password
+        } = this;
+        this.callApi(
+        this.$store.getters.prefix + "/static/api.php", {
+          cmd: "register", //проверяем наличие зарег. пользователей
+          usr: username,
+          psw: password
+        },
+        function(rd) {
+          if (rd) {
+          }
+        }
+      );
+      this.$store
+          .dispatch(AUTH_REQUEST, {
+            username,
+            password
+          })
+          .then(() => {
+            this.$router.push("/");
+          });
+      },
       register: function() {
         const {
           username,
           password
         } = this;
-
-        let flag;
+  
+        const self = this;
         let problems = false;
-
+  
         this.loginState = null;
         this.passwordState = null;
-
+  
         if (username.length < 1) {
           problems = true;
           this.loginState = false;
@@ -89,28 +114,20 @@
         //Вызов функции из глобального миксина
         this.callApi(
           this.$store.getters.prefix + "/static/api.php", {
-            cmd: "first", //проверяем наличие зарег. пользователей
+            cmd: "exist", //проверяем наличие зарег. пользователей
             dat: username
           },
           function(rd) {
-            flag = rd;
-            console.log('flag');
-          } 
+            if (rd) {
+              self.regFinish();
+            } else {
+              self.loginState = false;
+              self.passwordState = true;
+              self.usernameErrorMessage =
+                "Пользователь с таким именем уже существует!";
+            }
+          }
         );
-        if (flag) {
-          this.$store
-            .dispatch(AUTH_REQUEST, {
-              username,
-              password
-            })
-            .then(() => {
-              this.$router.push("/");
-            });
-        } else {
-           this.loginState = false;
-           this.passwordState = true;
-           this.usernameErrorMessage = "Пользователь с таким именем уже существует!";
-        }
       }
     }
   };
