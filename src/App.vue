@@ -7,15 +7,10 @@
         <b-collapse is-nav id="nav_dropdown_collapse">
           <b-navbar-nav v-if="isProfileLoaded">
             <!-- Navbar dropdowns -->
-            <b-nav-item-dropdown text="Файл">
-              <b-dropdown-item href="#">EN</b-dropdown-item>
-              <b-dropdown-item href="#">ES</b-dropdown-item>
-              <b-dropdown-item href="#">RU</b-dropdown-item>
-              <b-dropdown-item href="#">FA</b-dropdown-item>
-            </b-nav-item-dropdown>
+            <b-nav-item v-b-modal.bookScanner>Импорт книг</b-nav-item>
           </b-navbar-nav>
         </b-collapse>
-        <b-navbar-brand href="#">eLibrarian v.0.0.1</b-navbar-brand>
+        <b-navbar-brand href="#">{{this.$store.getters.appTitle}}</b-navbar-brand>
       </b-navbar>
     </header>
     <!-- Begin page content -->
@@ -59,16 +54,20 @@
     methods: {
       logout: function() {
         this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push("/login"));
-      }
+      },
     },
     computed: {
-      ...mapGetters(["getProfile", "isAuthenticated", "isProfileLoaded", "ownerName"]),
+      ...mapGetters([
+        "getProfile",
+        "isAuthenticated",
+        "isProfileLoaded",
+        "ownerName"
+      ]),
       ...mapState({
         authLoading: state => state.auth.status === "loading",
         name: state => `${state.user.profile.name}`
         //name: state => `${state.auth.owner}`
-      }),
-  
+      })
     }
   };
 </script>
