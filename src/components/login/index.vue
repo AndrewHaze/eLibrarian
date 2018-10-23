@@ -92,7 +92,7 @@
           },
           function(rd) {
             if (rd) {
-              console.log('yes');
+              store.commit("showRegModal", false);
               self.$store
                 .dispatch(AUTH_REQUEST, {
                   username,
