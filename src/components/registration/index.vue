@@ -24,7 +24,7 @@
           <b-button type="submit" variant="primary" class="btn-block">Зарегистрироваться</b-button>
         </b-col>
       </b-form-row>
-      <b-form-row v-if="$store.getters.login_form" class="mt-2">
+      <b-form-row v-if="$store.getters.loginForm" class="mt-2">
         <b-col class="text-center">
           <b-link to="login">Войти</b-link>
         </b-col>
@@ -72,6 +72,9 @@
         },
         function(rd) {
           if (rd) {
+            store.commit("showRegModal", true);
+          } else {
+            return;
           }
         }
       );
