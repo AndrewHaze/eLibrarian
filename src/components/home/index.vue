@@ -24,9 +24,9 @@
           <b-row>
             <b-col>
               <b-form-group>
-                <b-form-checkbox v-model="allSelected" :indeterminate="indeterminate" aria-describedby="files" aria-controls="files" @change="toggleAll" :title="allSelected ? 'Снять всё' : 'Выбрать всё'">
+                <b-form-checkbox v-model="allSelected" :indeterminate="indeterminate" aria-describedby="listInputFiles" aria-controls="listInputFiles" @change="toggleAll" :title="allSelected ? 'Снять всё' : 'Выбрать всё'">
                 </b-form-checkbox>
-                <b-form-checkbox-group id="fls" stacked v-model="selected" :options=listInputFiles name="fls" aria-label="Individual files">
+                <b-form-checkbox-group id="fls" class="border p-1 mnh-100"  stacked v-model="selected" :options=listInputFiles name="fls" aria-label="Individual files">
                 </b-form-checkbox-group>
               </b-form-group>
             </b-col>
@@ -107,6 +107,10 @@
     &:before {
       content: url("../../assets/add.png");
     }
+  }
+
+  .mnh {
+    min-height: 100%;
   }
 </style>
 
@@ -193,7 +197,7 @@
         if (newVal.length === 0) {
           this.indeterminate = false;
           this.allSelected = false;
-        } else if (newVal.length === this.files.length) {
+        } else if (newVal.length === this.listInputFiles.length) {
           this.indeterminate = false;
           this.allSelected = true;
         } else {
