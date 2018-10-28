@@ -3,22 +3,36 @@
     <loading v-if="loading" />
     <div v-if="isAuthenticated">
       <b-modal v-model="congShow" no-close-on-backdrop ok-only :title="appTitle">
-        <div class="d-block text-center">
+        <div class="d-block fileName-center">
           <h3>Поздравляем! Вы успешно зарегистрировались!</h3>
         </div>
       </b-modal>
       <b-modal id="bookScanner" no-close-on-backdrop hide-footer size="lg" title="Импорт книг">
         <b-container fluid>
-          <b-row class="mb-1">
+          <b-row class="mb-2">
             <b-col>
               <b-button-toolbar key-nav aria-label="Toolbar with button groups">
                 <b-button-group class="e-btn-group mr-2">
-                  <b-button variant="primary">Обработать папку</b-button>
-                  <b-button variant="success">Добавить папку</b-button>
-                  <b-button variant="success">Добавить файлы</b-button>
+                  <b-button variant="primary">Добавить папку</b-button>
+                  <b-button variant="success" @click="openFiles">Добавить файлы</b-button>
                 </b-button-group>
                 <b-button variant="danger">Запуск</b-button>
+                <input id="fi1" type="file" multiple @change="handleFileChange" />
               </b-button-toolbar>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <b-form-group>
+                <b-form-checkbox v-model="allSelected" :indeterminate="indeterminate" aria-describedby="listInputFiles" aria-controls="listInputFiles" @change="toggleAll" :title="allSelected ? 'Снять всё' : 'Выбрать всё'">
+                </b-form-checkbox>
+                <b-form-checkbox-group id="fls" class="border p-1 mnh-100"  stacked v-model="selected" :options=listInputFiles name="fls" aria-label="Individual files">
+                </b-form-checkbox-group>
+              </b-form-group>
+            </b-col>
+            <!---->
+            <b-col>
+  
             </b-col>
           </b-row>
         </b-container>
@@ -73,52 +87,136 @@
     &>.btn+.btn {
       margin-left: 1px;
     }
-    
+  }
+  
+  .btn-toolbar>input[type="file"] {
+    display: none;
+  }
+  
+  #fls .custom-control-label>span {
+    margin-left: 20px;
+    &:before {
+      content: url("../../assets/raw.png");
+      position: absolute;
+      left: -3px;
+      top: 1px;
+    }
+  }
+  
+  #fls .custom-checkbox:nth-child(1) .custom-control-label>span {
+    &:before {
+      content: url("../../assets/add.png");
+    }
+  }
+
+  .mnh {
+    min-height: 100%;
   }
 </style>
 
 <script>
   import {
     mapGetters
-  } from 'vuex';
+  } from "vuex";
   import store from "../../store";
-  import Login from '../login';
+  import Login from "../login";
   import AuthorsTab from "../tab-authors";
   import GenresTab from "../tab-genres";
   import SeriesTab from "../tab-series";
   
   export default {
-    name: 'home',
+    name: "home",
     components: {
       Login,
       AuthorsTab,
       GenresTab,
       SeriesTab
     },
-    computed: {
-      ...mapGetters(['isAuthenticated', 'authStatus', 'congratulation', 'appTitle']),
-      loading: function() {
-        return this.authStatus === 'loading' && !this.isAuthenticated
-      },
-  
+    data() {
+      return {
+        congShow: false,
+        listInputFiles: [],
+        buf: [],
+        selected: [],
+        allSelected: false,
+        indeterminate: false
+      };
     },
     created: function() {
       if (this.congratulation) {
         this.congShow = true;
       }
     },
+    computed: {
+      ...mapGetters([
+        "isAuthenticated",
+        "authStatus",
+        "congratulation",
+        "appTitle"
+      ]),
+      loading: function() {
+        return this.authStatus === "loading" && !this.isAuthenticated;
+      }
+    },
     methods: {
-      // openFiles: function() {
-      //   let file_input = document.createElement("input");
-      //   file_input.type = "file";
-      //   file_input.click();
-      // },
+      openFiles: function(e) {
+        document.getElementById("fi1").click();
+      },
+      handleFileChange: function(e) {
+        let filesList = e.target.files || e.dataTransfer.files;
+        if (!filesList.length)
+          return;
+        for (let i = 0; i < filesList.length; i++) {
+          // получаем сам файл
+          this.listInputFiles.push({
+            text: filesList[i].name,
+            value: filesList[i].name,
+            status: "add"
+          });
+        }
+      },
+      toggleAll(checked) {
+        this.buf = this.multi2one(this.listInputFiles);
+        this.selected = checked ? this.buf.slice() : [];
+        this.buf = [];
+      },
+      multi2one(arr) {
+        let newArr = [];
+        for (let i = 0; i < arr.length; i++) {
+          newArr[i] = arr[i].value;
+        }
+        return newArr;
+      },
+      find(array, value) {
+        return array.indexOf(value);
+      }
     },
-    data() {
-      return ({
-        congShow: false,
-      })
-    },
-  }
+    watch: {
+      selected(newVal, oldVal) {
+        // Handle changes in individual flavour checkboxes
+        if (newVal.length === 0) {
+          this.indeterminate = false;
+          this.allSelected = false;
+        } else if (newVal.length === this.listInputFiles.length) {
+          this.indeterminate = false;
+          this.allSelected = true;
+        } else {
+          this.indeterminate = true;
+          this.allSelected = false;
+        }
+      },
+      listInputFiles(val) {
+        for (let i = 0; i < val.length; i++) {
+          let st = val[i].status;
+          switch (st) {
+            case 'add': // if (x === 'value1')
+                break
+            case 'value2': // if (x === 'value2')
+                break
+          }
+        }
+      }
+    }
+  };
 </script>
 
