@@ -16,7 +16,7 @@
                   <b-button variant="primary">Добавить папку</b-button>
                   <b-button variant="success" @click="openFiles">Добавить файлы</b-button>
                 </b-button-group>
-                <b-button variant="danger" @click="startProc">Запуск</b-button>
+                <b-button variant="danger" :disabled="buttonStartProc" @click="startProc">Запуск</b-button>
                 <input id="fi1" type="file" multiple @change="handleFileChange" />
               </b-button-toolbar>
             </b-col>
@@ -30,7 +30,7 @@
                   <b-img :src="require('../../assets/info.png')" height="16" />
                   <span>Имя файла</span>
                 </div>
-                <b-form-checkbox-group id="fls" class="f-list" v-bind:style="{ maxHeight: mHeight + 'px', minHeight: mHeight + 'px' }" stacked v-model="selected" :options=listInputFiles name="fls" aria-label="Individual files">
+                <b-form-checkbox-group id="fls" class="f-list" :style="{ maxHeight: mHeight + 'px', minHeight: mHeight + 'px' }" stacked v-model="selected" :options=listInputFiles name="fls" aria-label="Individual files">
                 </b-form-checkbox-group>
               </b-form-group>
             </b-col>
@@ -122,7 +122,6 @@
   .f-list {
     padding: .25rem .5rem;
     border: 1px solid #dee2e6;
-    min-height: 10rem;
     overflow: auto;
   }
   
@@ -168,6 +167,7 @@
         selected: [],
         allSelected: false,
         indeterminate: false,
+        buttonStartProc: true,
         mHeight: 100
       };
     },
@@ -236,13 +236,18 @@
         obj.className = result.join(" ");
       },
       startProc() {
-        this.selected = [];
         this.buf = this.listInputFiles;
+        console.log(this.selected);
         //иначе не отслеживает изменения
-        this.listInputFiles = [];
-        for (let i = 0; i < this.buf.length; i++) {
-          this.buf[i].status = "add";
-        }
+        // this.listInputFiles = [];
+        // for (let i = 0; i < this.buf.length; i++) {
+        //   if (this.selected[i] == this.buf[i].value) {
+        //       this.selected[i] = "";
+        //       this.buf[i].status = "add";
+        //       /* exec */
+        //   }
+          
+        // }
         this.listInputFiles = this.buf;
       }
     },
@@ -252,12 +257,17 @@
         if (newVal.length === 0) {
           this.indeterminate = false;
           this.allSelected = false;
+          this.buttonStartProc = true;
         } else if (newVal.length === this.listInputFiles.length) {
           this.indeterminate = false;
           this.allSelected = true;
+          if (this.listInputFiles.length > 0) {
+            this.buttonStartProc = false;
+          }
         } else {
           this.indeterminate = true;
           this.allSelected = false;
+          this.buttonStartProc = false;
         }
       },
       listInputFiles(val) {
