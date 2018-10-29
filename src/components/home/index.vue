@@ -9,14 +9,14 @@
       </b-modal>
       <b-modal id="bookScanner" no-close-on-backdrop hide-footer size="lg" title="Импорт книг">
         <b-container fluid>
-          <b-row class="mb-2">
+          <b-row class="mb-3">
             <b-col>
               <b-button-toolbar key-nav aria-label="Toolbar with button groups">
                 <b-button-group class="e-btn-group mr-2">
                   <b-button variant="primary">Добавить папку</b-button>
                   <b-button variant="success" @click="openFiles">Добавить файлы</b-button>
                 </b-button-group>
-                <b-button variant="danger">Запуск</b-button>
+                <b-button variant="danger" @click="startProc">Запуск</b-button>
                 <input id="fi1" type="file" multiple @change="handleFileChange" />
               </b-button-toolbar>
             </b-col>
@@ -24,9 +24,13 @@
           <b-row>
             <b-col>
               <b-form-group>
-                <b-form-checkbox v-model="allSelected" :indeterminate="indeterminate" aria-describedby="listInputFiles" aria-controls="listInputFiles" @change="toggleAll" :title="allSelected ? 'Снять всё' : 'Выбрать всё'">
-                </b-form-checkbox>
-                <b-form-checkbox-group id="fls" class="border p-1 mnh-100"  stacked v-model="selected" :options=listInputFiles name="fls" aria-label="Individual files">
+                <div class="list-header">
+                  <b-form-checkbox v-model="allSelected" :indeterminate="indeterminate" aria-describedby="listInputFiles" aria-controls="listInputFiles" @change="toggleAll" :title="allSelected ? 'Снять всё' : 'Выбрать всё'">
+                  </b-form-checkbox>
+                  <b-img :src="require('../../assets/info.png')" height="16" />
+                  <span>Имя файла</span>
+                </div>
+                <b-form-checkbox-group id="fls" class="f-list" v-bind:style="{ maxHeight: mHeight + 'px', minHeight: mHeight + 'px' }" stacked v-model="selected" :options=listInputFiles name="fls" aria-label="Individual files">
                 </b-form-checkbox-group>
               </b-form-group>
             </b-col>
@@ -85,7 +89,7 @@
   
   .e-btn-group {
     &>.btn+.btn {
-      margin-left: 1px;
+      margin-left: 0.12rem;
     }
   }
   
@@ -94,23 +98,46 @@
   }
   
   #fls .custom-control-label>span {
-    margin-left: 20px;
+    margin-left: 1.65rem;
     &:before {
-      content: url("../../assets/raw.png");
+      content: "";
       position: absolute;
-      left: -3px;
-      top: 1px;
+      left: 0;
+      top: 0.12rem;
     }
   }
   
-  #fls .custom-checkbox:nth-child(1) .custom-control-label>span {
+  #fls .raw span {
+    &:before {
+      content: url("../../assets/raw.png");
+    }
+  }
+  
+  #fls .add span {
     &:before {
       content: url("../../assets/add.png");
     }
   }
-
-  .mnh {
-    min-height: 100%;
+  
+  .f-list {
+    padding: .25rem .5rem;
+    border: 1px solid #dee2e6;
+    min-height: 10rem;
+    overflow: auto;
+  }
+  
+  .list-header {
+    display: flex;
+    align-items: center;
+    border: 1px solid #dee2e6;
+    padding: 0.2rem 0.5rem;
+    .custom-control-inline {
+      margin-right: 0.1rem;
+    }
+    span {
+      margin-left: 0.5rem;
+      font-weight: bold;
+    }
   }
 </style>
 
@@ -135,17 +162,26 @@
     data() {
       return {
         congShow: false,
-        listInputFiles: [],
+        filesList: [], //хранилище открытых файлов
+        listInputFiles: [], //экранное представление
         buf: [],
         selected: [],
         allSelected: false,
-        indeterminate: false
+        indeterminate: false,
+        mHeight: 100
       };
     },
     created: function() {
       if (this.congratulation) {
         this.congShow = true;
       }
+    },
+    mounted: function() {
+      window.addEventListener('resize', this.handleResize);
+      this.mHeight = window.innerHeight - 260;
+    },
+    beforeDestroy: function() {
+      window.removeEventListener('resize', this.handleResize)
     },
     computed: {
       ...mapGetters([
@@ -159,19 +195,21 @@
       }
     },
     methods: {
-      openFiles: function(e) {
+      handleResize() {
+        this.mHeight = window.innerHeight - 260;
+      },
+      openFiles(e) {
         document.getElementById("fi1").click();
       },
-      handleFileChange: function(e) {
-        let filesList = e.target.files || e.dataTransfer.files;
-        if (!filesList.length)
-          return;
-        for (let i = 0; i < filesList.length; i++) {
+      handleFileChange(e) {
+        this.filesList = e.target.files || e.dataTransfer.files;
+        if (!this.filesList.length) return;
+        for (let i = 0; i < this.filesList.length; i++) {
           // получаем сам файл
           this.listInputFiles.push({
-            text: filesList[i].name,
-            value: filesList[i].name,
-            status: "add"
+            text: this.filesList[i].name,
+            value: this.filesList[i].name,
+            status: "raw"
           });
         }
       },
@@ -187,8 +225,25 @@
         }
         return newArr;
       },
-      find(array, value) {
-        return array.indexOf(value);
+      removeClasses(obj) {
+        //удаляем классы по списку из array
+        let array = ["add", "raw"];
+        let clsList = obj.className.split(" "); //Получаем массив классов
+        let result = [];
+        for (let i = 0; i < clsList.length; i++) {
+          if (array.indexOf(clsList[i]) === -1) result.push(clsList[i]);
+        }
+        obj.className = result.join(" ");
+      },
+      startProc() {
+        this.selected = [];
+        this.buf = this.listInputFiles;
+        //иначе не отслеживает изменения
+        this.listInputFiles = [];
+        for (let i = 0; i < this.buf.length; i++) {
+          this.buf[i].status = "add";
+        }
+        this.listInputFiles = this.buf;
       }
     },
     watch: {
@@ -206,15 +261,21 @@
         }
       },
       listInputFiles(val) {
-        for (let i = 0; i < val.length; i++) {
-          let st = val[i].status;
-          switch (st) {
-            case 'add': // if (x === 'value1')
-                break
-            case 'value2': // if (x === 'value2')
-                break
+        setTimeout(() => {
+          let c = document.getElementById("fls").children;
+          for (let i = 0; i < val.length; i++) {
+            this.removeClasses(c[i]);
+            let st = val[i].status;
+            switch (st) {
+              case "add":
+                c[i].classList.add("add");
+                break;
+              case "raw":
+                c[i].classList.add("raw");
+                break;
+            }
           }
-        }
+        }, 0);
       }
     }
   };
