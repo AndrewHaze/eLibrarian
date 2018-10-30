@@ -34,42 +34,39 @@
 </template>
 
 <style lang="scss">
-  .login-form {
-    width: 25rem;
-    padding-bottom: 10rem;
-  }
+.login-form {
+  width: 25rem;
+  padding-bottom: 10rem;
+}
 </style>
 
 <script>
-  import store from "../../store";
-  import {
-    AUTH_REQUEST
-  } from "../../store/actions/auth";
-  
-  export default {
-    name: "Registration",
-    data() {
-      return {
-        username: "",
-        usernameErrorMessage: "Пожалуйста заполните это поле",
-        loginState: null,
-        password: "",
-        passwordErrorMessage: "Пожалуйста заполните это поле",
-        passwordState: null
-      };
-    },
-    methods: {
-      regFinish: function() {
-        const {
-          username,
-          password
-        } = this;
-        this.callApi(
-        this.$store.getters.prefix + "/static/api.php", {
+import store from "../../store";
+import { AUTH_REQUEST } from "../../store/actions/auth";
+
+export default {
+  name: "Registration",
+  data() {
+    return {
+      username: "",
+      usernameErrorMessage: "Пожалуйста заполните это поле",
+      loginState: null,
+      password: "",
+      passwordErrorMessage: "Пожалуйста заполните это поле",
+      passwordState: null
+    };
+  },
+  methods: {
+    regFinish: function() {
+      const { username, password } = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
           cmd: "register", //проверяем наличие зарег. пользователей
           usr: username,
           psw: password
         },
+        "",
         function(rd) {
           if (rd) {
             store.commit("showRegModal", true);
@@ -79,59 +76,58 @@
         }
       );
       this.$store
-          .dispatch(AUTH_REQUEST, {
-            username,
-            password
-          })
-          .then(() => {
-            this.$router.push("/");
-          });
-      },
-      register: function() {
-        const {
+        .dispatch(AUTH_REQUEST, {
           username,
           password
-        } = this;
-  
-        const self = this;
-        let problems = false;
-  
-        this.loginState = null;
-        this.passwordState = null;
-  
-        if (username.length < 1) {
-          problems = true;
-          this.loginState = false;
-        } else {
-          problems = false;
-          this.loginState = true;
-        }
-        if (password.length < 1) {
-          problems = true;
-          this.passwordState = false;
-        } else {
-          problems = false;
-          this.passwordState = true;
-        }
-        if (problems) return;
-        //Вызов функции из глобального миксина
-        this.callApi(
-          this.$store.getters.prefix + "/static/api.php", {
-            cmd: "exist", //проверяем наличие зарег. пользователей
-            dat: username
-          },
-          function(rd) {
-            if (rd) {
-              self.regFinish();
-            } else {
-              self.loginState = false;
-              self.passwordState = true;
-              self.usernameErrorMessage =
-                "Пользователь с таким именем уже существует!";
-            }
-          }
-        );
+        })
+        .then(() => {
+          this.$router.push("/");
+        });
+    },
+    register: function() {
+      const { username, password } = this;
+
+      const self = this;
+      let problems = false;
+
+      this.loginState = null;
+      this.passwordState = null;
+
+      if (username.length < 1) {
+        problems = true;
+        this.loginState = false;
+      } else {
+        problems = false;
+        this.loginState = true;
       }
+      if (password.length < 1) {
+        problems = true;
+        this.passwordState = false;
+      } else {
+        problems = false;
+        this.passwordState = true;
+      }
+      if (problems) return;
+      //Вызов функции из глобального миксина
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "exist", //проверяем наличие зарег. пользователей
+          dat: username
+        },
+        "",
+        function(rd) {
+          if (rd) {
+            self.regFinish();
+          } else {
+            self.loginState = false;
+            self.passwordState = true;
+            self.usernameErrorMessage =
+              "Пользователь с таким именем уже существует!";
+          }
+        }
+      );
     }
-  };
+  }
+};
 </script>
