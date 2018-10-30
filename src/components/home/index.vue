@@ -12,10 +12,7 @@
           <b-row class="mb-3">
             <b-col>
               <b-button-toolbar key-nav aria-label="Toolbar with button groups">
-                <b-button-group class="e-btn-group mr-2">
-                  <b-button variant="primary">Добавить папку</b-button>
-                  <b-button variant="success" @click="openFiles">Добавить файлы</b-button>
-                </b-button-group>
+                <b-button variant="success" @click="openFiles" class="mr-2">Добавить файлы</b-button>
                 <b-button variant="danger" :disabled="buttonStartProc" @click="startProc">Запуск</b-button>
                 <input id="fi1" type="file" multiple @change="handleFileChange" />
               </b-button-toolbar>
@@ -36,7 +33,6 @@
             </b-col>
             <!---->
             <b-col>
-  
             </b-col>
           </b-row>
         </b-container>
@@ -64,230 +60,228 @@
 </template>
 
 <style lang="scss">
-  .fix-height {
-    height: calc(100vh - 225px);
+.fix-height {
+  height: calc(100vh - 225px);
+}
+
+.sidebar {
+  display: flex;
+  flex-flow: column nowrap;
+  flex: 0 0 230px !important;
+  /*border-right: 1px solid #dee2e6;*/
+  height: 100%;
+  overflow-y: auto;
+}
+
+.content {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.control-element {
+  cursor: pointer;
+  user-select: none;
+}
+
+.e-btn-group {
+  & > .btn + .btn {
+    margin-left: 0.12rem;
   }
-  
-  .sidebar {
-    display: flex;
-    flex-flow: column nowrap;
-    flex: 0 0 230px !important;
-    /*border-right: 1px solid #dee2e6;*/
-    height: 100%;
-    overflow-y: auto;
+}
+
+.btn-toolbar > input[type="file"] {
+  display: none;
+}
+
+#fls .custom-control-label > span {
+  margin-left: 1.65rem;
+  &:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.12rem;
   }
-  
-  .content {
-    height: 100%;
-    overflow-y: auto;
+}
+
+#fls .raw span {
+  &:before {
+    content: url("../../assets/raw.png");
   }
-  
-  .control-element {
-    cursor: pointer;
-    user-select: none;
+}
+
+#fls .add span {
+  &:before {
+    content: url("../../assets/add.png");
   }
-  
-  .e-btn-group {
-    &>.btn+.btn {
-      margin-left: 0.12rem;
-    }
+}
+
+.f-list {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #dee2e6;
+  overflow: auto;
+}
+
+.list-header {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dee2e6;
+  padding: 0.2rem 0.5rem;
+  .custom-control-inline {
+    margin-right: 0.1rem;
   }
-  
-  .btn-toolbar>input[type="file"] {
-    display: none;
+  span {
+    margin-left: 0.5rem;
+    font-weight: bold;
   }
-  
-  #fls .custom-control-label>span {
-    margin-left: 1.65rem;
-    &:before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0.12rem;
-    }
-  }
-  
-  #fls .raw span {
-    &:before {
-      content: url("../../assets/raw.png");
-    }
-  }
-  
-  #fls .add span {
-    &:before {
-      content: url("../../assets/add.png");
-    }
-  }
-  
-  .f-list {
-    padding: .25rem .5rem;
-    border: 1px solid #dee2e6;
-    overflow: auto;
-  }
-  
-  .list-header {
-    display: flex;
-    align-items: center;
-    border: 1px solid #dee2e6;
-    padding: 0.2rem 0.5rem;
-    .custom-control-inline {
-      margin-right: 0.1rem;
-    }
-    span {
-      margin-left: 0.5rem;
-      font-weight: bold;
-    }
-  }
+}
 </style>
 
 <script>
-  import {
-    mapGetters
-  } from "vuex";
-  import store from "../../store";
-  import Login from "../login";
-  import AuthorsTab from "../tab-authors";
-  import GenresTab from "../tab-genres";
-  import SeriesTab from "../tab-series";
-  
-  export default {
-    name: "home",
-    components: {
-      Login,
-      AuthorsTab,
-      GenresTab,
-      SeriesTab
-    },
-    data() {
-      return {
-        congShow: false,
-        filesList: [], //хранилище открытых файлов
-        listInputFiles: [], //экранное представление
-        buf: [],
-        selected: [],
-        allSelected: false,
-        indeterminate: false,
-        buttonStartProc: true,
-        mHeight: 100
-      };
-    },
-    created: function() {
-      if (this.congratulation) {
-        this.congShow = true;
-      }
-    },
-    mounted: function() {
-      window.addEventListener('resize', this.handleResize);
+import { mapGetters } from "vuex";
+import store from "../../store";
+import Login from "../login";
+import AuthorsTab from "../tab-authors";
+import GenresTab from "../tab-genres";
+import SeriesTab from "../tab-series";
+
+export default {
+  name: "home",
+  components: {
+    Login,
+    AuthorsTab,
+    GenresTab,
+    SeriesTab
+  },
+  data() {
+    return {
+      congShow: false,
+      listInputFiles: [], //экранное представление
+      buf: [],
+      selected: [],
+      allSelected: false,
+      indeterminate: false,
+      buttonStartProc: true,
+      mHeight: 100,
+      img: ""
+    };
+  },
+  created: function() {
+    if (this.congratulation) {
+      this.congShow = true;
+    }
+  },
+  mounted: function() {
+    window.addEventListener("resize", this.handleResize);
+    this.mHeight = window.innerHeight - 260;
+  },
+  beforeDestroy: function() {
+    window.removeEventListener("resize", this.handleResize);
+  },
+  computed: {
+    ...mapGetters([
+      "isAuthenticated",
+      "authStatus",
+      "congratulation",
+      "appTitle"
+    ]),
+    loading: function() {
+      return this.authStatus === "loading" && !this.isAuthenticated;
+    }
+  },
+  methods: {
+    handleResize() {
       this.mHeight = window.innerHeight - 260;
     },
-    beforeDestroy: function() {
-      window.removeEventListener('resize', this.handleResize)
+    openFiles(e) {
+      document.getElementById("fi1").click();
     },
-    computed: {
-      ...mapGetters([
-        "isAuthenticated",
-        "authStatus",
-        "congratulation",
-        "appTitle"
-      ]),
-      loading: function() {
-        return this.authStatus === "loading" && !this.isAuthenticated;
+    handleFileChange(e) {
+      let filesList = e.target.files || e.dataTransfer.files;
+      if (!filesList.length) return;
+      for (let i = 0; i < filesList.length; i++) {
+        // получаем сам файл
+        this.listInputFiles.push({
+          text: filesList[i].name,
+          value: filesList[i].name,
+          //url: window.URL.createObjectURL(filesList[i]),
+          status: "raw"
+        });
       }
     },
-    methods: {
-      handleResize() {
-        this.mHeight = window.innerHeight - 260;
-      },
-      openFiles(e) {
-        document.getElementById("fi1").click();
-      },
-      handleFileChange(e) {
-        this.filesList = e.target.files || e.dataTransfer.files;
-        if (!this.filesList.length) return;
-        for (let i = 0; i < this.filesList.length; i++) {
-          // получаем сам файл
-          this.listInputFiles.push({
-            text: this.filesList[i].name,
-            value: this.filesList[i].name,
-            status: "raw"
-          });
-        }
-      },
-      toggleAll(checked) {
-        this.buf = this.multi2one(this.listInputFiles);
-        this.selected = checked ? this.buf.slice() : [];
-        this.buf = [];
-      },
-      multi2one(arr) {
-        let newArr = [];
-        for (let i = 0; i < arr.length; i++) {
-          newArr[i] = arr[i].value;
-        }
-        return newArr;
-      },
-      removeClasses(obj) {
-        //удаляем классы по списку из array
-        let array = ["add", "raw"];
-        let clsList = obj.className.split(" "); //Получаем массив классов
-        let result = [];
-        for (let i = 0; i < clsList.length; i++) {
-          if (array.indexOf(clsList[i]) === -1) result.push(clsList[i]);
-        }
-        obj.className = result.join(" ");
-      },
-      startProc() {
-        this.buf = this.listInputFiles;
-        console.log(this.selected);
-        //иначе не отслеживает изменения
-        // this.listInputFiles = [];
-        // for (let i = 0; i < this.buf.length; i++) {
-        //   if (this.selected[i] == this.buf[i].value) {
-        //       this.selected[i] = "";
-        //       this.buf[i].status = "add";
-        //       /* exec */
-        //   }
-          
-        // }
-        this.listInputFiles = this.buf;
-      }
+    toggleAll(checked) {
+      this.buf = this.multi2one(this.listInputFiles);
+      this.selected = checked ? this.buf.slice() : [];
+      this.buf = [];
     },
-    watch: {
-      selected(newVal, oldVal) {
-        // Handle changes in individual flavour checkboxes
-        if (newVal.length === 0) {
-          this.indeterminate = false;
-          this.allSelected = false;
-          this.buttonStartProc = true;
-        } else if (newVal.length === this.listInputFiles.length) {
-          this.indeterminate = false;
-          this.allSelected = true;
-          if (this.listInputFiles.length > 0) {
-            this.buttonStartProc = false;
-          }
-        } else {
-          this.indeterminate = true;
-          this.allSelected = false;
+    multi2one(arr) {
+      let newArr = [];
+      for (let i = 0; i < arr.length; i++) {
+        newArr[i] = arr[i].value;
+      }
+      return newArr;
+    },
+    removeClasses(obj) {
+      //удаляем классы по списку из array
+      let array = ["add", "raw"];
+      let clsList = obj.className.split(" "); //Получаем массив классов
+      let result = [];
+      for (let i = 0; i < clsList.length; i++) {
+        if (array.indexOf(clsList[i]) === -1) result.push(clsList[i]);
+      }
+      obj.className = result.join(" ");
+    },
+    startProc() {
+      this.buf = this.listInputFiles;
+      //иначе не отслеживает изменения
+      this.listInputFiles = [];
+      for (let i = 0; i < this.buf.length; i++) {
+        let idx = this.selected.indexOf(this.buf[i].value);
+        if (idx != -1) {
+          this.selected.splice(idx, 1);
+          this.buf[i].status = "add";
+          /* exec */
+        }
+      }
+      this.listInputFiles = this.buf;
+    }
+  },
+  watch: {
+    selected(newVal, oldVal) {
+      // Handle changes in individual flavour checkboxes
+      if (newVal.length === 0) {
+        this.indeterminate = false;
+        this.allSelected = false;
+        this.buttonStartProc = true;
+      } else if (newVal.length === this.listInputFiles.length) {
+        this.indeterminate = false;
+        this.allSelected = true;
+        if (this.listInputFiles.length > 0) {
           this.buttonStartProc = false;
         }
-      },
-      listInputFiles(val) {
-        setTimeout(() => {
-          let c = document.getElementById("fls").children;
-          for (let i = 0; i < val.length; i++) {
-            this.removeClasses(c[i]);
-            let st = val[i].status;
-            switch (st) {
-              case "add":
-                c[i].classList.add("add");
-                break;
-              case "raw":
-                c[i].classList.add("raw");
-                break;
-            }
-          }
-        }, 0);
+      } else {
+        this.indeterminate = true;
+        this.allSelected = false;
+        this.buttonStartProc = false;
       }
+    },
+    listInputFiles(val) {
+      setTimeout(() => {
+        let c = document.getElementById("fls").children;
+        for (let i = 0; i < val.length; i++) {
+          this.removeClasses(c[i]);
+          let st = val[i].status;
+          switch (st) {
+            case "add":
+              c[i].classList.add("add");
+              break;
+            case "raw":
+              c[i].classList.add("raw");
+              break;
+          }
+        }
+      }, 0);
     }
-  };
+  }
+};
 </script>
 
