@@ -85,6 +85,7 @@ export default {
     this.callApi(
       this.$store.getters.prefix + "/static/api.php",
       { cmd: "с_list", dat: "" },
+      "",
       function(rd) {
         с_list = rd; //возвр. данные (Responce)
         self.options = с_list;
