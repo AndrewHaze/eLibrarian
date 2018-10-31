@@ -162,7 +162,7 @@ export default {
       indeterminate: false,
       buttonStartProc: true,
       mHeight: 100,
-      img: ""
+      img: "",
     };
   },
   created: function() {
@@ -198,14 +198,24 @@ export default {
     handleFileChange(e) {
       let filesList = e.target.files || e.dataTransfer.files;
       if (!filesList.length) return;
+      
       for (let i = 0; i < filesList.length; i++) {
-        // получаем сам файл
-        this.listInputFiles.push({
-          text: filesList[i].name,
-          value: filesList[i].name,
-          //url: window.URL.createObjectURL(filesList[i]),
-          status: "raw"
-        });
+        const self = this;
+        let formData = new FormData();
+        formData.append("file", filesList[i]);
+        //Вызов функции из глобального миксина
+        this.callApi(
+          this.$store.getters.prefix + "/static/upload.php",
+          formData,
+          "multipart/form-data",
+          function(rd) {
+            self.listInputFiles.push({
+              text: rd.base_name,
+              value: rd.hash_name,
+              status: rd.status
+            });
+          }
+        );
       }
     },
     toggleAll(checked) {
