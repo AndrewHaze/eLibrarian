@@ -16,6 +16,13 @@ Vue.config.productionTip = false
 
 Vue.mixin({
   methods: {
+    setServerError(m, d) {
+      console.log("******* db_api call *******");
+      console.log('Message: ',m);
+      console.log('Data: ',d);
+      console.log("***************************");
+      return;
+    },
     callApi(url, prms, hct, callback) {
       axios({
           method: "post",
