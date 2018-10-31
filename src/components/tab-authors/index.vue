@@ -102,13 +102,6 @@ export default {
     );
   },
   methods: {
-    setServerError(m, d) {
-      console.log("******* db_api call *******");
-      console.log(m);
-      console.log(d);
-      console.log("***************************");
-      return;
-    },
     myRowClickHandler(item) {
       //сбросим атрибуты по всему массиву
       a_list.forEach(function(entry) {
