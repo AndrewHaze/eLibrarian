@@ -33,6 +33,14 @@
             </b-col>
             <!---->
             <b-col>
+              <b-form-group label="Using sub-components:">
+                <b-form-checkbox-group id="checkboxes2" name="flavour2" v-model="selected">
+                  <b-form-checkbox disabled value="orange">Orange</b-form-checkbox>
+                  <b-form-checkbox value="apple">Apple</b-form-checkbox>
+                  <b-form-checkbox value="pineapple">Pineapple</b-form-checkbox>
+                  <b-form-checkbox value="grape">Grape</b-form-checkbox>
+                </b-form-checkbox-group>
+              </b-form-group>
             </b-col>
           </b-row>
         </b-container>
@@ -115,6 +123,13 @@
   }
 }
 
+#fls .err span {
+  color: red;
+  &:before {
+    content: "";
+  }
+}
+
 .f-list {
   padding: 0.25rem 0.5rem;
   border: 1px solid #dee2e6;
@@ -143,6 +158,15 @@ import Login from "../login";
 import AuthorsTab from "../tab-authors";
 import GenresTab from "../tab-genres";
 import SeriesTab from "../tab-series";
+import axios from "axios";
+
+function sortASC(a, b) {
+  if (a[0] === b[0]) {
+    return 0;
+  } else {
+    return a[0] < b[0] ? -1 : 1;
+  }
+}
 
 export default {
   name: "home",
@@ -162,7 +186,7 @@ export default {
       indeterminate: false,
       buttonStartProc: true,
       mHeight: 100,
-      img: "",
+      img: ""
     };
   },
   created: function() {
@@ -182,7 +206,8 @@ export default {
       "isAuthenticated",
       "authStatus",
       "congratulation",
-      "appTitle"
+      "appTitle",
+      "errFlag"
     ]),
     loading: function() {
       return this.authStatus === "loading" && !this.isAuthenticated;
@@ -198,24 +223,42 @@ export default {
     handleFileChange(e) {
       let filesList = e.target.files || e.dataTransfer.files;
       if (!filesList.length) return;
-      
+      this.buf = [];
       for (let i = 0; i < filesList.length; i++) {
         const self = this;
         let formData = new FormData();
         formData.append("file", filesList[i]);
-        //Вызов функции из глобального миксина
-        this.callApi(
-          this.$store.getters.prefix + "/static/upload.php",
-          formData,
-          "multipart/form-data",
-          function(rd) {
-            self.listInputFiles.push({
-              text: rd.base_name,
-              value: rd.hash_name,
-              status: rd.status
-            });
+        this.buf[i] = filesList[i].name;
+        axios({
+          method: "post",
+          url: this.$store.getters.prefix + "/static/upload.php",
+          data: formData,
+          headers: {
+            "content-type": "application/x-www-form-urlencoded"
           }
-        );
+        })
+          .then(response => {
+            let rd = response.data;
+            if (rd.success) {
+              self.listInputFiles.push({
+                text: rd.data.base_name,
+                value: rd.data.hash_name,
+                status: rd.data.status
+              });
+            }
+          })
+          .catch(error => {
+            self.listInputFiles.push({
+              text: filesList[i].name,
+              disabled: true,
+              value: Math.random()
+                .toString(36)
+                .substr(2, 9),
+              status: "err"
+            });
+          });
+
+        //this.listInputFiles.sort(sortASC);
       }
     },
     toggleAll(checked) {
@@ -286,6 +329,9 @@ export default {
               break;
             case "raw":
               c[i].classList.add("raw");
+              break;
+            case "err":
+              c[i].classList.add("err");
               break;
           }
         }
