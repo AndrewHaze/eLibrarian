@@ -16,7 +16,7 @@ const mutations = {
   },
   showRegModal(state, show) {
     state.reg = show
-  }
+  },
 }
 
 export default {

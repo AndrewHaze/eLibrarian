@@ -38,7 +38,7 @@
 
 <script>
 import BooksList from "../books-list";
-import store from '../../store';
+import store from "../../store";
 
 //Массив фильтра авторов
 var с_list = [];
@@ -76,7 +76,7 @@ export default {
       ],
       sortBy: "author",
       sortDesc: false,
-      items: a_list,
+      items: a_list
     };
   },
   mounted: function() {
@@ -85,6 +85,7 @@ export default {
     this.callApi(
       this.$store.getters.prefix + "/static/api.php",
       { cmd: "с_list", dat: "" },
+      "",
       function(rd) {
         с_list = rd; //возвр. данные (Responce)
         self.options = с_list;
@@ -93,6 +94,7 @@ export default {
     this.callApi(
       this.$store.getters.prefix + "/static/api.php",
       { cmd: "a_list", dat: "" },
+      "",
       function(rd) {
         a_list = rd; //возвр. данные (Responce)
         self.items = a_list;
@@ -100,13 +102,6 @@ export default {
     );
   },
   methods: {
-    setServerError(m, d) {
-      console.log("******* db_api call *******");
-      console.log(m);
-      console.log(d);
-      console.log("***************************");
-      return;
-    },
     myRowClickHandler(item) {
       //сбросим атрибуты по всему массиву
       a_list.forEach(function(entry) {
