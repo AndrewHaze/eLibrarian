@@ -22,10 +22,13 @@
             <b-col>
               <b-form-group>
                 <div class="list-header">
-                  <b-form-checkbox v-model="allSelected" :indeterminate="indeterminate" aria-describedby="listInputFiles" aria-controls="listInputFiles" @change="toggleAll" :title="allSelected ? 'Снять всё' : 'Выбрать всё'">
+                  <b-form-checkbox v-model="allSelected" :disabled="!countLIF" :indeterminate="indeterminate" aria-describedby="listInputFiles" aria-controls="listInputFiles" @change="toggleAll" :title="allSelected ? 'Снять всё' : 'Выбрать всё'">
                   </b-form-checkbox>
                   <b-img :src="require('../../assets/info.png')" height="16" />
-                  <span>Имя файла</span>
+                  <div class = "list-header-body" @click="sortListInputFiles">Имя файла
+                    <span class="list-header-sort-desc" :class="{ active: desc }">&#8593;</span>
+                    <span class="list-header-sort-asc" :class="{ active: asc }">&#8595;</span>
+                  </div>
                 </div>
                 <b-form-checkbox-group id="fls" class="f-list" :style="{ maxHeight: mHeight + 'px', minHeight: mHeight + 'px' }" stacked v-model="selected" :options=listInputFiles name="fls" aria-label="Individual files">
                 </b-form-checkbox-group>
@@ -93,6 +96,15 @@
   display: none;
 }
 
+#bookScanner * {
+  user-select: none;
+  .custom-control,
+  .custom-control-label,
+  .custom-control-input {
+    cursor: pointer;
+  }
+}
+
 #fls .custom-control-label > span {
   margin-left: 1.65rem;
   &:before {
@@ -136,9 +148,30 @@
   .custom-control-inline {
     margin-right: 0.1rem;
   }
-  span {
+  .list-header-body {
+    display: flex;
+    flex: 1 1 auto;
+    position: relative;
     margin-left: 0.5rem;
     font-weight: bold;
+    cursor: pointer;
+  }
+  .list-header-sort-desc,
+  .list-header-sort-asc {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    opacity: 0.4;
+    top: 0;
+  }
+  .active {
+    opacity: 1;
+  }
+  .list-header-sort-desc {
+    right: 8px;
+  }
+  .list-header-sort-asc {
+    right: 0px;
   }
 }
 </style>
@@ -151,14 +184,6 @@ import AuthorsTab from "../tab-authors";
 import GenresTab from "../tab-genres";
 import SeriesTab from "../tab-series";
 import axios from "axios";
-
-function sortASC(a, b) {
-  if (a[0] === b[0]) {
-    return 0;
-  } else {
-    return a[0] < b[0] ? -1 : 1;
-  }
-}
 
 export default {
   name: "home",
@@ -178,7 +203,8 @@ export default {
       indeterminate: false,
       buttonStartProc: true,
       mHeight: 100,
-      img: ""
+      asc: false,
+      desc: false
     };
   },
   created: function() {
@@ -203,6 +229,9 @@ export default {
     ]),
     loading: function() {
       return this.authStatus === "loading" && !this.isAuthenticated;
+    },
+    countLIF: function() {
+      return this.listInputFiles.length;
     }
   },
   methods: {
@@ -250,33 +279,32 @@ export default {
               status: "err"
             });
           });
-
-        //this.listInputFiles.sort(sortASC);
       }
+      //this.sortListInputFiles();
     },
     toggleAll(checked) {
       this.buf = this.multi2one(this.listInputFiles);
       this.selected = checked ? this.buf.slice() : [];
-
-      for (let i = 0; i < this.listInputFiles.length; i++) {
-        if (this.listInputFiles[i].status == "err") {
-          let idx = this.selected.indexOf(this.listInputFiles[i].value);
-          if (idx != -1) {
-            this.selected.splice(idx, 1);
-          }
-        }
-      }
+      // for (let i = 0; i < this.listInputFiles.length; i++) {
+      //   if (this.listInputFiles[i].status == "err") {
+      //     let idx = this.selected.indexOf(this.listInputFiles[i].value);
+      //     if (idx != -1) {
+      //       this.selected.splice(idx, 1);
+      //     }
+      //   }
+      // }
     },
     multi2one(arr) {
       let newArr = [];
       for (let i = 0; i < arr.length; i++) {
-        newArr[i] = arr[i].value;
+        if (arr[i].status != "err")
+         newArr.push(arr[i].value); 
       }
       return newArr;
     },
     removeClasses(obj) {
       //удаляем классы по списку из array
-      let array = ["add", "raw"];
+      let array = ["add", "raw", "err"];
       let clsList = obj.className.split(" "); //Получаем массив классов
       let result = [];
       for (let i = 0; i < clsList.length; i++) {
@@ -297,6 +325,31 @@ export default {
         }
       }
       this.listInputFiles = this.buf;
+    },
+    sortListInputFiles() {
+      if (this.countLIF < 1) return;
+      function sortASC(a, b) {
+        let x = a.text.toLowerCase();
+        let y = b.text.toLowerCase();
+        return x < y ? -1 : x > y ? 1 : 0;
+      }
+      function sortDESC(a, b) {
+        let x = a.text.toLowerCase();
+        let y = b.text.toLowerCase();
+        return x > y ? -1 : x < y ? 1 : 0;
+      }
+      if (this.asc) {
+        this.desc = true;
+        this.asc = false;
+      } else if (this.desc) {
+        this.desc = false;
+        this.asc = true;
+      } else {
+        this.desc = false;
+        this.asc = true;
+      }
+      if (this.asc) this.listInputFiles.sort(sortASC);
+      else this.listInputFiles.sort(sortDESC);
     }
   },
   watch: {
@@ -307,8 +360,8 @@ export default {
         this.allSelected = false;
         this.buttonStartProc = true;
       } else if (newVal.length === this.listInputFiles.length) {
-          this.indeterminate = false;
-          this.allSelected = true;
+        this.indeterminate = false;
+        this.allSelected = true;
         if (this.listInputFiles.length > 0) {
           this.buttonStartProc = false;
         }
