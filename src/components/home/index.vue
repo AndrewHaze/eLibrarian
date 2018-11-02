@@ -371,7 +371,7 @@ export default {
       }
     },
     listInputFiles(val) {
-      setTimeout(() => {
+      setTimeout(() => { //выжидаем мгновение, иначе не подхватываютя изменения
         let c = document.getElementById("fls").children;
         for (let i = 0; i < val.length; i++) {
           this.removeClasses(c[i]);
