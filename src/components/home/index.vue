@@ -33,14 +33,6 @@
             </b-col>
             <!---->
             <b-col>
-              <b-form-group label="Using sub-components:">
-                <b-form-checkbox-group id="checkboxes2" name="flavour2" v-model="selected">
-                  <b-form-checkbox disabled value="orange">Orange</b-form-checkbox>
-                  <b-form-checkbox value="apple">Apple</b-form-checkbox>
-                  <b-form-checkbox value="pineapple">Pineapple</b-form-checkbox>
-                  <b-form-checkbox value="grape">Grape</b-form-checkbox>
-                </b-form-checkbox-group>
-              </b-form-group>
             </b-col>
           </b-row>
         </b-container>
@@ -242,6 +234,7 @@ export default {
             if (rd.success) {
               self.listInputFiles.push({
                 text: rd.data.base_name,
+                disabled: false,
                 value: rd.data.hash_name,
                 status: rd.data.status
               });
@@ -264,7 +257,15 @@ export default {
     toggleAll(checked) {
       this.buf = this.multi2one(this.listInputFiles);
       this.selected = checked ? this.buf.slice() : [];
-      this.buf = [];
+
+      for (let i = 0; i < this.listInputFiles.length; i++) {
+        if (this.listInputFiles[i].status == "err") {
+          let idx = this.selected.indexOf(this.listInputFiles[i].value);
+          if (idx != -1) {
+            this.selected.splice(idx, 1);
+          }
+        }
+      }
     },
     multi2one(arr) {
       let newArr = [];
@@ -306,8 +307,8 @@ export default {
         this.allSelected = false;
         this.buttonStartProc = true;
       } else if (newVal.length === this.listInputFiles.length) {
-        this.indeterminate = false;
-        this.allSelected = true;
+          this.indeterminate = false;
+          this.allSelected = true;
         if (this.listInputFiles.length > 0) {
           this.buttonStartProc = false;
         }
