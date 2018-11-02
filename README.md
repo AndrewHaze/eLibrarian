@@ -1,6 +1,6 @@
 # elibrarian
 
-> SPA, по мотивам <a href="http://www.fb2library.net/projects/fb2library">Fb2Library</a>, в процессе... 
+> Vue.js SPA, по мотивам <a href="http://www.fb2library.net/projects/fb2library">Fb2Library</a>, в процессе... 
 
 ## Build Setup
 
