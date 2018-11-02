@@ -130,7 +130,7 @@
 #fls .err span {
   color: red;
   &:before {
-    content: "";
+    content: url("../../assets/err.png");
   }
 }
 
@@ -297,8 +297,7 @@ export default {
     multi2one(arr) {
       let newArr = [];
       for (let i = 0; i < arr.length; i++) {
-        if (arr[i].status != "err")
-         newArr.push(arr[i].value); 
+        if (arr[i].status != "err") newArr.push(arr[i].value);
       }
       return newArr;
     },
@@ -380,12 +379,15 @@ export default {
           switch (st) {
             case "add":
               c[i].classList.add("add");
+              c[i].setAttribute("title", "Файл готов к обработке");
               break;
             case "raw":
               c[i].classList.add("raw");
+              c[i].setAttribute("title", "Файл успешно добавлен");
               break;
             case "err":
               c[i].classList.add("err");
+              c[i].setAttribute("title", "Ошибка чтения");
               break;
           }
         }
