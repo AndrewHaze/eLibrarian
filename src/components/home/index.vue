@@ -7,7 +7,7 @@
           <h3>Поздравляем! Вы успешно зарегистрировались!</h3>
         </div>
       </b-modal>
-      <b-modal id="bookScanner" no-close-on-backdrop hide-footer size="lg" title="Импорт книг">
+      <b-modal id="bookScanner" @shown="showBookScanner" no-close-on-backdrop hide-footer size="lg" title="Импорт книг">
         <b-container fluid>
           <b-row class="mb-3">
             <b-col>
@@ -25,9 +25,17 @@
                   <b-form-checkbox v-model="allSelected" :disabled="!countLIF" :indeterminate="indeterminate" aria-describedby="listInputFiles" aria-controls="listInputFiles" @change="toggleAll" :title="allSelected ? 'Снять всё' : 'Выбрать всё'">
                   </b-form-checkbox>
                   <b-img :src="require('../../assets/info.png')" height="16" />
-                  <div class = "list-header-body" @click="sortListInputFiles">Имя файла
+                  <div class="list-header-body" @click="sortListInputFiles">Имя файла
                     <span class="list-header-sort-desc" :class="{ active: desc }">&#8593;</span>
                     <span class="list-header-sort-asc" :class="{ active: asc }">&#8595;</span>
+                  </div>
+                </div>
+                <div v-if="fCount > 0" class="animation-wrap">
+                  <div class="lds-ring">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
                   </div>
                 </div>
                 <b-form-checkbox-group id="fls" class="f-list" :style="{ maxHeight: mHeight + 'px', minHeight: mHeight + 'px' }" stacked v-model="selected" :options=listInputFiles name="fls" aria-label="Individual files">
@@ -174,6 +182,63 @@
     right: 0px;
   }
 }
+
+/* Animation */
+
+$ring_color:#cce5ff;
+$width: 15rem;
+$height: 15rem;
+.animation-wrap {
+  position: absolute;
+  width: $width;
+  height: $height;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.lds-ring {
+  display: inline-block;
+  position: relative;
+  width: $width;
+  height: $height;
+}
+
+.lds-ring div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: $width/1.25;
+  height: $height/1.25;
+  margin: 16px;
+  border: 16px solid $ring_color;
+  border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: $ring_color transparent transparent transparent;
+}
+
+.lds-ring div:nth-child(1) {
+  animation-delay: -0.45s;
+}
+
+.lds-ring div:nth-child(2) {
+  animation-delay: -0.3s;
+}
+
+.lds-ring div:nth-child(3) {
+  animation-delay: -0.15s;
+}
+
+@keyframes lds-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 </style>
 
 <script>
@@ -204,7 +269,8 @@ export default {
       buttonStartProc: true,
       mHeight: 100,
       asc: false,
-      desc: false
+      desc: false,
+      fCount: -1,
     };
   },
   created: function() {
@@ -224,8 +290,7 @@ export default {
       "isAuthenticated",
       "authStatus",
       "congratulation",
-      "appTitle",
-      "errFlag"
+      "appTitle"
     ]),
     loading: function() {
       return this.authStatus === "loading" && !this.isAuthenticated;
@@ -244,12 +309,11 @@ export default {
     handleFileChange(e) {
       let filesList = e.target.files || e.dataTransfer.files;
       if (!filesList.length) return;
-      this.buf = [];
+      this.fCount = filesList.length;
       for (let i = 0; i < filesList.length; i++) {
         const self = this;
         let formData = new FormData();
         formData.append("file", filesList[i]);
-        this.buf[i] = filesList[i].name;
         axios({
           method: "post",
           url: this.$store.getters.prefix + "/static/upload.php",
@@ -267,6 +331,7 @@ export default {
                 value: rd.data.hash_name,
                 status: rd.data.status
               });
+              self.fCount--;
             }
           })
           .catch(error => {
@@ -278,21 +343,26 @@ export default {
                 .substr(2, 9),
               status: "err"
             });
+            self.fCount--;
           });
       }
-      //this.sortListInputFiles();
     },
     toggleAll(checked) {
       this.buf = this.multi2one(this.listInputFiles);
       this.selected = checked ? this.buf.slice() : [];
-      // for (let i = 0; i < this.listInputFiles.length; i++) {
-      //   if (this.listInputFiles[i].status == "err") {
-      //     let idx = this.selected.indexOf(this.listInputFiles[i].value);
-      //     if (idx != -1) {
-      //       this.selected.splice(idx, 1);
-      //     }
-      //   }
-      // }
+    },
+    showBookScanner(evt) {
+      this.listInputFiles = [];
+      //Вызов функции из глобального миксина
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "clear_upload", //очищаем загрузку при закрытии окна
+          dat: ""
+        },
+        "",
+        function(rd) {}
+      );
     },
     multi2one(arr) {
       let newArr = [];
@@ -327,16 +397,24 @@ export default {
     },
     sortListInputFiles() {
       if (this.countLIF < 1) return;
+
       function sortASC(a, b) {
         let x = a.text.toLowerCase();
         let y = b.text.toLowerCase();
         return x < y ? -1 : x > y ? 1 : 0;
       }
+
       function sortDESC(a, b) {
         let x = a.text.toLowerCase();
         let y = b.text.toLowerCase();
         return x > y ? -1 : x < y ? 1 : 0;
       }
+
+      if (this.fCount === 0){
+        this.desc = true;
+        this.fCount = -1;
+      }
+
       if (this.asc) {
         this.desc = true;
         this.asc = false;
@@ -371,7 +449,8 @@ export default {
       }
     },
     listInputFiles(val) {
-      setTimeout(() => { //выжидаем мгновение, иначе не подхватываютя изменения
+      setTimeout(() => {
+        //выжидаем мгновение, иначе не подхватываютя изменения
         let c = document.getElementById("fls").children;
         for (let i = 0; i < val.length; i++) {
           this.removeClasses(c[i]);
@@ -392,7 +471,12 @@ export default {
           }
         }
       }, 0);
-    }
+    },
+   fCount(val) {
+     if (val === 0) {
+       this.sortListInputFiles();
+     }
+   } 
   }
 };
 </script>
