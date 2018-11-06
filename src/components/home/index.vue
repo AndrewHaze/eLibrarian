@@ -353,6 +353,10 @@ export default {
     },
     showBookScanner(evt) {
       this.listInputFiles = [];
+      this.fCount = -1;
+      this.asc = false;
+      this.desc = false;
+      console.log('showBookScanner')
       //Вызов функции из глобального миксина
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
@@ -411,7 +415,8 @@ export default {
       }
 
       if (this.fCount === 0){
-        this.desc = true;
+        this.asc = false;
+        this.desc = false;
         this.fCount = -1;
       }
 
