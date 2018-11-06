@@ -22,11 +22,8 @@ if (move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) {
         "status" => "raw",
     );
 } else {
-    $res["data"] =  array(
-        "base_name" => $name,
-        "hash_name" => $target_file,
-        "status" => "err",
-    );
+    $res["success"] = false;
+    $res["error"] = "I/O Error (File Upload)";
 }
 
 
