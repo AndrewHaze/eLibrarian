@@ -185,7 +185,7 @@
 
 /* Animation */
 
-$ring_color:#cce5ff;
+$ring_color: #cce5ff;
 $width: 15rem;
 $height: 15rem;
 .animation-wrap {
@@ -270,7 +270,7 @@ export default {
       mHeight: 100,
       asc: false,
       desc: false,
-      fCount: -1,
+      fCount: -1
     };
   },
   created: function() {
@@ -314,6 +314,7 @@ export default {
         const self = this;
         let formData = new FormData();
         formData.append("file", filesList[i]);
+
         axios({
           method: "post",
           url: this.$store.getters.prefix + "/static/upload.php",
@@ -330,6 +331,16 @@ export default {
                 disabled: false,
                 value: rd.data.hash_name,
                 status: rd.data.status
+              });
+              self.fCount--;
+            } else {
+              self.listInputFiles.push({
+                text: filesList[i].name,
+                disabled: true,
+                value: Math.random()
+                  .toString(36)
+                  .substr(2, 9),
+                status: "err"
               });
               self.fCount--;
             }
@@ -356,7 +367,7 @@ export default {
       this.fCount = -1;
       this.asc = false;
       this.desc = false;
-      console.log('showBookScanner')
+      console.log("showBookScanner");
       //Вызов функции из глобального миксина
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
@@ -414,7 +425,7 @@ export default {
         return x > y ? -1 : x < y ? 1 : 0;
       }
 
-      if (this.fCount === 0){
+      if (this.fCount === 0) {
         this.asc = false;
         this.desc = false;
         this.fCount = -1;
@@ -477,11 +488,11 @@ export default {
         }
       }, 0);
     },
-   fCount(val) {
-     if (val === 0) {
-       this.sortListInputFiles();
-     }
-   } 
+    fCount(val) {
+      if (val === 0) {
+        this.sortListInputFiles();
+      }
+    }
   }
 };
 </script>
