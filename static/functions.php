@@ -45,3 +45,13 @@ function pdo_connect()
 
     return $pdo = new PDO($dsn, $user, $pass, $opt);
 }
+
+function clear_dir($dir) {
+    $res = false;
+    if (file_exists($dir.'/')) {
+        foreach (glob($dir.'/*') as $file) {
+            $res = unlink($file);
+        }
+    }
+    return $res;
+}

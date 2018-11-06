@@ -136,6 +136,13 @@ if (isset($_POST["cmd"])) {
         case "a_list":
             $res["data"] = $authors;
             break;
+        case "clear_upload":
+            $res["data"] = clear_dir('uploads');
+            if (!$res["data"]) {
+                $res["success"] = false;
+                $res["error"] = "I/O Error (Clear Upload)";
+            }
+            break;    
         default:
             $res["success"] = false;
             $res["error"] = "Unknown command";
