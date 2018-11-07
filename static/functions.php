@@ -49,7 +49,7 @@ function pdo_connect()
 function clear_dir($dir) {
     $res = false;
     if (file_exists($dir.'/')) {
-        foreach (glob($dir.'/*') as $file) {
+        foreach (glob($dir.'/'.$_SESSION['user'].'*') as $file) {
             $res = unlink($file);
         }
     }

@@ -59,9 +59,11 @@ $res = array("data" => array(), "success" => true, "error" => "");
 $_POST = json_decode(file_get_contents("php://input"), true);
 
 if (isset($_POST["cmd"])) {
+    session_name("xeg6joZqNSGP3FyEi6xW");
+    session_start(); 
+    $pdo = pdo_connect();
     switch ($_POST["cmd"]) {
-        case "first":
-            $pdo = pdo_connect();
+        case "first": //есть заг. пользователи?
             if ($pdo) {
                 $stmt = $pdo->query("SELECT COUNT(*) FROM users;");
                 $count = $stmt->fetchColumn();
@@ -75,8 +77,7 @@ if (isset($_POST["cmd"])) {
                 $res["error"] = "PDO Error";
             }
             break;
-        case "exist":
-            $pdo = pdo_connect();
+        case "exist": //есть такой пользователь?
             if ($pdo) {
                 $username = $_POST["dat"];
                 $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE login = :login');
@@ -93,8 +94,7 @@ if (isset($_POST["cmd"])) {
                 $res["error"] = "PDO Error";
             }
             break;
-        case "register":
-            $pdo = pdo_connect();
+        case "register": //регистрация
             if ($pdo) {
                 $username = $_POST["usr"];
                 $password = $_POST["psw"];
@@ -103,13 +103,15 @@ if (isset($_POST["cmd"])) {
                 $stmt->bindValue(':login', $username, PDO::PARAM_INT);
                 $stmt->bindValue(':hash', $hash, PDO::PARAM_INT);
                 $stmt->execute();
+                $_SESSION['user'] = $username;
+                $res["data"] = $_SESSION['user'];
             } else {
+                $_SESSION['user'] = null;
                 $res["success"] = false;
                 $res["error"] = "PDO Error";
             }
             break;
-        case "verification":
-            $pdo = pdo_connect();
+        case "verification": //логин
             if ($pdo) {
                 $username = $_POST["usr"];
                 $password = $_POST["psw"];
@@ -118,11 +120,16 @@ if (isset($_POST["cmd"])) {
                 $stmt->execute();
                 $hash = $stmt->fetchColumn();
                 if (password_verify ($password , $hash)) {
-                    $res["data"] = true;
+                    $_SESSION['user'] = $username;
+                    $res["data"] = $_SESSION['user'];
                 } else {
+                    $_SESSION['user'] = null;
                     $res["data"] = false;
+                    $res["success"] = false;
+                    $res["error"] = "Wrong Password";
                 }
             } else {
+                $_SESSION['user'] = null;
                 $res["success"] = false;
                 $res["error"] = "PDO Error";
             }
@@ -136,7 +143,7 @@ if (isset($_POST["cmd"])) {
         case "a_list":
             $res["data"] = $authors;
             break;
-        case "clear_upload":
+        case "clear_upload": //очистка папки uploads, для текщей сессии
             $res["data"] = clear_dir('uploads');
             if (!$res["data"]) {
                 $res["success"] = false;
