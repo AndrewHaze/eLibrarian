@@ -46,12 +46,19 @@ function pdo_connect()
     return $pdo = new PDO($dsn, $user, $pass, $opt);
 }
 
-function clear_dir($dir) {
+function clear_dir($dir)
+{
     $res = false;
-    if (file_exists($dir.'/')) {
-        foreach (glob($dir.'/'.$_SESSION['user'].'*') as $file) {
-            $res = unlink($file);
+    if (file_exists($dir . '/')) {
+        $files = glob($dir . '/' . $_SESSION['user'] . '*');
+        if (count($files) > 0) {
+            foreach ($files as $file) {
+                $res = unlink($file);
+            }
+        } else {
+            return true;
         }
+
     }
     return $res;
 }
