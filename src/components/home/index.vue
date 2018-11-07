@@ -319,6 +319,7 @@ export default {
           method: "post",
           url: this.$store.getters.prefix + "/static/upload.php",
           data: formData,
+          withCredentials: true,  //передаем куки
           headers: {
             "content-type": "application/x-www-form-urlencoded"
           }
@@ -367,7 +368,6 @@ export default {
       this.fCount = -1;
       this.asc = false;
       this.desc = false;
-      console.log("showBookScanner");
       //Вызов функции из глобального миксина
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
