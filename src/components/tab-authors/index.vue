@@ -40,11 +40,6 @@
 import BooksList from "../books-list";
 import store from "../../store";
 
-//Массив фильтра авторов
-var с_list = [];
-//Массив авторов
-var a_list = [];
-
 export default {
   name: "tab-authors",
   components: {
@@ -53,7 +48,7 @@ export default {
   data: function() {
     return {
       selected: "*",
-      options: с_list,
+      options: [], //Массив фильтра авторов
       filter: null,
       selectedItem: "",
       info: null,
@@ -76,7 +71,7 @@ export default {
       ],
       sortBy: "author",
       sortDesc: false,
-      items: a_list
+      items: [] //Массив авторов
     };
   },
   mounted: function() {
@@ -87,8 +82,7 @@ export default {
       { cmd: "с_list", dat: "" },
       "",
       function(rd) {
-        с_list = rd; //возвр. данные (Responce)
-        self.options = с_list;
+        self.options = rd; //возвр. данные (Responce)
       }
     );
     this.callApi(
@@ -96,15 +90,14 @@ export default {
       { cmd: "a_list", dat: "" },
       "",
       function(rd) {
-        a_list = rd; //возвр. данные (Responce)
-        self.items = a_list;
+        self.items = rd; //возвр. данные (Responce)
       }
     );
   },
   methods: {
     myRowClickHandler(item) {
       //сбросим атрибуты по всему массиву
-      a_list.forEach(function(entry) {
+      this.items.forEach(function(entry) {
         entry._rowVariant = "";
         entry.isActive = false;
       });
