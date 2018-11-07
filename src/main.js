@@ -28,6 +28,7 @@ Vue.mixin({
           method: "post",
           url: url,
           data: prms,
+          withCredentials: true, //передаем куки
           headers: { 'content-type': hct || 'application/x-www-form-urlencoded' },
         })
         .then(response => {
