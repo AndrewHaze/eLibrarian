@@ -48,6 +48,11 @@
   height: 100%;
   overflow-y: auto;
 }
+
+.control-element {
+  cursor: pointer;
+  user-select: none;
+}
 </style>
 
 <script>

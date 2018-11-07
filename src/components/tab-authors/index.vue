@@ -70,7 +70,7 @@ export default {
         }
       ],
       sortBy: "author",
-      sortDesc: false,
+      //sortDesc: false,
       items: [] //Массив авторов
     };
   },

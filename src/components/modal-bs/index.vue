@@ -1,53 +1,49 @@
 <template>
-      <b-modal id="bookScanner" @shown="showBookScanner" no-close-on-backdrop hide-footer size="lg" title="Импорт книг">
+    <b-modal id="bookScanner" @shown="showBookScanner" no-close-on-backdrop hide-footer size="lg" title="Импорт книг">
         <b-container fluid>
-          <b-row class="mb-3">
-            <b-col>
-              <b-button-toolbar key-nav aria-label="Toolbar with button groups">
-                <b-button variant="success" @click="openFiles" class="mr-2">Добавить файлы</b-button>
-                <b-button variant="danger" :disabled="buttonStartProc" @click="startProc">Запуск</b-button>
-                <input id="fi1" type="file" multiple @change="handleFileChange" />
-              </b-button-toolbar>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <b-form-group>
-                <div class="list-header">
-                  <b-form-checkbox v-model="allSelected" :disabled="!countLIF" :indeterminate="indeterminate" aria-describedby="listInputFiles" aria-controls="listInputFiles" @change="toggleAll" :title="allSelected ? 'Снять всё' : 'Выбрать всё'">
-                  </b-form-checkbox>
-                  <b-img :src="require('../../assets/info.png')" height="16" />
-                  <div class="list-header-body" @click="sortListInputFiles">Имя файла
-                    <span class="list-header-sort-desc" :class="{ active: desc }">&#8593;</span>
-                    <span class="list-header-sort-asc" :class="{ active: asc }">&#8595;</span>
-                  </div>
-                </div>
-                <div v-if="fCount > 0" class="animation-wrap">
-                  <div class="lds-ring">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                  </div>
-                </div>
-                <b-form-checkbox-group id="fls" class="f-list" :style="{ maxHeight: mHeight + 'px', minHeight: mHeight + 'px' }" stacked v-model="selected" :options=listInputFiles name="fls" aria-label="Individual files">
-                </b-form-checkbox-group>
-              </b-form-group>
-            </b-col>
-            <!---->
-            <b-col>
-            </b-col>
-          </b-row>
+            <b-row class="mb-3">
+                <b-col>
+                    <b-button-toolbar key-nav aria-label="Toolbar with button groups">
+                        <b-button variant="success" @click="openFiles" class="mr-2">Добавить файлы</b-button>
+                        <b-button variant="danger" :disabled="buttonStartProc" @click="startProc">Запуск</b-button>
+                        <input id="fi1" type="file" multiple @change="handleFileChange" />
+                    </b-button-toolbar>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <b-form-group>
+                        <div class="list-header">
+                            <b-form-checkbox v-model="allSelected" :disabled="!countLIF" :indeterminate="indeterminate" aria-describedby="listInputFiles" aria-controls="listInputFiles" @change="toggleAll" :title="allSelected ? 'Снять всё' : 'Выбрать всё'">
+                            </b-form-checkbox>
+                            <b-img :src="require('../../assets/info.png')" />
+                            <div class="list-header-body" @click="sortListInputFiles">Имя файла
+                                <span class="list-header-sort-desc" :class="{ active: desc }">&#8593;</span>
+                                <span class="list-header-sort-asc" :class="{ active: asc }">&#8595;</span>
+                            </div>
+                        </div>
+                        <div v-if="fCount > 0" class="animation-wrap">
+                            <div class="lds-ring">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                        </div>
+                        <b-form-checkbox-group id="fls" class="f-list" :style="{ maxHeight: mHeight + 'px', minHeight: mHeight + 'px' }" stacked v-model="selected" :options=listInputFiles name="fls" aria-label="Individual files">
+                        </b-form-checkbox-group>
+                    </b-form-group>
+                </b-col>
+                <b-col>
+                    <b-table outlined hover :sort-by.sync="mbsSortBy" :items="mbsItems" :fields="mbsFields" :filter="mbsFilter" @row-clicked="mbsRowClickHandler">
+                    </b-table>
+                </b-col>
+            </b-row>
         </b-container>
-      </b-modal>
+    </b-modal>
 </template>
 
 <style lang="scss">
-.control-element {
-  cursor: pointer;
-  user-select: none;
-}
-
 .e-btn-group {
   & > .btn + .btn {
     margin-left: 0.12rem;
@@ -137,12 +133,28 @@
   }
 }
 
+.fl-table-th {
+  padding: 0.2rem 0.5rem 0.2rem 2rem !important;
+  span:before {
+    content: url("../../assets/info.png");
+    position: absolute;
+    left: 0.5rem;
+    top: 0.24rem;
+  }
+}
+
+.fl-table-td {
+  padding: 0.05rem 0.5rem 0.05rem 2rem !important;
+  border-top: 0 !important;
+  cursor: pointer;
+  user-select: none;
+}
+
 /* Animation */
 
 $ring_color: #cce5ff;
 $width: 15rem;
 $height: 15rem;
-
 .animation-wrap {
   position: absolute;
   width: $width;
@@ -197,14 +209,13 @@ $height: 15rem;
 </style>
 
 <script>
-import store from "../../store";
 import axios from "axios";
 
 export default {
   name: "modal-bs",
-
   data() {
     return {
+      /* левая колонка */
       listInputFiles: [], //экранное представление
       buf: [],
       selected: [],
@@ -214,7 +225,21 @@ export default {
       mHeight: 100,
       asc: false,
       desc: false,
-      fCount: -1
+      fCount: -1,
+      /* правая колонка */
+      mbsFilter: null,
+      mbsFields: [
+        //заголовок
+        {
+          key: "name",
+          label: "<span>Имя файла</span>",
+          sortable: true,
+          thClass: "fl-table-th",
+          tdClass: "fl-table-td"
+        }
+      ],
+      mbsSortBy: "name",
+      mbsItems: [] //файлы
     };
   },
   mounted: function() {
@@ -244,7 +269,6 @@ export default {
         const self = this;
         let formData = new FormData();
         formData.append("file", filesList[i]);
-
         axios({
           method: "post",
           url: this.$store.getters.prefix + "/static/upload.php",
@@ -295,6 +319,7 @@ export default {
     },
     showBookScanner(evt) {
       this.listInputFiles = [];
+      this.mbsItems = [];
       this.fCount = -1;
       this.asc = false;
       this.desc = false;
@@ -336,6 +361,7 @@ export default {
           this.selected.splice(idx, 1);
           this.buf[i].status = "add";
           /* exec */
+          this.mbsItems.push( { name: this.buf[i].text, file: this.buf[i].value } );
         }
       }
       this.listInputFiles = this.buf;
@@ -373,6 +399,16 @@ export default {
       }
       if (this.asc) this.listInputFiles.sort(sortASC);
       else this.listInputFiles.sort(sortDESC);
+    },
+    mbsRowClickHandler(item) {
+      //сбросим атрибуты по всему массиву
+      this.items.forEach(function(entry) {
+        entry._rowVariant = "";
+        entry.isActive = false;
+      });
+      item._rowVariant = "active";
+      item.isActive = true;
+      this.selectedItem = item;
     }
   },
   watch: {
