@@ -107,7 +107,6 @@ if (isset($_POST["cmd"])) {
                 $res["data"] = $_SESSION['user'];
             } else {
                 $_SESSION['user'] = null;
-                $res["success"] = false;
                 $res["error"] = "PDO Error";
             }
             break;
@@ -125,7 +124,6 @@ if (isset($_POST["cmd"])) {
                 } else {
                     $_SESSION['user'] = null;
                     $res["data"] = false;
-                    $res["success"] = false;
                     $res["error"] = "Wrong Password";
                 }
             } else {
