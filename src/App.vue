@@ -34,84 +34,91 @@
 </template>
 
 <script>
-import { USER_REQUEST } from "./store/actions/user";
-import { mapGetters, mapState } from "vuex";
-import { AUTH_LOGOUT } from "./store/actions/auth";
-
-export default {
-  created: function() {
-    if (this.$store.getters.isAuthenticated) {
-      this.$store.dispatch(USER_REQUEST);
+  import {
+    USER_REQUEST
+  } from "./store/actions/user";
+  import {
+    mapGetters,
+    mapState
+  } from "vuex";
+  import {
+    AUTH_LOGOUT
+  } from "./store/actions/auth";
+  
+  export default {
+    created: function() {
+      if (this.$store.getters.isAuthenticated) {
+        this.$store.dispatch(USER_REQUEST);
+      }
+    },
+    methods: {
+      logout: function() {
+        this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push("/login"));
+      },
+    },
+    computed: {
+      ...mapGetters([
+        "getProfile",
+        "isAuthenticated",
+        "isProfileLoaded",
+        "ownerName"
+      ]),
+      ...mapState({
+        authLoading: state => state.auth.status === "loading",
+        name: state => `${state.user.profile.name}`
+        //name: state => `${state.auth.owner}`
+      })
     }
-  },
-  methods: {
-    logout: function() {
-      this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push("/login"));
-    }
-  },
-  computed: {
-    ...mapGetters([
-      "getProfile",
-      "isAuthenticated",
-      "isProfileLoaded",
-      "ownerName"
-    ]),
-    ...mapState({
-      authLoading: state => state.auth.status === "loading",
-      name: state => `${state.user.profile.name}`
-      //name: state => `${state.auth.owner}`
-    })
-  }
-};
+  };
 </script>
 
 <style lang="scss">
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
-  height: calc(100vh - 60px);
-  box-sizing: border-box;
-  & > div {
+  html {
+    position: relative;
+    min-height: 100%;
+  }
+  
+  body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+    height: calc(100vh - 60px);
+    box-sizing: border-box;
+    &>div {
+      height: 100%;
+    }
+  }
+  
+  section {
     height: 100%;
   }
-}
-
-section {
-  height: 100%;
-}
-
-.cf100 {
-  padding: 75px 15px 0;
-  box-sizing: border-box;
-}
-
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 60px;
-  /* Vertically center the text there */
-  color: lightgrey;
-  background-color: #343a40;
-  padding: 16px 0;
-}
-
-.footer > .container {
-  padding-right: 15px;
-  padding-left: 15px;
-}
-
-code {
-  font-size: 80%;
-}
-
-#ddown1 > button {
-  min-width: 80px;
-}
+  
+  .cf100 {
+    padding: 75px 15px 0;
+    box-sizing: border-box;
+  }
+  
+  .footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 60px;
+    /* Vertically center the text there */
+    color: lightgrey;
+    background-color: #343a40;
+    padding: 16px 0;
+  }
+  
+  .footer>.container {
+    padding-right: 15px;
+    padding-left: 15px;
+  }
+  
+  code {
+    font-size: 80%;
+  }
+  
+  #ddown1>button {
+    min-width: 80px;
+  }
 </style>

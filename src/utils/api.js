@@ -9,12 +9,12 @@ const apiCall = ({
       if (method === 'POST') {
         const curentUserName = data.username;
         resolve({
-          token: '$2y$10$.vGA1O9wmRjrwAVXD98HNOgsNpDczlqm3Jq7KnEd1rVAGv3Fykk1a',
+          token: 'el',
           login: curentUserName
         })
 
       } else {
-        const login = localStorage.getItem('user-login') || 'unkown';
+        const login = sessionStorage.getItem('user-login') || 'unkown';
         resolve({
           name: login
         })

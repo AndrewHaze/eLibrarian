@@ -91,6 +91,7 @@ export default {
         "",
         function(rd) {
           if (rd) {
+            console.log(rd);
             store.commit("showRegModal", false);
             self.$store
               .dispatch(AUTH_REQUEST, {

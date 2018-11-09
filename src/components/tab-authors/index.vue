@@ -19,6 +19,7 @@
         <b-table  outlined 
                   hover 
                   :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
                   :items="items" 
                   :fields="fields" 
                   :filter="filter"
@@ -70,7 +71,7 @@ export default {
         }
       ],
       sortBy: "author",
-      //sortDesc: false,
+      sortDesc: false,
       items: [] //Массив авторов
     };
   },
@@ -112,7 +113,7 @@ export default {
         var expr = new RegExp("(?:^|\\s)([" + arg + "][.]*)", "gi");
         this.filter = expr;
       }
-      a_list.forEach(function(entry) {
+      this.items.forEach(function(entry) {
         entry._rowVariant = "";
         entry.isActive = false;
       });

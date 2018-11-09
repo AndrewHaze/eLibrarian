@@ -53,6 +53,13 @@
   cursor: pointer;
   user-select: none;
 }
+
+.modal-max {
+  max-width: 80%;
+  @media (max-width: 576px) {
+    max-width: none;
+  }
+}
 </style>
 
 <script>
