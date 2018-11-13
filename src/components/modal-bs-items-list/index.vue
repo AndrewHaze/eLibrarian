@@ -8,6 +8,9 @@
       &:hover {
         background-color: #eee;
       }
+     &>img{
+       margin-top: -5px;
+     } 
    }
 </style>
 

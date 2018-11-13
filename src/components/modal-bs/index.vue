@@ -34,7 +34,7 @@
             </b-form-checkbox-group>
           </b-form-group>
         </b-col>
-        <b-col class="col-6">
+        <b-col class="col-6 right-col">
           <div class="list-header">
             <b-img :src="require('../../assets/info.png')" />
             <div class="list-header-body" @click="sortListInputFiles">Имя файла
@@ -45,8 +45,10 @@
           <div class="f-list" :style="{ maxHeight: pHeight + 'px', minHeight: pHeight + 'px' }">
             <ListItems v-for="listItem in listProcessingFiles" :listItem="listItem" :key="listItem.id" />
           </div>
-          <div class="info-panel" :style="{ maxHeight: pHeight + 'px', minHeight: pHeight + 'px' }">
-            <div class="ip-legend">1111</div>
+          <div class="info-panel">
+            <div class="ip-legend">
+              <div class="panel-header">Обозначения</div>
+            </div>
           </div>
         </b-col>
       </b-row>
@@ -72,18 +74,6 @@
     .custom-control-input {
       cursor: pointer;
     }
-    .info-panel {
-        display: flex;
-        margin-top: 30px;
-      }
-      .ip-legend {
-        display: flex;
-        height: 100%;
-        width: 100%;
-        padding: 0;
-        border: 1px solid #dee2e6;
-        overflow: auto;
-      }
     .f-list {
       padding: 0;
       border: 1px solid #dee2e6;
@@ -104,6 +94,32 @@
         width: 100%;
         word-wrap: normal;
         white-space: nowrap;
+      }
+    }
+    .right-col {
+      display: flex;
+      flex-flow: column nowrap;
+      padding-left: 0;
+      padding-bottom: 16px;
+      .f-list {
+        margin-bottom: 15px;
+      }
+      .info-panel {
+        display: flex;
+        flex: 1 1 auto;
+        flex-flow: row nowrap;
+        .panel-header {
+          border-bottom: 1px solid #dee2e6;
+          padding: 0.2rem 0.5rem;
+          height: 2rem;
+          font-weight: bold;
+        }
+        .ip-legend {
+          display: flex;
+          padding: 0;
+          border: 1px solid #dee2e6;
+          overflow: auto;
+        }
       }
     }
     #fls .custom-control-label>span {
@@ -249,14 +265,18 @@
         pHeight: 100,
         asc: false,
         desc: false,
-        fCount: -1,
+        fCount: -1, //счетчик добавляемых файлов
         /* правая колонка */
-        listProcessingFiles: []
+        listProcessingFiles: [],
+        bCount: -1, //счетчик обработанных файлов
       };
     },
     mounted: function() {
       window.addEventListener("resize", this.handleResize);
       this.mHeight = window.innerHeight - 260;
+      if (this.mHeight > 1200) {
+        this.mHeight = 1200;
+      }
       this.pHeight = this.mHeight / 2 - 15;
     },
     beforeDestroy: function() {
@@ -270,6 +290,9 @@
     methods: {
       handleResize() {
         this.mHeight = window.innerHeight - 260;
+        if (this.mHeight > 1200) {
+          this.mHeight = 1200;
+        }
         this.pHeight = this.mHeight / 2 - 15;
       },
       openFiles(e) {
@@ -333,8 +356,10 @@
       },
       showBookScanner(evt) {
         this.listInputFiles = [];
+        this.listProcessingFiles = [];
         this.mbsItems = [];
         this.fCount = -1;
+        this.bCount = -1;
         this.asc = false;
         this.desc = false;
         //Вызов функции из глобального миксина
@@ -363,25 +388,6 @@
           if (array.indexOf(clsList[i]) === -1) result.push(clsList[i]);
         }
         obj.className = result.join(" ");
-      },
-      startProc() {
-        this.buf = this.listInputFiles;
-        //иначе не отслеживает изменения
-        this.listInputFiles = [];
-        for (let i = 0; i < this.buf.length; i++) {
-          let idx = this.selected.indexOf(this.buf[i].value);
-          if (idx != -1) {
-            this.selected.splice(idx, 1);
-            this.buf[i].status = "add";
-            /* exec */
-            this.listProcessingFiles.push({
-              name: this.buf[i].text,
-              file: this.buf[i].value,
-              status: "add"
-            });
-          }
-        }
-        this.listInputFiles = this.buf;
       },
       sortListInputFiles() {
         if (this.countLIF < 1) return;
@@ -416,7 +422,7 @@
         }
         if (this.asc) this.listInputFiles.sort(sortASC);
         else this.listInputFiles.sort(sortDESC);
-      }
+      },
       // mbsRowClickHandler(item) {
       //   //сбросим атрибуты по всему массиву
       //   this.items.forEach(function(entry) {
@@ -427,6 +433,52 @@
       //   item.isActive = true;
       //   this.mbsSelectedItem = item;
       // }
+      startProc() {
+        this.buf = this.listInputFiles;
+        //иначе не отслеживает изменения
+        this.listInputFiles = [];
+        this.bCount = this.buf.length;
+        for (let i = 0; i < this.buf.length; i++) {
+          let idx = this.selected.indexOf(this.buf[i].value);
+          if (idx != -1) { //обрабатываем омеченные
+            /* exec */
+            const self = this;
+            axios({
+                method: "post",
+                url: this.$store.getters.prefix + "/static/api.php",
+                data: {
+                  cmd: "proc",
+                  file: self.buf[i].value,
+                },
+                withCredentials: true, //передаем куки
+                headers: {
+                  "content-type": "application/x-www-form-urlencoded"
+                }
+              })
+              .then(response => {
+                let rd = response.data;
+                if (rd.success) {
+                  self.selected.splice(idx, 1); //снимаем отметку
+                  self.buf[i].status = "add";
+                  self.listProcessingFiles.push({
+                    name: self.buf[i].text,
+                    file: rd.data.hash_name,
+                    status: "add"
+                  });
+                  self.bCount--;
+                } else {
+                  console.log(rd.error);
+                  self.bCount--;
+                }
+              })
+              .catch(error => {
+                console.log(rd.error);
+                self.bCount--;
+              });
+          }
+        }
+        this.listInputFiles = this.buf;
+      },
     },
     watch: {
       selected(newVal, oldVal) {
@@ -475,7 +527,8 @@
         if (val === 0) {
           this.sortListInputFiles();
         }
-      }
+      },
+      
     }
   };
 </script>
