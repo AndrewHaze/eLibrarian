@@ -435,9 +435,7 @@
       // }
       startProc() {
         this.buf = this.listInputFiles;
-        //иначе не отслеживает изменения
-        this.listInputFiles = [];
-        this.bCount = this.buf.length;
+        this.bCount = this.selected.length; //количество отмеченных
         for (let i = 0; i < this.buf.length; i++) {
           let idx = this.selected.indexOf(this.buf[i].value);
           if (idx != -1) { //обрабатываем омеченные
@@ -458,7 +456,6 @@
               .then(response => {
                 let rd = response.data;
                 if (rd.success) {
-                  self.selected.splice(idx, 1); //снимаем отметку
                   self.buf[i].status = "add";
                   self.listProcessingFiles.push({
                     name: self.buf[i].text,
@@ -475,9 +472,8 @@
                 console.log(rd.error);
                 self.bCount--;
               });
-          }
+          } 
         }
-        this.listInputFiles = this.buf;
       },
     },
     watch: {
@@ -526,6 +522,14 @@
       fCount(val) {
         if (val === 0) {
           this.sortListInputFiles();
+        }
+      },
+      bCount(val) {
+        if (val === 0) {
+          this.selected = []
+          this.listInputFiles = [];
+          this.listInputFiles = this.buf;
+          console.log('bCount')
         }
       },
       
