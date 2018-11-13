@@ -50,7 +50,7 @@ $authors = array(
     ),
 );
 
-require_once('functions.php'); 
+require_once 'functions.php';
 
 set_cors();
 
@@ -60,7 +60,7 @@ $_POST = json_decode(file_get_contents("php://input"), true);
 
 if (isset($_POST["cmd"])) {
     session_name("xeg6joZqNSGP3FyEi6xW");
-    session_start(); 
+    session_start();
     $pdo = pdo_connect();
     switch ($_POST["cmd"]) {
         case "first": //есть заг. пользователи?
@@ -118,7 +118,7 @@ if (isset($_POST["cmd"])) {
                 $stmt->bindValue(':login', $username, PDO::PARAM_INT);
                 $stmt->execute();
                 $hash = $stmt->fetchColumn();
-                if (password_verify ($password , $hash)) {
+                if (password_verify($password, $hash)) {
                     $_SESSION['user'] = $username;
                     $res["data"] = $_SESSION['user'];
                 } else {
@@ -147,7 +147,19 @@ if (isset($_POST["cmd"])) {
                 $res["success"] = false;
                 $res["error"] = "I/O Error (Clear Upload)";
             }
-            break;    
+            break;
+        case "proc":
+            if ($pdo) {
+                if ($_SESSION["user"]) {
+                    $filename = $_POST["file"];
+                    $res["data"] = array(
+                        "hash_name" => $filename
+                    );
+                }
+            } else {
+                $res["error"] = "PDO Error";
+            }
+            break;
         default:
             $res["success"] = false;
             $res["error"] = "Unknown command";
