@@ -1,7 +1,7 @@
 <template>
   <b-modal id="bookScanner" @shown="showBookScanner" no-close-on-backdrop hide-footer size="max" title="Импорт книг">
     <b-container fluid>
-      <b-row class="mb-3">
+      <b-row class="mb-2">
         <b-col>
           <b-button-toolbar key-nav aria-label="Toolbar with button groups">
             <b-button variant="success" @click="openFiles" class="mr-2">Добавить файлы</b-button>
@@ -11,15 +11,16 @@
         </b-col>
       </b-row>
       <b-row>
-        <b-col class="col-6">
+        <b-col class="col-5">
+          <h4>Добавленные файлы</h4>
           <b-form-group>
             <div class="list-header">
               <b-form-checkbox v-model="allSelected" :disabled="!countLIF" :indeterminate="indeterminate" aria-describedby="listInputFiles" aria-controls="listInputFiles" @change="toggleAll" :title="allSelected ? 'Снять всё' : 'Выбрать всё'">
               </b-form-checkbox>
               <b-img :src="require('../../assets/info.png')" />
               <div class="list-header-body" @click="sortListInputFiles">Имя файла
-                <span class="list-header-sort-desc" :class="{ active: desc }">&#8593;</span>
-                <span class="list-header-sort-asc" :class="{ active: asc }">&#8595;</span>
+                <span class="list-header-sort-desc" :class="{ active: iDesc }">&#8593;</span>
+                <span class="list-header-sort-asc" :class="{ active: iAsc }">&#8595;</span>
               </div>
             </div>
             <div v-if="fCount > 0" class="animation-wrap">
@@ -34,12 +35,13 @@
             </b-form-checkbox-group>
           </b-form-group>
         </b-col>
-        <b-col class="col-6 right-col">
+        <b-col class="col-7 right-col">
+          <h4>Обработанные файлы</h4>
           <div class="list-header">
             <b-img :src="require('../../assets/info.png')" />
-            <div class="list-header-body" @click="sortListInputFiles">Имя файла
-              <span class="list-header-sort-desc" :class="{ active: desc }">&#8593;</span>
-              <span class="list-header-sort-asc" :class="{ active: asc }">&#8595;</span>
+            <div class="list-header-body" @click="sortListProcessingFiles">Имя файла
+              <span class="list-header-sort-desc" :class="{ active: pDesc }">&#8593;</span>
+              <span class="list-header-sort-asc" :class="{ active: pAsc }">&#8595;</span>
             </div>
           </div>
           <div class="f-list" :style="{ maxHeight: pHeight + 'px', minHeight: pHeight + 'px' }">
@@ -69,6 +71,7 @@
   
   #bookScanner {
     user-select: none;
+    .list-element,
     .custom-control,
     .custom-control-label,
     .custom-control-input {
@@ -90,6 +93,7 @@
       .custom-control+.custom-control {
         padding-top: 0;
       }
+      .list-element,
       .custom-control-label {
         width: 100%;
         word-wrap: normal;
@@ -247,6 +251,18 @@
   import axios from "axios";
   import ListItems from "../modal-bs-items-list";
   
+  function sortASC(a, b) {
+    let x = a.text.toLowerCase();
+    let y = b.text.toLowerCase();
+    return x < y ? -1 : x > y ? 1 : 0;
+  }
+  
+  function sortDESC(a, b) {
+    let x = a.text.toLowerCase();
+    let y = b.text.toLowerCase();
+    return x > y ? -1 : x < y ? 1 : 0;
+  }
+  
   export default {
     name: "modal-bs",
     components: {
@@ -263,17 +279,19 @@
         buttonStartProc: true,
         mHeight: 100,
         pHeight: 100,
-        asc: false,
-        desc: false,
+        iAsc: false,
+        iDesc: false,
         fCount: -1, //счетчик добавляемых файлов
         /* правая колонка */
         listProcessingFiles: [],
-        bCount: -1, //счетчик обработанных файлов
+        pAsc: false,
+        pDesc: false,
+        bCount: -1 //счетчик обработанных файлов
       };
     },
     mounted: function() {
       window.addEventListener("resize", this.handleResize);
-      this.mHeight = window.innerHeight - 260;
+      this.mHeight = window.innerHeight - 286;
       if (this.mHeight > 1200) {
         this.mHeight = 1200;
       }
@@ -289,7 +307,7 @@
     },
     methods: {
       handleResize() {
-        this.mHeight = window.innerHeight - 260;
+        this.mHeight = window.innerHeight - 286;
         if (this.mHeight > 1200) {
           this.mHeight = 1200;
         }
@@ -360,8 +378,8 @@
         this.mbsItems = [];
         this.fCount = -1;
         this.bCount = -1;
-        this.asc = false;
-        this.desc = false;
+        this.iAsc = false;
+        this.iDesc = false;
         //Вызов функции из глобального миксина
         this.callApi(
           this.$store.getters.prefix + "/static/api.php", {
@@ -392,53 +410,54 @@
       sortListInputFiles() {
         if (this.countLIF < 1) return;
   
-        function sortASC(a, b) {
-          let x = a.text.toLowerCase();
-          let y = b.text.toLowerCase();
-          return x < y ? -1 : x > y ? 1 : 0;
-        }
-  
-        function sortDESC(a, b) {
-          let x = a.text.toLowerCase();
-          let y = b.text.toLowerCase();
-          return x > y ? -1 : x < y ? 1 : 0;
-        }
-  
         if (this.fCount === 0) {
-          this.asc = false;
-          this.desc = false;
+          this.iAsc = false;
+          this.iDesc = false;
           this.fCount = -1;
         }
   
-        if (this.asc) {
-          this.desc = true;
-          this.asc = false;
-        } else if (this.desc) {
-          this.desc = false;
-          this.asc = true;
+        if (this.iAsc) {
+          this.iDesc = true;
+          this.iAsc = false;
+        } else if (this.iDesc) {
+          this.iDesc = false;
+          this.iAsc = true;
         } else {
-          this.desc = false;
-          this.asc = true;
+          this.iDesc = false;
+          this.iAsc = true;
         }
-        if (this.asc) this.listInputFiles.sort(sortASC);
+        if (this.iAsc) this.listInputFiles.sort(sortASC);
         else this.listInputFiles.sort(sortDESC);
       },
-      // mbsRowClickHandler(item) {
-      //   //сбросим атрибуты по всему массиву
-      //   this.items.forEach(function(entry) {
-      //     entry._rowVariant = "";
-      //     entry.isActive = false;
-      //   });
-      //   item._rowVariant = "active";
-      //   item.isActive = true;
-      //   this.mbsSelectedItem = item;
-      // }
+      sortListProcessingFiles() {
+        //if (this.countLIF < 1) return;
+  
+        if (this.bCount === 0) {
+          this.pAsc = false;
+          this.pDesc = false;
+          this.bCount = -1;
+        }
+  
+        if (this.pAsc) {
+          this.pDesc = true;
+          this.pAsc = false;
+        } else if (this.pDesc) {
+          this.pDesc = false;
+          this.pAsc = true;
+        } else {
+          this.pDesc = false;
+          this.pAsc = true;
+        }
+        if (this.pAsc) this.listProcessingFiles.sort(sortASC);
+        else this.listProcessingFiles.sort(sortDESC);
+      },
       startProc() {
         this.buf = this.listInputFiles;
         this.bCount = this.selected.length; //количество отмеченных
         for (let i = 0; i < this.buf.length; i++) {
           let idx = this.selected.indexOf(this.buf[i].value);
-          if (idx != -1) { //обрабатываем омеченные
+          if (idx != -1) {
+            //обрабатываем омеченные
             /* exec */
             const self = this;
             axios({
@@ -446,7 +465,7 @@
                 url: this.$store.getters.prefix + "/static/api.php",
                 data: {
                   cmd: "proc",
-                  file: self.buf[i].value,
+                  file: self.buf[i].value
                 },
                 withCredentials: true, //передаем куки
                 headers: {
@@ -458,8 +477,8 @@
                 if (rd.success) {
                   self.buf[i].status = "add";
                   self.listProcessingFiles.push({
-                    name: self.buf[i].text,
-                    file: rd.data.hash_name,
+                    text: self.buf[i].text,
+                    value: rd.data.hash_name,
                     status: "add"
                   });
                   self.bCount--;
@@ -472,9 +491,9 @@
                 console.log(rd.error);
                 self.bCount--;
               });
-          } 
+          }
         }
-      },
+      }
     },
     watch: {
       selected(newVal, oldVal) {
@@ -526,13 +545,12 @@
       },
       bCount(val) {
         if (val === 0) {
-          this.selected = []
+          this.selected = [];
           this.listInputFiles = [];
           this.listInputFiles = this.buf;
-          console.log('bCount')
+          this.sortListProcessingFiles();
         }
-      },
-      
+      }
     }
   };
 </script>

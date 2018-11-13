@@ -1,5 +1,5 @@
 <template>
-  <div class="list-element"><img :src="icon"> {{ listItem.name }}</div>
+  <div class="list-element"><img :src="icon"> {{ listItem.text }}</div>
 </template>
 
 <style lang="scss">
