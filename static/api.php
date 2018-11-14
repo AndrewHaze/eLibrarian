@@ -80,7 +80,7 @@ if (isset($_POST["cmd"])) {
         case "exist": //есть такой пользователь?
             if ($pdo) {
                 $username = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE login = :login');
+                $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE ur_login = :login');
                 $stmt->bindValue(':login', $username, PDO::PARAM_INT);
                 $stmt->execute();
                 $count = $stmt->fetchColumn();
@@ -99,7 +99,7 @@ if (isset($_POST["cmd"])) {
                 $username = $_POST["usr"];
                 $password = $_POST["psw"];
                 $hash = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare('INSERT INTO `users` (`id`, `login`, `hash`) VALUES (NULL, :login, :hash);');
+                $stmt = $pdo->prepare('INSERT INTO `users` (`ur_id`, `ur_login`, `ur_hash`) VALUES (NULL, :login, :hash);');
                 $stmt->bindValue(':login', $username, PDO::PARAM_INT);
                 $stmt->bindValue(':hash', $hash, PDO::PARAM_INT);
                 $stmt->execute();
@@ -114,7 +114,7 @@ if (isset($_POST["cmd"])) {
             if ($pdo) {
                 $username = $_POST["usr"];
                 $password = $_POST["psw"];
-                $stmt = $pdo->prepare('SELECT hash FROM users WHERE login = :login ');
+                $stmt = $pdo->prepare('SELECT ur_hash FROM users WHERE ur_login = :login ');
                 $stmt->bindValue(':login', $username, PDO::PARAM_INT);
                 $stmt->execute();
                 $hash = $stmt->fetchColumn();
@@ -151,9 +151,67 @@ if (isset($_POST["cmd"])) {
         case "proc":
             if ($pdo) {
                 if ($_SESSION["user"]) {
-                    $filename = $_POST["file"];
+                    $filename = 'uploads/'.$_POST["file"];
+                    $fileext = pathinfo($filename, PATHINFO_EXTENSION);
+                    if ($fileext == "fb2") {
+                        //Создаем XML документ
+                        $doc = new DOMDocument();
+                        //Отключаем проверку ошибок
+                        $doc->strictErrorChecking = false;
+                        $doc->recover = true;
+                        //Загружаем содержимое файла
+                        $load = $doc->load($filename, LIBXML_NOERROR);
+                        if (!$load) {
+                            echo "Ошибка загрузки!";
+                            $fb2error = 1;
+                        }
+                        //Получаем содержимое секции <description>
+                        $description = $doc->getElementsByTagName('description');
+                        $description = $description->item(0);
+                        if (!$description) {
+                            echo "No description!";
+                        }
+                        //Получаем название книги
+                        $title_info = $description->getElementsByTagName('title-info')->item(0);
+                        //Получаем список жанров, к которым относится книга
+                        $genre_list = $title_info->getElementsByTagName('genre');
+                        if (count($genre_list) == 0) {$fb2error = 1;}
+                        foreach ($genre_list as $element) {
+                            //Помещаем список жанров в массив
+                            $genres[] = $element->nodeValue;
+                        }
+                        //Получаем список авторов.
+                        $authors_list = $title_info->getElementsByTagName('author');
+                        $element = '';
+                        if (count($authors_list) == 0) {$fb2error = 1;}
+
+                        foreach ($authors_list as $element) {
+                            $authors = array($element->getElementsByTagName('first-name')->item(0)->nodeValue,
+                                $element->getElementsByTagName('last-name')->item(0)->nodeValue,
+                                $element->getElementsByTagName('middle-name')->item(0)->nodeValue,
+                                $element->getElementsByTagName('nickname')->item(0)->nodeValue,
+                                $element->getElementsByTagName('email')->item(0)->nodeValue);
+                        }
+
+                        //Получаем оставшуюся информацию о книге:
+                        //Название книги
+                        $book_title = $title_info->getElementsByTagName('book-title')->item(0)->nodeValue;
+                        //Аннотация
+                        $annotation = trim($title_info->getElementsByTagName('annotation')->item(0)->nodeValue);
+                        //Дата
+                        $date = $title_info->getElementsByTagName('date')->item(0)->nodeValue;
+                        //Серия
+                        if (empty($title_info->getElementsByTagName('sequence')->item(0))) {
+                            $sequence = '';
+                            $sequence_number = 0;
+                        } else {
+                            $sequence = $title_info->getElementsByTagName('sequence')->item(0)->GetAttribute('name');
+                            $sequence_number = $title_info->getElementsByTagName('sequence')->item(0)->GetAttribute('number');
+                        }
+                    }
                     $res["data"] = array(
-                        "hash_name" => $filename
+                        "book_title" => $book_title, 
+                        "hash_name" => $filename,
                     );
                 }
             } else {
