@@ -6,13 +6,13 @@
           <b-button-toolbar key-nav aria-label="Toolbar with button groups">
             <b-button variant="success" @click="openFiles" class="mr-2">Добавить файлы</b-button>
             <b-button variant="danger" :disabled="buttonStartProc" @click="startProc">Запуск</b-button>
-            <input id="fi1" type="file" multiple @change="handleFileChange" />
+            <input id="fi1" type="file" multiple @change="handleFileChange" accept=".fb2,.zip"/>
           </b-button-toolbar>
         </b-col>
       </b-row>
       <b-row>
         <b-col class="col-5">
-          <h4>Добавленные файлы</h4>
+          <div class="hm">Добавленные файлы</div>
           <b-form-group>
             <div class="list-header">
               <b-form-checkbox v-model="allSelected" :disabled="!countLIF" :indeterminate="indeterminate" aria-describedby="listInputFiles" aria-controls="listInputFiles" @change="toggleAll" :title="allSelected ? 'Снять всё' : 'Выбрать всё'">
@@ -36,7 +36,7 @@
           </b-form-group>
         </b-col>
         <b-col class="col-7 right-col">
-          <h4>Обработанные файлы</h4>
+          <div class="hm">Обработанные файлы</div>
           <div class="list-header">
             <b-img :src="require('../../assets/info.png')" />
             <div class="list-header-body" @click="sortListProcessingFiles">Имя файла
@@ -47,9 +47,25 @@
           <div class="f-list" :style="{ maxHeight: pHeight + 'px', minHeight: pHeight + 'px' }">
             <ListItems v-for="listItem in listProcessingFiles" :listItem="listItem" :key="listItem.id" />
           </div>
-          <div class="info-panel">
+          <div class="info-panel" :style="{ maxHeight: pHeight + 'px', minHeight: pHeight + 'px' }">
             <div class="ip-legend">
-              <div class="panel-header">Обозначения</div>
+              <div class="hm">Обозначения</div>
+              <div class="ip-body">
+                <ul>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/raw.png'">Отмечен для обработки</li>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Успешно добавлен</li>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Обновлено</li>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Дубликат (идентичный)</li>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Дубликат (старее)</li>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Дубликат (ID отличается)</li>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Дубликат (Название отличается)</li>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Дубликат (новее)</li>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Ошибка разбора</li>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Поврежденный архив</li>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Ошибка обнавления БД</li>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Требуется описание книги</li>
+                </ul>
+              </div>
             </div>
           </div>
         </b-col>
@@ -71,6 +87,14 @@
   
   #bookScanner {
     user-select: none;
+    .hm {
+      font-size: 1.15rem;
+      margin-bottom: 0.5rem;
+      font-family: inherit;
+      color: #1414FC;
+      font-weight: 500;
+      line-height: 1.2;
+    }
     .list-element,
     .custom-control,
     .custom-control-label,
@@ -104,25 +128,39 @@
       display: flex;
       flex-flow: column nowrap;
       padding-left: 0;
-      padding-bottom: 16px;
       .f-list {
-        margin-bottom: 15px;
+        margin-bottom: 12px;
       }
       .info-panel {
         display: flex;
-        flex: 1 1 auto;
         flex-flow: row nowrap;
-        .panel-header {
-          border-bottom: 1px solid #dee2e6;
-          padding: 0.2rem 0.5rem;
-          height: 2rem;
-          font-weight: bold;
-        }
         .ip-legend {
           display: flex;
+          flex-flow: column nowrap;
           padding: 0;
-          border: 1px solid #dee2e6;
+        }
+        .ip-body {
           overflow: auto;
+          flex: 1 1 auto;
+          padding: .2rem 1rem .4rem .5rem;
+          border: 1px solid #dee2e6;
+          &>ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            &>li {
+              word-wrap: normal;
+              white-space: nowrap;
+              line-height: 1.6;
+              &>img {
+                margin-right: 6px;
+                margin-top: -3px;
+                border: 1px solid darkgray;
+                border-radius: 2px;
+                background-color: #f5f5fd; 
+              }
+            }
+          }
         }
       }
     }
@@ -251,6 +289,9 @@
   import axios from "axios";
   import ListItems from "../modal-bs-items-list";
   
+  const shiftL = 280;
+  const shiftR = 6;
+  
   function sortASC(a, b) {
     let x = a.text.toLowerCase();
     let y = b.text.toLowerCase();
@@ -291,11 +332,11 @@
     },
     mounted: function() {
       window.addEventListener("resize", this.handleResize);
-      this.mHeight = window.innerHeight - 286;
+      this.mHeight = window.innerHeight - shiftL;
       if (this.mHeight > 1200) {
         this.mHeight = 1200;
       }
-      this.pHeight = this.mHeight / 2 - 15;
+      this.pHeight = this.mHeight / 2 - shiftR;
     },
     beforeDestroy: function() {
       window.removeEventListener("resize", this.handleResize);
@@ -303,15 +344,18 @@
     computed: {
       countLIF: function() {
         return this.listInputFiles.length;
+      },
+      countLPF: function() {
+        return this.listProcessingFiles.length;
       }
     },
     methods: {
       handleResize() {
-        this.mHeight = window.innerHeight - 286;
+        this.mHeight = window.innerHeight - shiftL;
         if (this.mHeight > 1200) {
           this.mHeight = 1200;
         }
-        this.pHeight = this.mHeight / 2 - 15;
+        this.pHeight = this.mHeight / 2 - shiftR;
       },
       openFiles(e) {
         document.getElementById("fi1").click();
@@ -430,7 +474,7 @@
         else this.listInputFiles.sort(sortDESC);
       },
       sortListProcessingFiles() {
-        //if (this.countLIF < 1) return;
+        if (this.countLPF < 1) return;
   
         if (this.bCount === 0) {
           this.pAsc = false;
@@ -477,7 +521,8 @@
                 if (rd.success) {
                   self.buf[i].status = "add";
                   self.listProcessingFiles.push({
-                    text: self.buf[i].text,
+                    //text: self.buf[i].text,
+                    text: rd.data.book_title,
                     value: rd.data.hash_name,
                     status: "add"
                   });
