@@ -60,10 +60,10 @@
                   <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Дубликат (ID отличается)</li>
                   <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Дубликат (Название отличается)</li>
                   <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Дубликат (новее)</li>
-                  <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Ошибка разбора</li>
-                  <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Поврежденный архив</li>
-                  <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Ошибка обнавления БД</li>
-                  <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Требуется описание книги</li>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/per.png'">Ошибка разбора</li>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/dma.png'">Повреждённый архив</li>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/dbe.png'">Ошибка обновления БД</li>
+                  <li><img :src="this.$store.getters.prefix + '/static/assets/ndf.png'">Требуется описание книги</li>
                 </ul>
               </div>
             </div>
@@ -187,6 +187,26 @@
       color: red;
       &:before {
         content: url("../../assets/err.png");
+      }
+    }
+    #fls .dma span {
+      &:before {
+        content: url("../../assets/dma.png");
+      }
+    } 
+    #fls .ndf span {
+      &:before {
+        content: url("../../assets/ndf.png");
+      }
+    }
+    #fls .per span {
+      &:before {
+        content: url("../../assets/per.png");
+      }
+    } 
+    #fls .dbe span {
+      &:before {
+        content: url("../../assets/dbe.png");
       }
     }
     .list-header {
@@ -443,7 +463,7 @@
       },
       removeClasses(obj) {
         //удаляем классы по списку из array
-        let array = ["add", "raw", "err"];
+        let array = ["add", "raw", "err", "dma", "ndf", "per", "dbe"];
         let clsList = obj.className.split(" "); //Получаем массив классов
         let result = [];
         for (let i = 0; i < clsList.length; i++) {
@@ -521,19 +541,29 @@
                 if (rd.success) {
                   self.buf[i].status = "add";
                   self.listProcessingFiles.push({
-                    //text: self.buf[i].text,
+                    text: self.buf[i].text,
                     text: rd.data.book_title,
                     value: rd.data.hash_name,
                     status: "add"
                   });
                   self.bCount--;
                 } else {
-                  console.log(rd.error);
+                  self.buf[i].status = rd.error;
+                  self.listProcessingFiles.push({
+                    text: self.buf[i].text,
+                    value: self.buf[i].value,
+                    status: rd.error
+                  });
                   self.bCount--;
                 }
               })
               .catch(error => {
-                console.log(rd.error);
+                self.buf[i].status = rd.error;
+                  self.listProcessingFiles.push({
+                    text: self.buf[i].text,
+                    value: self.buf[i].value,
+                    status: rd.error
+                  });
                 self.bCount--;
               });
           }
@@ -569,16 +599,32 @@
             switch (st) {
               case "add":
                 c[i].classList.add("add");
-                c[i].setAttribute("title", "Файл готов к обработке");
+                c[i].setAttribute("title", "Файл успешно добавлен");
                 break;
               case "raw":
                 c[i].classList.add("raw");
-                c[i].setAttribute("title", "Файл успешно добавлен");
+                c[i].setAttribute("title", "Файл готов к обработке");
                 break;
               case "err":
                 c[i].classList.add("err");
                 c[i].setAttribute("title", "Ошибка чтения");
                 break;
+              case "ndf":
+                c[i].classList.add("ndf");
+                c[i].setAttribute("title", "Требуется описание книги");
+                break;
+              case "dma":
+                c[i].classList.add("dma");
+                c[i].setAttribute("title", "Поврежденный архив");
+                break;  
+              case "per":
+                c[i].classList.add("per");
+                c[i].setAttribute("title", "Ошибка разбора");
+                break;
+              case "dbe":
+                c[i].classList.add("dbe");
+                c[i].setAttribute("title", "Ошибка обновления БД");
+                break;    
             }
           }
         }, 0);

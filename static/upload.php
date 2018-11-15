@@ -1,5 +1,7 @@
 <?php
-
+//Включение буферизации вывода
+//что-бы не портить JSON
+ob_start(); 
 require_once "functions.php";
 
 set_cors();
@@ -30,5 +32,5 @@ if (move_uploaded_file($_FILES["file"]["tmp_name"], $target_file) && ($_SESSION[
     $res["success"] = false;
     $res["error"] = "I/O Error (File Upload)";
 }
-
+ob_end_clean(); //Чистим буфер
 echo json_encode($res);
