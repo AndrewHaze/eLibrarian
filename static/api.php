@@ -139,6 +139,12 @@ if (isset($_POST["cmd"])) {
             $res["data"] = $_POST["dat"];
             break;
         case "с_list":
+            if ($pdo) {
+                if ($_SESSION["user"]) {
+                    $username = $_SESSION["user"];
+                    $stmt = $pdo->prepare('SELECT ur_hash FROM users WHERE ur_login = :login ');
+                }
+            }
             $res["data"] = $chars;
             break;
         case "a_list":
@@ -210,7 +216,7 @@ if (isset($_POST["cmd"])) {
                             $stmt->bindValue(':book_file', $filename, PDO::PARAM_STR);
 
                             if ($stmt->execute()) {
-                                $id_book = $pdo->lastInsertId(); 
+                                $id_book = $pdo->lastInsertId();
                                 //Получаем список жанров, к которым относится книга
                                 $genre_list = $title_info->getElementsByTagName('genre');
                                 if (count($genre_list) > 0) {
@@ -225,36 +231,45 @@ if (isset($_POST["cmd"])) {
                                 if (count($authors_list) > 0) {
                                     $element = '';
                                     foreach ($authors_list as $element) {
-                                        $authors = array($element->getElementsByTagName('first-name')->item(0)->nodeValue,
+                                        $author = array($element->getElementsByTagName('first-name')->item(0)->nodeValue,
                                             $element->getElementsByTagName('last-name')->item(0)->nodeValue,
                                             $element->getElementsByTagName('middle-name')->item(0)->nodeValue);
 
-                                        $authors[0] = $authors[0] ?: "";
-                                        $authors[1] = $authors[1] ?: "";
-                                        $authors[2] = $authors[2] ?: "";
+                                        $first_name = $author[0] ?: "";
+                                        $last_name = $author[1] ?: "";
+                                        $middle_name = $author[2] ?: "";
 
                                         $stmt = $pdo->prepare('SELECT COUNT(*) FROM authors
                                                                WHERE ar_first_name = :first_name AND ar_last_name = :last_name AND ar_middle_name = :middle_name ');
-                                        $stmt->bindValue(':first_name', $authors[0], PDO::PARAM_STR);
-                                        $stmt->bindValue(':last_name', $authors[1], PDO::PARAM_STR);
-                                        $stmt->bindValue(':middle_name', $authors[2], PDO::PARAM_STR);
+                                        $stmt->bindValue(':first_name', $first_name, PDO::PARAM_STR);
+                                        $stmt->bindValue(':last_name', $last_name, PDO::PARAM_STR);
+                                        $stmt->bindValue(':middle_name', $middle_name, PDO::PARAM_STR);
                                         $stmt->execute();
                                         $count = $stmt->fetchColumn();
                                         if ($count === 0) {
                                             $stmt = $pdo->prepare('INSERT INTO `authors` (`ar_first_name`, `ar_last_name`, `ar_middle_name`)
                                                                    VALUES (:first_name, :last_name, :middle_name);');
-                                            $stmt->bindValue(':first_name', $authors[0], PDO::PARAM_STR);
-                                            $stmt->bindValue(':last_name', $authors[1], PDO::PARAM_STR);
-                                            $stmt->bindValue(':middle_name', $authors[2], PDO::PARAM_STR);
+                                            $stmt->bindValue(':first_name', $first_name, PDO::PARAM_STR);
+                                            $stmt->bindValue(':last_name', $last_name, PDO::PARAM_STR);
+                                            $stmt->bindValue(':middle_name', $middle_name, PDO::PARAM_STR);
                                             $stmt->execute();
-                                            $id_author = $pdo->lastInsertId(); 
-                                            //книги-авторы 
-                                            $stmt = $pdo->prepare('INSERT INTO `books_authors` (`bkar_bk_id`, `bkar_ar_id`)
-                                                                   VALUES (:id_books, :id_authors);');
-                                            $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
-                                            $stmt->bindValue(':id_authors', $id_author, PDO::PARAM_INT);
+                                            $id_author = $pdo->lastInsertId();
+                                        } else {
+                                            $stmt = $pdo->prepare('SELECT ar_id FROM authors
+                                                                   WHERE ar_first_name = :first_name AND ar_last_name = :last_name AND ar_middle_name = :middle_name ');
+                                            $stmt->bindValue(':first_name', $first_name, PDO::PARAM_STR);
+                                            $stmt->bindValue(':last_name', $last_name, PDO::PARAM_STR);
+                                            $stmt->bindValue(':middle_name', $middle_name, PDO::PARAM_STR);
                                             $stmt->execute();
+                                            $id_author = $stmt->fetchColumn();
                                         }
+                                        //книги-авторы
+                                        $stmt = $pdo->prepare('INSERT INTO `books_authors` (`bkar_bk_id`, `bkar_ar_id`)
+                                                                   VALUES (:id_books, :id_authors);');
+                                        $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
+                                        $stmt->bindValue(':id_authors', $id_author, PDO::PARAM_INT);
+                                        $stmt->execute();
+
                                     }
                                 }
 
