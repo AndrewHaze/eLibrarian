@@ -31,77 +31,80 @@
 </template>
 
 <style lang="scss">
-.fix-height {
-  height: calc(100vh - 225px);
-}
-
-.sidebar {
-  display: flex;
-  flex-flow: column nowrap;
-  flex: 0 0 230px !important;
-  /*border-right: 1px solid #dee2e6;*/
-  height: 100%;
-  overflow-y: auto;
-}
-// для табов
-.content {
-  height: 100%;
-  overflow-y: auto;
-}
-
-.control-element {
-  cursor: pointer;
-  user-select: none;
-}
-
-.modal-max {
-  max-width: 80%;
-  min-width: 680px;
-  @media (max-width: 576px) {
-    max-width: none;
+  .fix-height {
+    height: calc(100vh - 225px);
   }
-}
+  
+  .sidebar {
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 0 0 230px !important;
+    /*border-right: 1px solid #dee2e6;*/
+    height: 100%;
+    overflow-y: auto;
+  }
+  
+  // для табов
+  .content {
+    height: 100%;
+    overflow-y: auto;
+  }
+  
+  .control-element {
+    cursor: pointer;
+    user-select: none;
+  }
+  
+  .modal-max {
+    max-width: 80%;
+    min-width: 680px;
+    @media (max-width: 576px) {
+      max-width: none;
+    }
+  }
 </style>
 
 <script>
-import { mapGetters } from "vuex";
-import store from "../../store";
-import Login from "../login";
-import ModalBooksScanner from "../modal-bs";
-import AuthorsTab from "../tab-authors";
-import GenresTab from "../tab-genres";
-import SeriesTab from "../tab-series";
-
-export default {
-  name: "home",
-  components: {
-    Login,
-    ModalBooksScanner,
-    AuthorsTab,
-    GenresTab,
-    SeriesTab
-  },
-  data() {
-    return {
-      congShow: false
-    };
-  },
-  created: function() {
-    if (this.congratulation) {
-      this.congShow = true;
+  import {
+    mapGetters
+  } from "vuex";
+  import store from "../../store";
+  import Login from "../login";
+  import ModalBooksScanner from "../modal-bs";
+  import AuthorsTab from "../tab-authors";
+  import GenresTab from "../tab-genres";
+  import SeriesTab from "../tab-series";
+  
+  export default {
+    name: "home",
+    components: {
+      Login,
+      ModalBooksScanner,
+      AuthorsTab,
+      GenresTab,
+      SeriesTab
+    },
+    data() {
+      return {
+        congShow: false
+      };
+    },
+    created: function() {
+      if (this.congratulation) {
+        this.congShow = true;
+      }
+    },
+    computed: {
+      ...mapGetters([
+        "isAuthenticated",
+        "authStatus",
+        "congratulation",
+        "appTitle"
+      ]),
+      loading: function() {
+        return this.authStatus === "loading" && !this.isAuthenticated;
+      }
     }
-  },
-  computed: {
-    ...mapGetters([
-      "isAuthenticated",
-      "authStatus",
-      "congratulation",
-      "appTitle"
-    ]),
-    loading: function() {
-      return this.authStatus === "loading" && !this.isAuthenticated;
-    }
-  }
-};
+  };
 </script>
 

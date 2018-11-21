@@ -542,6 +542,7 @@
                   self.buf[i].status = "add";
                   self.listProcessingFiles.push({
                     text: self.buf[i].text,
+                    //text: rd.data.test,
                     value: rd.data.hash_name,
                     status: "add"
                   });

@@ -25,6 +25,7 @@
                   :filter="filter"
                   @row-clicked="myRowClickHandler">
           </b-table>
+          <AuthorsList :aItems="items" />
       </b-col>
       <b-col class="content">
         <books-list
@@ -38,13 +39,14 @@
 
 
 <script>
-import BooksList from "../books-list";
+import BooksList from "../tab-authors-b-list";
+import AuthorsList from "../tab-authors-a-list";
 import store from "../../store";
 
 export default {
   name: "tab-authors",
   components: {
-    BooksList
+    BooksList, AuthorsList,
   },
   data: function() {
     return {
