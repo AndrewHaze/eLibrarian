@@ -1,16 +1,17 @@
 <template>
   <section>
-      <h6 v-if="! selectedItem.id">Нет данных для отображения</h6>
-      {{ selectedItem.id  }} <br/>
-      {{ selectedItem.author }} <br/>
-      {{ mess }}
+      <h6 v-if="this.$store.getters.authorID == -1">Нет данных для отображения</h6>
+      <div v-else>
+        {{ this.$store.getters.authorID }}
+      </div>
   </section>
 </template>
 
 <script>
+import store from "../../store";
 export default {
   name: 'books-list',
-  props: ["selectedItem", "loading", "mess"],
+  
   data: function() {
       return { };
   }

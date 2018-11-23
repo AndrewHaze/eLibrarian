@@ -12,7 +12,7 @@
         <b-col>
           <b-tabs>
             <b-tab title="Авторы" active>
-              <AuthorsTab/>
+              <AuthorsTab />
             </b-tab>
             <b-tab title="Жанры">
               <GenresTab />
@@ -86,13 +86,15 @@
     },
     data() {
       return {
-        congShow: false
+        congShow: false,
+        
       };
     },
     created: function() {
       if (this.congratulation) {
         this.congShow = true;
       }
+      
     },
     computed: {
       ...mapGetters([
@@ -103,7 +105,8 @@
       ]),
       loading: function() {
         return this.authStatus === "loading" && !this.isAuthenticated;
-      }
+      },
+
     }
   };
 </script>

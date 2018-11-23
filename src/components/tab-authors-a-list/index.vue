@@ -1,29 +1,33 @@
-<template>
+﻿<template>
   <div class="tb">
     <div class="tb-header">
-      <div class="tb-header-left">
+      <div class="tb-header-left"  @click="sortText">
         <div class="tb-header-title">Авторы</div>
         <div class="tb-header-sort-arrows">
-          <span class="tb-header-sort-desc">&#8593;</span>
-          <span class="tb-header-sort-asc">&#8595;</span>
+          <span class="tb-header-sort-desc" :class="{ active: aDesc }">&#8593;</span>
+          <span class="tb-header-sort-asc" :class="{ active: aAsc }">&#8595;</span>
         </div>
       </div>
-      <div class="tb-header-right">
+      <div class="tb-header-right" @click="sortNumeric">
         <div class="tb-header-title">Книг</div>
         <div class="tb-header-sort-arrows">
-          <span class="tb-header-sort-desc">&#8593;</span>
-          <span class="tb-header-sort-asc">&#8595;</span>
+          <span class="tb-header-sort-desc" :class="{ active: bDesc }">&#8593;</span>
+          <span class="tb-header-sort-asc" :class="{ active: bAsc }">&#8595;</span>
         </div>
       </div>
     </div>
     <div class="tb-body">
-      <div class="tb-body-element" v-for="item in aItems" :key="item.id" v-if="filter == '*'">
+      <div class="tb-body-element" v-for="item in aItems" :id="item.id" :key="item.id" :ref="item.id"
+                                   v-if="aFilter == '*' || aFilter == item.author.charAt(0).toUpperCase()"
+                                   :class="{active: item.isActive}"
+                                   @click="itemClickHandler">
         <div class="tb-body-element-left">{{ item.author }}</div>
         <div class="tb-body-element-right">{{ item.books }}</div>
       </div>
     </div>
   </div>
 </template>
+
 
 <style lang="scss">
 %flex {
@@ -34,12 +38,14 @@
 
 .tb {
   border: 1px solid #dee2e6;
+  user-select: none;
   .tb-header {
     @extend %flex;
     border-bottom: 1px solid #dee2e6;
     padding: 0.8rem 0.3rem 0.8rem 0.65rem;
     .tb-header-left,
     .tb-header-right {
+      cursor: pointer;
       @extend %flex;
     }
     .tb-header-left {
@@ -59,38 +65,134 @@
         opacity: 0.4;
         top: 0;
       }
-      .active {
-        opacity: 1;
-      }
       .tb-header-sort-desc {
         right: 8px;
       }
       .tb-header-sort-asc {
         right: 0px;
       }
+      .active {
+        opacity: 1;
+      }
     }
   }
 
-  .tb-body-element {
-    @extend %flex;
-    border-top: 1px solid #dee2e6;
-    padding: 0.8rem 0.3rem 0.8rem 0.65rem;
-    .tb-body-element-right {
-      width: 4rem;
-      text-align: center;
+  .tb-body {
+    .tb-body-element {
+      @extend %flex;
+      border-top: 1px solid #dee2e6;
+      padding: 0.8rem 0.3rem 0.8rem 0.65rem;
+      overflow-x: auto;
+      cursor: pointer;
+      &:hover {
+        background-color: #eee;
+      }
+      .tb-body-element-right {
+        width: 4rem;
+        text-align: center;
+      }
+    }
+    .active {
+      background-color: #ddd;
+      &:hover {
+        background-color: #ddd;
+      }
     }
   }
 }
 </style>
 
 <script>
+import store from "../../store";
+
+function sortTasc(a, b) {
+  let x = a.author.toLowerCase();
+  let y = b.author.toLowerCase();
+  return x < y ? -1 : x > y ? 1 : 0;
+}
+
+function sortTdesc(a, b) {
+  let x = a.author.toLowerCase();
+  let y = b.author.toLowerCase();
+  return x > y ? -1 : x < y ? 1 : 0;
+}
+
+function sortNasc(a, b) {
+  let x = a.books;
+  let y = b.books;
+  return x < y ? -1 : x > y ? 1 : 0;
+}
+
+function sortNdesc(a, b) {
+  let x = a.books;
+  let y = b.books;
+  return x > y ? -1 : x < y ? 1 : 0;
+}
+
 export default {
   name: "items-list",
-  props: ["aItems"],
+  props: ["aItems", "aFilter"],
   data: function() {
     return {
-      filter: 'g',
+      aAsc: true,
+      aDesc: false,
+      bAsc: false,
+      bDesc: false,
     };
+  },
+  methods: {
+    itemClickHandler(item) {
+      //сбросим атрибуты по всему массиву
+      this.aItems.forEach(function(entry) {
+        entry.isActive = false;
+      });
+      let element = this.aItems[
+        this.aItems.map(el => el.id).indexOf(Number(item.currentTarget.id))
+      ];
+      store.commit("setAuthorID", element.id);
+      element.isActive = true;
+    },
+    sortText() {
+      this.bAsc = false;
+      this.bDesc = false;
+      if (this.aAsc) {
+        this.aDesc = true;
+        this.aAsc = false;
+      } else if (this.aDesc) {
+        this.aDesc = false;
+        this.aAsc = true;
+      } else {
+        this.aDesc = false;
+        this.aAsc = true;
+      }
+      if (this.aAsc) this.aItems.sort(sortTasc);
+      else this.aItems.sort(sortTdesc);
+    },
+    sortNumeric() {
+      this.aAsc = false;
+      this.aDesc = false;
+      if (this.bAsc) {
+        this.bDesc = true;
+        this.bAsc = false;
+      } else if (this.bDesc) {
+        this.bDesc = false;
+        this.bAsc = true;
+      } else {
+        this.bDesc = false;
+        this.bAsc = true;
+      }
+      if (this.bAsc) this.aItems.sort(sortNasc);
+      else this.aItems.sort(sortNdesc);
+    }
+  },
+  
+  updated() {
+    console.log('u');
+      if (store.getters.authorID === -1) {
+        this.aItems.forEach(function(entry) {
+          entry.isActive = false;
+        });
+    }
   }
 };
 </script>
