@@ -55,17 +55,7 @@ export default {
   mounted: function() {
     this.getAuthors();
   },
-  created: function() {
-    this.$store.watch(
-      function(state) {
-        return state.bsc;
-      },
-      function() {
-        this.store.commit("setbsJC", false);
-        this.getAuthors();
-      }
-    );
-  },
+  
   methods: {
     getAuthors() {
       const self = this;

@@ -1,10 +1,11 @@
-const state = { link: "http://l.mgr.loc", 
-                possibility: true, 
-                reg: false, 
-                at: 'eLibrarian v.0.0.1', 
-                ai: -1,
-                bsc: false,
-              }
+const state = {
+  link: "http://l.mgr.loc",
+  possibility: true,
+  reg: false,
+  at: 'eLibrarian v.0.0.1',
+  ai: -1,
+  bsc: false,
+}
 
 const getters = {
   //домен для подстановки в пути к файлам
@@ -15,8 +16,6 @@ const getters = {
   congratulation: state => state.reg,
   appTitle: state => state.at,
   authorID: state => state.ai,
-  //флаг: сканер книг отработал
-  bsJC: state => state.bsc,
 }
 
 const mutations = {
@@ -30,7 +29,7 @@ const mutations = {
     state.ai = value
   },
   setbsJC(state, value) {
-    state.ai = value
+    state.bsc = value
   },
 }
 

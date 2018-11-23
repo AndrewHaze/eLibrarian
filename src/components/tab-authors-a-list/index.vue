@@ -196,7 +196,6 @@ export default {
     },
 
     updated() {
-        console.log('u');
         if (store.getters.authorID === -1) {
             this.aItems.forEach(function (entry) {
                 entry.isActive = false;
