@@ -27,10 +27,7 @@ const mutations = {
   },
   setAuthorID(state, value) {
     state.ai = value
-  },
-  setbsJC(state, value) {
-    state.bsc = value
-  },
+  }
 }
 
 export default {
