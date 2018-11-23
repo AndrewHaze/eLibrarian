@@ -3,8 +3,7 @@ const state = {
   possibility: true,
   reg: false,
   at: 'eLibrarian v.0.0.1',
-  ai: -1,
-  bsc: false,
+  ai: -1
 }
 
 const getters = {
