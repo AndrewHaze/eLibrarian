@@ -106,13 +106,13 @@ if (isset($_POST["cmd"])) {
         case "a_list":
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
-                $stmt = $pdo->prepare('SELECT ar_id, ar_last_name, ar_middle_name, ar_first_name, count(*) cnt
+                $stmt = $pdo->prepare('SELECT ar_id, ar_last_name, ar_middle_name, ar_first_name, COUNT(*) cnt
                                        FROM authors, books_authors, books, users
                                        WHERE ar_id = bkar_ar_id
                                          AND bkar_bk_id = bk_id
                                          AND bk_ur_id = ur_id
                                          AND ur_login = :login
-                                      group by ar_id, ar_last_name, ar_middle_name, ar_first_name
+                                      GROUP BY ar_id, ar_last_name, ar_middle_name, ar_first_name
                                       ORDER BY ar_last_name');                                             
                 $stmt->bindValue(':login', $username, PDO::PARAM_STR);
                 $stmt->execute();
@@ -122,9 +122,8 @@ if (isset($_POST["cmd"])) {
                     array(
                         "id" => $value[ar_id],
                         "books" => $value[cnt],
-                        "author" => $value[ar_last_name].' '.$value[ar_first_name].' '.$value[ar_middle_name],
+                        "author" => ucwords($value[ar_last_name].' '.$value[ar_first_name].' '.$value[ar_middle_name]),
                         "isActive" => false,
-                        "_rowVariant" => "",
                     ));
                 }
                 
@@ -185,7 +184,7 @@ if (isset($_POST["cmd"])) {
                         //books.db
                         $time = strtotime($book_date);
                         echo $time;
-                        $stmt = $pdo->prepare('INSERT INTO `books` (`bk_ur_id`, `bk_book_id`, `bk_title`, `bk_annotation`, `bk_file_date`, `bk_file`)
+                        $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id, bk_book_id, bk_title, bk_annotation, bk_file_date, bk_file)
                                                    VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), :book_id, :book_title, :book_annotation, :book_date, :book_file);');
                         $stmt->bindValue(':login', $username, PDO::PARAM_STR);
                         $stmt->bindValue(':book_id', $book_id, PDO::PARAM_STR);
