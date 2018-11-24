@@ -113,20 +113,20 @@ if (isset($_POST["cmd"])) {
                                          AND bk_ur_id = ur_id
                                          AND ur_login = :login
                                       GROUP BY ar_id, ar_last_name, ar_middle_name, ar_first_name
-                                      ORDER BY ar_last_name');
+                                      ORDER BY ar_last_name');                                             
                 $stmt->bindValue(':login', $username, PDO::PARAM_STR);
                 $stmt->execute();
                 $result = $stmt->fetchAll();
                 foreach ($result as $value) {
-                    array_push($res["data"],
-                        array(
-                            "id" => $value[ar_id],
-                            "books" => $value[cnt],
-                            "author" => ucwords($value[ar_last_name] . ' ' . $value[ar_first_name] . ' ' . $value[ar_middle_name]),
-                            "isActive" => false,
-                        ));
+                    array_push($res["data"], 
+                    array(
+                        "id" => "ai".$value[ar_id],
+                        "books" => $value[cnt],
+                        "author" => ucwords($value[ar_last_name].' '.$value[ar_first_name].' '.$value[ar_middle_name]),
+                        "isActive" => false,
+                    ));
                 }
-
+                
             }
             break;
         case "clear_upload": //очистка папки uploads, для текщей сессии

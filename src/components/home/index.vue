@@ -32,16 +32,15 @@
 
 <style lang="scss">
 .fix-height {
-    height: calc(100vh - 225px);
+    height: calc(100vh - 240px);
 }
 
 .sidebar {
     display: flex;
     flex-flow: column nowrap;
-    flex: 0 0 230px !important;
-    /*border-right: 1px solid #dee2e6;*/
+    flex: 0 0 16rem !important;
+    min-width: 16rem;
     height: 100%;
-    overflow-y: auto;
 }
 
 // для табов

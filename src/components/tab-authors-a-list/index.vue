@@ -33,12 +33,15 @@
 }
 
 .tb {
-    border: 1px solid #dee2e6;
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 1 1 auto;
+    height: 100%;
     user-select: none;
 
     .tb-header {
         @extend %flex;
-        border-bottom: 1px solid #dee2e6;
+        border: 1px solid #dee2e6;
         padding: 0.8rem 0.3rem 0.8rem 0.65rem;
 
         .tb-header-left,
@@ -83,20 +86,29 @@
     }
 
     .tb-body {
+        overflow: auto;
+        height: calc(100% - 50px);
+
         .tb-body-element {
             @extend %flex;
-            border-top: 1px solid #dee2e6;
+            border: 1px solid #dee2e6;
+            border-bottom: none;
             padding: 0.8rem 0.3rem 0.8rem 0.65rem;
-            overflow-x: auto;
             cursor: pointer;
 
             &:hover {
                 background-color: #eee;
             }
 
+            &:last-child {
+                border-bottom: 1px solid #dee2e6;
+            }
+
             .tb-body-element-right {
-                width: 4rem;
-                text-align: center;
+                display: flex;
+                min-width: 4rem;
+                justify-content: center;
+                align-items: center;
             }
         }
 
@@ -146,7 +158,7 @@ export default {
             aAsc: true,
             aDesc: false,
             bAsc: false,
-            bDesc: false,
+            bDesc: false
         };
     },
     methods: {
@@ -156,9 +168,9 @@ export default {
                 entry.isActive = false;
             });
             let element = this.aItems[
-                this.aItems.map(el => el.id).indexOf(Number(item.currentTarget.id))
+                this.aItems.map(el => el.id).indexOf(item.currentTarget.id)
             ];
-            store.commit("setAuthorID", element.id);
+            store.commit("setAuthorID", element.id.substr(2));
             element.isActive = true;
         },
         sortText() {
