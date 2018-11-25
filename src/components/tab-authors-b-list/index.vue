@@ -3,6 +3,7 @@
     <h6 v-if="this.curAI == -1">Нет данных для отображения</h6>
     <div v-else>
         <div v-for="item in bListItems" :key="item.id">
+            {{ item.author }}
             {{ item.title }}
         </div>
     </div>
