@@ -88,6 +88,7 @@ if (isset($_POST["cmd"])) {
         case "test":
             $res["data"] = $_POST["dat"];
             break;
+        //набор букв для фильтра авторов    
         case "с_list":
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
@@ -103,6 +104,7 @@ if (isset($_POST["cmd"])) {
                 array_unshift($res["data"], array("text" => "*", "value" => "*"));
             }
             break;
+        //список авторов    
         case "a_list":
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
@@ -113,20 +115,46 @@ if (isset($_POST["cmd"])) {
                                          AND bk_ur_id = ur_id
                                          AND ur_login = :login
                                       GROUP BY ar_id, ar_last_name, ar_middle_name, ar_first_name
-                                      ORDER BY ar_last_name');                                             
+                                      ORDER BY ar_last_name');
                 $stmt->bindValue(':login', $username, PDO::PARAM_STR);
                 $stmt->execute();
                 $result = $stmt->fetchAll();
                 foreach ($result as $value) {
-                    array_push($res["data"], 
-                    array(
-                        "id" => "ai".$value[ar_id],
-                        "books" => $value[cnt],
-                        "author" => ucwords($value[ar_last_name].' '.$value[ar_first_name].' '.$value[ar_middle_name]),
-                        "isActive" => false,
-                    ));
+                    array_push($res["data"],
+                        array(
+                            "id" => "ai" . $value[ar_id],
+                            "books" => $value[cnt],
+                            "author" => ucwords($value[ar_last_name] . ' ' . $value[ar_first_name] . ' ' . $value[ar_middle_name]),
+                            "isActive" => false,
+                        ));
                 }
-                
+
+            }
+            break;
+        //список книг    
+        case "b_list":
+            if ($pdo and $_SESSION["user"]) {
+                $username = $_SESSION["user"];
+                $ai = $_POST["dat"];
+                $stmt = $pdo->prepare('SELECT bk_id, bk_title 
+                                       FROM books_authors, books, users
+                                       WHERE bkar_ar_id = :ai
+                                         AND bkar_bk_id = bk_id
+                                         AND bk_ur_id = ur_id
+                                         AND ur_login = :login');
+                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
+                $stmt->bindValue(':ai', $ai, PDO::PARAM_INT);
+                $stmt->execute();
+                $result = $stmt->fetchAll();
+                foreach ($result as $value) {
+                    array_push($res["data"],
+                        array(
+                            "id" => "bk" . $value[bk_id],
+                            "title" => $value[bk_title],
+                            "isActive" => false,
+                        ));
+                }
+
             }
             break;
         case "clear_upload": //очистка папки uploads, для текщей сессии
