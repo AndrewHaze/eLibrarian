@@ -87,7 +87,7 @@
 
     .tb-body {
         overflow: auto;
-        height: calc(100% - 50px);
+        height: calc(100% - 70px);
 
         .tb-body-element {
             @extend %flex;
@@ -206,8 +206,8 @@ export default {
             else this.aItems.sort(sortNdesc);
         }
     },
-
-    updated() {
+    //Хук <UPDATED> вызывается после изменения данных в компоненте и перерисовки DOM
+    updated: function () {
         if (store.getters.authorID === -1) {
             this.aItems.forEach(function (entry) {
                 entry.isActive = false;
