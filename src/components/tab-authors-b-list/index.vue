@@ -19,7 +19,7 @@
 
 <style lang="scss">
 .content  section {
-  padding-left: .5rem;
+  margin-left: -.5rem;
 }
 .cover-book-list {
   display: flex;
@@ -29,10 +29,15 @@
   }
   .item {
     flex-flow: row nowrap;
-    width: 21rem;
+    width: 23rem;
+    margin-bottom: 2rem;
+    //border: 1px solid gray;
+    &:first-child {
+      margin-left: 1.5rem;
+    }
     .cover {
-      width: 150px;
-      min-width: 150px;
+      width: 160px;
+      min-width: 160px;
       height: 220px;
       margin-right: 1rem;
       justify-content: center;
@@ -54,8 +59,8 @@
       }
     }
   }
-  .item + .item {
-    margin-right: 1rem;
+  .item+.item {
+    margin-left: 1.5rem;
   }
 }
 </style>
