@@ -88,7 +88,7 @@ if (isset($_POST["cmd"])) {
         case "test":
             $res["data"] = $_POST["dat"];
             break;
-        //набор букв для фильтра авторов    
+        //набор букв для фильтра авторов
         case "с_list":
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
@@ -104,7 +104,7 @@ if (isset($_POST["cmd"])) {
                 array_unshift($res["data"], array("text" => "*", "value" => "*"));
             }
             break;
-        //список авторов    
+        //список авторов
         case "a_list":
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
@@ -115,7 +115,7 @@ if (isset($_POST["cmd"])) {
                                          AND bk_ur_id = ur_id
                                          AND ur_login = :login
                                       GROUP BY ar_id, ar_last_name, ar_middle_name, ar_first_name
-                                      ORDER BY ar_last_name');
+                                      ORDER BY ar_last_name, ar_middle_name, ar_first_name');
                 $stmt->bindValue(':login', $username, PDO::PARAM_STR);
                 $stmt->execute();
                 $result = $stmt->fetchAll();
@@ -131,30 +131,43 @@ if (isset($_POST["cmd"])) {
 
             }
             break;
-        //список книг    
+        //список книг
         case "b_list":
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $ai = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT bk_id, bk_title 
-                                       FROM books_authors, books, users
+                $stmt = $pdo->prepare('SELECT bk_id, bk_title, bk_cover, (SELECT GROUP_CONCAT(ar_last_name, " ", ar_middle_name, " ", ar_first_name
+                                                                                    ORDER BY ar_last_name, ar_middle_name, ar_first_name ASC SEPARATOR ", ")
+                                                                 FROM books_authors, authors, users
+                                                                WHERE bkar_bk_id = bk_id
+                                                                  AND ar_id = bkar_ar_id
+                                                                  AND bk_ur_id = ur_id
+                                                                  AND ur_login = :login2
+                                                                ) list_authors
+                                        FROM books_authors, books, users
                                        WHERE bkar_ar_id = :ai
                                          AND bkar_bk_id = bk_id
                                          AND bk_ur_id = ur_id
-                                         AND ur_login = :login');
-                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
+                                         AND ur_login = :login1');
+                $stmt->bindValue(':login1', $username, PDO::PARAM_STR);
+                $stmt->bindValue(':login2', $username, PDO::PARAM_STR);
                 $stmt->bindValue(':ai', $ai, PDO::PARAM_INT);
-                $stmt->execute();
-                $result = $stmt->fetchAll();
-                foreach ($result as $value) {
-                    array_push($res["data"],
-                        array(
-                            "id" => "bk" . $value[bk_id],
-                            "title" => $value[bk_title],
-                            "isActive" => false,
-                        ));
+                if ($stmt->execute()) {
+                    $result = $stmt->fetchAll();
+                    foreach ($result as $value) {
+                        array_push($res["data"],
+                            array(
+                                "id" => "bk" . $value[bk_id],
+                                "author" => ucwords($value[list_authors]),
+                                "title" => $value[bk_title],
+                                "cover" => base64_encode($value[bk_cover]),
+                                "isActive" => false,
+                            ));
+                    }
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "dbe";
                 }
-
             }
             break;
         case "clear_upload": //очистка папки uploads, для текщей сессии
@@ -208,18 +221,22 @@ if (isset($_POST["cmd"])) {
                         $document_info = $description->getElementsByTagName('document-info')->item(0);
                         //book id
                         $book_id = $document_info->getElementsByTagName('id')->item(0)->nodeValue;
-
+                        //cover
+                        $node = $doc->getElementsByTagName('binary')->item(0);
+                        $cover = base64_decode($node->nodeValue);
+                        //$cover = 'oops';
                         //books.db
                         $time = strtotime($book_date);
                         echo $time;
-                        $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id, bk_book_id, bk_title, bk_annotation, bk_file_date, bk_file)
-                                                   VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), :book_id, :book_title, :book_annotation, :book_date, :book_file);');
+                        $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id, bk_book_id, bk_title, bk_annotation, bk_file_date, bk_file, bk_cover)
+                                                   VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), :book_id, :book_title, :book_annotation, :book_date, :book_file, :book_cover);');
                         $stmt->bindValue(':login', $username, PDO::PARAM_STR);
                         $stmt->bindValue(':book_id', $book_id, PDO::PARAM_STR);
                         $stmt->bindValue(':book_title', $book_title, PDO::PARAM_STR);
                         $stmt->bindValue(':book_annotation', $book_annotation, PDO::PARAM_STR);
                         $stmt->bindValue(':book_date', date('Y-m-d', $time));
                         $stmt->bindValue(':book_file', $filename, PDO::PARAM_STR);
+                        $stmt->bindValue(':book_cover', $cover, PDO::PARAM_STR);
 
                         if ($stmt->execute()) {
                             $id_book = $pdo->lastInsertId();
