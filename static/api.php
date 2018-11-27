@@ -202,6 +202,8 @@ if (isset($_POST["cmd"])) {
                         $res["error"] = "dma";
                     }
                 }
+                // Нужно проверить документ перед тем как ссылаться по идентификатору
+                $doc->validateOnParse = true;
                 if ($load) {
                     //Получаем содержимое секции <description>
                     $description = $doc->getElementsByTagName('description');
@@ -214,20 +216,28 @@ if (isset($_POST["cmd"])) {
                         $book_title = $title_info->getElementsByTagName('book-title')->item(0)->nodeValue;
                         //Аннотация
                         $book_annotation = trim($title_info->getElementsByTagName('annotation')->item(0)->nodeValue);
+                        
+                        //Обложка
+                        $coverpage = $title_info->getElementsByTagName('coverpage')->item(0);
+                        $cover_id =  substr($coverpage->getElementsByTagName('image')->item(0)->getAttribute('l:href'), 1);
+                        
+                        $cover = '';
+                        $nodes = $doc->getElementsByTagName('binary');
+                        foreach ($nodes as $node) {
+                            if ($node->getAttribute('id') == $cover_id) {
+                                $cover = base64_decode($node->nodeValue);
+                                break;
+                            }
+                        }
+                        //$cover = '';
                         //Дата
                         $book_date = $title_info->getElementsByTagName('date')->item(0)->nodeValue;
-
                         //Подгружаем секцию 'document-info'
                         $document_info = $description->getElementsByTagName('document-info')->item(0);
                         //book id
                         $book_id = $document_info->getElementsByTagName('id')->item(0)->nodeValue;
-                        //cover
-                        $node = $doc->getElementsByTagName('binary')->item(0);
-                        $cover = base64_decode($node->nodeValue);
-                        //$cover = 'oops';
-                        //books.db
                         $time = strtotime($book_date);
-                        echo $time;
+                        
                         $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id, bk_book_id, bk_title, bk_annotation, bk_file_date, bk_file, bk_cover)
                                                    VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), :book_id, :book_title, :book_annotation, :book_date, :book_file, :book_cover);');
                         $stmt->bindValue(':login', $username, PDO::PARAM_STR);
@@ -236,7 +246,7 @@ if (isset($_POST["cmd"])) {
                         $stmt->bindValue(':book_annotation', $book_annotation, PDO::PARAM_STR);
                         $stmt->bindValue(':book_date', date('Y-m-d', $time));
                         $stmt->bindValue(':book_file', $filename, PDO::PARAM_STR);
-                        $stmt->bindValue(':book_cover', $cover, PDO::PARAM_STR);
+                        $stmt->bindValue(':book_cover', $cover, PDO::PARAM_LOB);
 
                         if ($stmt->execute()) {
                             $id_book = $pdo->lastInsertId();
