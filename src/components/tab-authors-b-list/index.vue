@@ -29,11 +29,14 @@
   }
   .item {
     flex-flow: row nowrap;
-    width: 23rem;
+    width: 23.5rem;
     margin-bottom: 2rem;
-    //border: 1px solid gray;
+    padding: .3rem;
     &:first-child {
       margin-left: 1.5rem;
+    }
+    &:hover {
+      background-color: #eee;
     }
     .cover {
       width: 160px;

@@ -97,6 +97,7 @@ export default {
     },
     methods: {
       updateAll() {
+            store.commit("setAuthorID", -1);
             this.$refs.aTab.getAuthors();
         },
     },
