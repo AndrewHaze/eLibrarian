@@ -136,14 +136,15 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $ai = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT bk_id, bk_title, bk_cover, (SELECT GROUP_CONCAT(ar_last_name, " ", ar_middle_name, " ", ar_first_name
-                                                                                    ORDER BY ar_last_name, ar_middle_name, ar_first_name ASC SEPARATOR ", ")
-                                                                 FROM books_authors, authors, users
-                                                                WHERE bkar_bk_id = bk_id
-                                                                  AND ar_id = bkar_ar_id
-                                                                  AND bk_ur_id = ur_id
-                                                                  AND ur_login = :login2
-                                                                ) list_authors
+                $stmt = $pdo->prepare('SELECT bk_id, bk_title, bk_cover, 
+                                              (SELECT GROUP_CONCAT(ar_last_name, " ", ar_middle_name, " ", ar_first_name
+                                                      ORDER BY ar_last_name, ar_middle_name, ar_first_name ASC SEPARATOR ", ")
+                                                FROM books_authors, authors, users
+                                              WHERE bkar_bk_id = bk_id
+                                                AND ar_id = bkar_ar_id
+                                                AND bk_ur_id = ur_id
+                                                AND ur_login = :login2
+                                              ) list_authors
                                         FROM books_authors, books, users
                                        WHERE bkar_ar_id = :ai
                                          AND bkar_bk_id = bk_id
@@ -262,6 +263,7 @@ if (isset($_POST["cmd"])) {
                                        $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
                                         $stmt->bindValue(':genre_code', $genre, PDO::PARAM_STR);
                                         $stmt->execute();
+
                                 }
                             }
                             
@@ -303,7 +305,7 @@ if (isset($_POST["cmd"])) {
                                         $id_author = $stmt->fetchColumn();
                                     }
                                     //книги-авторы
-                                    $stmt = $pdo->prepare('INSERT INTO `books_authors` (`bkar_bk_id`, `bkar_ar_id`)
+                                    $stmt = $pdo->prepare('INSERT INTO books_authors (bkar_bk_id, bkar_ar_id)
                                                                    VALUES (:id_books, :id_authors);');
                                     $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
                                     $stmt->bindValue(':id_authors', $id_author, PDO::PARAM_INT);
@@ -319,12 +321,17 @@ if (isset($_POST["cmd"])) {
 
                             //Серия
                             if (empty($title_info->getElementsByTagName('sequence')->item(0))) {
-                                $sequence = '';
+                                $sequence = 'Ђ'; //Для сортировки
                                 $sequence_number = 0;
                             } else {
                                 $sequence = $title_info->getElementsByTagName('sequence')->item(0)->GetAttribute('name');
                                 $sequence_number = $title_info->getElementsByTagName('sequence')->item(0)->GetAttribute('number');
                             }
+                            $stmt = $pdo->prepare('INSERT INTO books_sequence (bkse_bk_id, bkse_se_id, bkse_number)
+                                                                   VALUES (:id_books,               :id_authors);');
+                                    $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
+                                    $stmt->bindValue(':se_number', $id_author, PDO::PARAM_INT);
+                                    $stmt->execute();
 
                         } else {
                             //Ошибка обновления БД
