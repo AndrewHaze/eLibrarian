@@ -214,14 +214,13 @@ if (isset($_POST["cmd"])) {
 
                         //Название книги
                         $book_title = $title_info->getElementsByTagName('book-title')->item(0)->nodeValue;
+                        
                         //Аннотация
                         $book_annotation = trim($title_info->getElementsByTagName('annotation')->item(0)->nodeValue);
                         
                         //Обложка
                         $coverpage = $title_info->getElementsByTagName('coverpage')->item(0);
                         $cover_id =  substr($coverpage->getElementsByTagName('image')->item(0)->getAttribute('l:href'), 1);
-                        
-                        $cover = '';
                         $nodes = $doc->getElementsByTagName('binary');
                         foreach ($nodes as $node) {
                             if ($node->getAttribute('id') == $cover_id) {
@@ -229,11 +228,13 @@ if (isset($_POST["cmd"])) {
                                 break;
                             }
                         }
-                        //$cover = '';
+                        
                         //Дата
                         $book_date = $title_info->getElementsByTagName('date')->item(0)->nodeValue;
+                        
                         //Подгружаем секцию 'document-info'
                         $document_info = $description->getElementsByTagName('document-info')->item(0);
+                        
                         //book id
                         $book_id = $document_info->getElementsByTagName('id')->item(0)->nodeValue;
                         $time = strtotime($book_date);
@@ -250,17 +251,22 @@ if (isset($_POST["cmd"])) {
 
                         if ($stmt->execute()) {
                             $id_book = $pdo->lastInsertId();
+                            
                             //Получаем список жанров, к которым относится книга
                             $genre_list = $title_info->getElementsByTagName('genre');
                             if (count($genre_list) > 0) {
                                 foreach ($genre_list as $element) {
-                                    //Помещаем список жанров в массив
-                                    $genres[] = $element->nodeValue;
+                                    $genre = $element->nodeValue;
+                                    $stmt = $pdo->prepare('INSERT INTO books_genres (bkge_bk_id, bkge_ge_id)
+                                                                   VALUES (:id_books, (SELECT ge_id FROM genres WHERE ge_code = :genre_code));');
+                                       $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
+                                        $stmt->bindValue(':genre_code', $genre, PDO::PARAM_STR);
+                                        $stmt->execute();
                                 }
                             }
+                            
                             //Получаем список авторов.
                             $authors_list = $title_info->getElementsByTagName('author');
-
                             if (count($authors_list) > 0) {
                                 $element = '';
                                 foreach ($authors_list as $element) {
@@ -280,7 +286,7 @@ if (isset($_POST["cmd"])) {
                                     $stmt->execute();
                                     $count = $stmt->fetchColumn();
                                     if ($count === 0) {
-                                        $stmt = $pdo->prepare('INSERT INTO `authors` (`ar_first_name`, `ar_last_name`, `ar_middle_name`)
+                                        $stmt = $pdo->prepare('INSERT INTO authors (ar_first_name, ar_last_name, ar_middle_name)
                                                                    VALUES (:first_name, :last_name, :middle_name);');
                                         $stmt->bindValue(':first_name', $first_name, PDO::PARAM_STR);
                                         $stmt->bindValue(':last_name', $last_name, PDO::PARAM_STR);
@@ -321,16 +327,20 @@ if (isset($_POST["cmd"])) {
                             }
 
                         } else {
+                            //Ошибка обновления БД
                             $res["success"] = false;
                             $res["error"] = "dbe";
                         }
 
                     } else {
+                        //Требуется описание книги
                         $res["success"] = false;
                         $res["error"] = "ndf";
                     }
                 } else {
+                    //Нет коннекта или авторизации
                     $res["success"] = false;
+                    $res["error"] = "dbe";
                 }
             } else {
                 $res["error"] = "PDO Error";
