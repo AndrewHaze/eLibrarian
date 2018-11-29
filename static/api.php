@@ -136,7 +136,7 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $ai = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT bk_id, bk_title, bk_cover, 
+                $stmt = $pdo->prepare('SELECT bk_id, bk_title, bk_cover,
                                               (SELECT GROUP_CONCAT(ar_last_name, " ", ar_middle_name, " ", ar_first_name
                                                       ORDER BY ar_last_name, ar_middle_name, ar_first_name ASC SEPARATOR ", ")
                                                 FROM books_authors, authors, users
@@ -215,13 +215,13 @@ if (isset($_POST["cmd"])) {
 
                         //Название книги
                         $book_title = $title_info->getElementsByTagName('book-title')->item(0)->nodeValue;
-                        
+
                         //Аннотация
                         $book_annotation = trim($title_info->getElementsByTagName('annotation')->item(0)->nodeValue);
-                        
+
                         //Обложка
                         $coverpage = $title_info->getElementsByTagName('coverpage')->item(0);
-                        $cover_id =  substr($coverpage->getElementsByTagName('image')->item(0)->getAttribute('l:href'), 1);
+                        $cover_id = substr($coverpage->getElementsByTagName('image')->item(0)->getAttribute('l:href'), 1);
                         $nodes = $doc->getElementsByTagName('binary');
                         foreach ($nodes as $node) {
                             if ($node->getAttribute('id') == $cover_id) {
@@ -229,17 +229,19 @@ if (isset($_POST["cmd"])) {
                                 break;
                             }
                         }
-                        
+
                         //Дата
                         $book_date = $title_info->getElementsByTagName('date')->item(0)->nodeValue;
-                        
+
                         //Подгружаем секцию 'document-info'
                         $document_info = $description->getElementsByTagName('document-info')->item(0);
-                        
+
                         //book id
                         $book_id = $document_info->getElementsByTagName('id')->item(0)->nodeValue;
                         $time = strtotime($book_date);
-                        
+
+                        /********************************** QUERIES ***********************************************/
+
                         $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id, bk_book_id, bk_title, bk_annotation, bk_file_date, bk_file, bk_cover)
                                                    VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), :book_id, :book_title, :book_annotation, :book_date, :book_file, :book_cover);');
                         $stmt->bindValue(':login', $username, PDO::PARAM_STR);
@@ -252,7 +254,7 @@ if (isset($_POST["cmd"])) {
 
                         if ($stmt->execute()) {
                             $id_book = $pdo->lastInsertId();
-                            
+
                             //Получаем список жанров, к которым относится книга
                             $genre_list = $title_info->getElementsByTagName('genre');
                             if (count($genre_list) > 0) {
@@ -260,13 +262,12 @@ if (isset($_POST["cmd"])) {
                                     $genre = $element->nodeValue;
                                     $stmt = $pdo->prepare('INSERT INTO books_genres (bkge_bk_id, bkge_ge_id)
                                                                    VALUES (:id_books, (SELECT ge_id FROM genres WHERE ge_code = :genre_code));');
-                                       $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
-                                        $stmt->bindValue(':genre_code', $genre, PDO::PARAM_STR);
-                                        $stmt->execute();
-
+                                    $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
+                                    $stmt->bindValue(':genre_code', $genre, PDO::PARAM_STR);
+                                    $stmt->execute();
                                 }
                             }
-                            
+
                             //Получаем список авторов.
                             $authors_list = $title_info->getElementsByTagName('author');
                             if (count($authors_list) > 0) {
@@ -315,7 +316,7 @@ if (isset($_POST["cmd"])) {
                             }
 
                             $res["data"] = array(
-                                //"test" => $count,
+                                //имя файла с книгой
                                 "hash_name" => $filename,
                             );
 
@@ -324,14 +325,34 @@ if (isset($_POST["cmd"])) {
                                 $sequence = 'Ђ'; //Для сортировки
                                 $sequence_number = 0;
                             } else {
-                                $sequence = $title_info->getElementsByTagName('sequence')->item(0)->GetAttribute('name');
+                                $sequence = trim($title_info->getElementsByTagName('sequence')->item(0)->GetAttribute('name'));
                                 $sequence_number = $title_info->getElementsByTagName('sequence')->item(0)->GetAttribute('number');
                             }
+                            //Серия есть?
+                            $stmt = $pdo->prepare('SELECT COUNT(*) FROM sequence
+                                                    WHERE se_title = :se_title ');
+                            $stmt->bindValue(':se_title', $sequence, PDO::PARAM_STR);
+                            $stmt->execute();
+                            $count = $stmt->fetchColumn();
+                            if ($count === 0) { //Новая серия
+                                $stmt = $pdo->prepare('INSERT INTO sequence (se_title) VALUES (:se_title);');
+                                $stmt->bindValue(':se_title', $sequence, PDO::PARAM_STR);
+                                $stmt->execute();
+                                $id_sequence = $pdo->lastInsertId();
+                            } else { //Существующая серия
+                                $stmt = $pdo->prepare('SELECT se_id FROM sequence
+                                                        WHERE se_title = :se_title');
+                                $stmt->bindValue(':se_title', $sequence, PDO::PARAM_STR);
+                                $stmt->execute();
+                                $id_sequence = $stmt->fetchColumn();
+                            }
+
                             $stmt = $pdo->prepare('INSERT INTO books_sequence (bkse_bk_id, bkse_se_id, bkse_number)
-                                                                   VALUES (:id_books,               :id_authors);');
-                                    $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
-                                    $stmt->bindValue(':se_number', $id_author, PDO::PARAM_INT);
-                                    $stmt->execute();
+                                                          VALUES (:id_books, :id_sequence, :se_number);');
+                            $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
+                            $stmt->bindValue(':id_sequence', $id_sequence, PDO::PARAM_INT);
+                            $stmt->bindValue(':se_number', $sequence_number, PDO::PARAM_INT);
+                            $stmt->execute();
 
                         } else {
                             //Ошибка обновления БД
