@@ -131,8 +131,39 @@ if (isset($_POST["cmd"])) {
 
             }
             break;
+        case "as_list":
+            if ($pdo and $_SESSION["user"]) {
+                $username = $_SESSION["user"];
+                $ai = $_POST["dat"];
+                $stmt = $pdo->prepare('SELECT DISTINCT se_id, se_title
+                                        FROM books, books_authors, books_series, series, users
+                                        WHERE bkar_ar_id = :ai
+                                         AND bkar_bk_id = bk_id
+                                         AND bkse_bk_id = bk_id
+                                         AND se_id = bkse_se_id
+                                         AND bk_ur_id = ur_id
+                                         AND ur_login = :login1
+                                         ORDER BY se_title');
+                $stmt->bindValue(':login1', $username, PDO::PARAM_STR);
+                $stmt->bindValue(':ai', $ai, PDO::PARAM_INT);
+                if ($stmt->execute()) {
+                    $result = $stmt->fetchAll();
+                    foreach ($result as $value) {
+                        array_push($res["data"],
+                            array(
+                                "id" => "se" . $value[se_id],
+                                "seriesTitle" => $value[se_title],
+                                "isActive" => false,
+                            ));
+                    }
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "dbe";
+                }
+            }
+            break;
         //список книг
-        case "b_list":
+        case "ab_list":
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $ai = $_POST["dat"];
@@ -158,7 +189,8 @@ if (isset($_POST["cmd"])) {
                                          AND bkse_bk_id = bk_id
                                          AND se_id = bkse_se_id
                                          AND bk_ur_id = ur_id
-                                         AND ur_login = :login1');
+                                         AND ur_login = :login1
+                                         ORDER BY se_title, bkse_number, bk_title');
                 $stmt->bindValue(':login1', $username, PDO::PARAM_STR);
                 $stmt->bindValue(':login2', $username, PDO::PARAM_STR);
                 $stmt->bindValue(':login3', $username, PDO::PARAM_STR);
@@ -173,8 +205,8 @@ if (isset($_POST["cmd"])) {
                                 "title" => $value[bk_title],
                                 "cover" => base64_encode($value[bk_cover]),
                                 "genres" => $value[list_genres] ?: "Прочее",
-                                "seriesTitle" => $value[se_title], 
-                                "seriesNumber" => $value[bkse_number],    
+                                "seriesTitle" => $value[se_title],
+                                "seriesNumber" => $value[bkse_number],
                                 "isActive" => false,
                             ));
                     }
@@ -335,7 +367,7 @@ if (isset($_POST["cmd"])) {
 
                             //Серия
                             if (empty($title_info->getElementsByTagName('sequence')->item(0))) {
-                                $sequence = 'Ђ'; //Для сортировки
+                                $sequence = "Ђ"; //Для сортировки
                                 $sequence_number = 0;
                             } else {
                                 $sequence = trim($title_info->getElementsByTagName('sequence')->item(0)->GetAttribute('name'));
