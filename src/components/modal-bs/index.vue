@@ -75,6 +75,7 @@
 </template>
 
 <style lang="scss">
+$line-color: #dee2e6;
 .e-btn-group {
   & > .btn + .btn {
     margin-left: 0.12rem;
@@ -106,7 +107,7 @@
 
   .f-list {
     padding: 0;
-    border: 1px solid #dee2e6;
+    border: 1px solid $line-color;
     overflow: auto;
 
     .custom-control {
@@ -156,7 +157,7 @@
         overflow: auto;
         flex: 1 1 auto;
         padding: 0.2rem 1rem 0.4rem 0.5rem;
-        border: 1px solid #dee2e6;
+        border: 1px solid $line-color;
 
         & > ul {
           list-style-type: none;
@@ -239,7 +240,7 @@
   .list-header {
     display: flex;
     align-items: center;
-    border: 1px solid #dee2e6;
+    border: 1px solid $line-color;
     padding: 0.2rem 0.5rem;
 
     .custom-control-inline {

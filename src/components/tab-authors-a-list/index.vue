@@ -26,6 +26,8 @@
 </template>
 
 <style lang="scss">
+$line-color: #dee2e6;
+
 %flex {
     display: flex;
     flex: row, nowrap;
@@ -41,7 +43,7 @@
 
     .tb-header {
         @extend %flex;
-        border: 1px solid #dee2e6;
+        border: 1px solid $line-color;
         padding: 0.8rem 0.3rem 0.8rem 0.65rem;
 
         .tb-header-left,
@@ -91,7 +93,7 @@
 
         .tb-body-element {
             @extend %flex;
-            border: 1px solid #dee2e6;
+            border: 1px solid $line-color;
             border-bottom: none;
             padding: 0.8rem 0.3rem 0.8rem 0.65rem;
             cursor: pointer;
@@ -101,7 +103,7 @@
             }
 
             &:last-child {
-                border-bottom: 1px solid #dee2e6;
+                border-bottom: 1px solid $line-color;
             }
 
             .tb-body-element-right {
