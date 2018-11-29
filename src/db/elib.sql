@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost
--- Время создания: Ноя 29 2018 г., 11:04
+-- Время создания: Ноя 29 2018 г., 13:39
 -- Версия сервера: 5.7.20
 -- Версия PHP: 7.2.0
 
@@ -79,10 +79,10 @@ CREATE TABLE `books_genres` (
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `books_sequence`
+-- Структура таблицы `books_series`
 --
 
-CREATE TABLE `books_sequence` (
+CREATE TABLE `books_series` (
   `bkse_id` int(11) NOT NULL,
   `bkse_bk_id` int(11) NOT NULL,
   `bkse_se_id` int(11) NOT NULL,
@@ -155,10 +155,10 @@ INSERT INTO `genres_groups` (`gg_id`, `gg_title`) VALUES
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `sequence`
+-- Структура таблицы `series`
 --
 
-CREATE TABLE `sequence` (
+CREATE TABLE `series` (
   `se_id` int(11) NOT NULL,
   `se_title` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -210,19 +210,24 @@ ALTER TABLE `books_authors`
 -- Индексы таблицы `books_genres`
 --
 ALTER TABLE `books_genres`
-  ADD PRIMARY KEY (`bkge_id`);
+  ADD PRIMARY KEY (`bkge_id`),
+  ADD KEY `bkge_bk_fk` (`bkge_bk_id`),
+  ADD KEY `bkge_ge_fk` (`bkge_ge_id`);
 
 --
--- Индексы таблицы `books_sequence`
+-- Индексы таблицы `books_series`
 --
-ALTER TABLE `books_sequence`
-  ADD PRIMARY KEY (`bkse_id`);
+ALTER TABLE `books_series`
+  ADD PRIMARY KEY (`bkse_id`),
+  ADD KEY `bkse_bk_fk` (`bkse_bk_id`),
+  ADD KEY `bkse_se_fk` (`bkse_se_id`);
 
 --
 -- Индексы таблицы `genres`
 --
 ALTER TABLE `genres`
-  ADD PRIMARY KEY (`ge_id`);
+  ADD PRIMARY KEY (`ge_id`),
+  ADD KEY `ge_gg_fk` (`ge_gg_id`);
 
 --
 -- Индексы таблицы `genres_groups`
@@ -232,9 +237,9 @@ ALTER TABLE `genres_groups`
   ADD UNIQUE KEY `gg_title` (`gg_title`);
 
 --
--- Индексы таблицы `sequence`
+-- Индексы таблицы `series`
 --
-ALTER TABLE `sequence`
+ALTER TABLE `series`
   ADD PRIMARY KEY (`se_id`);
 
 --
@@ -252,31 +257,31 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `authors`
 --
 ALTER TABLE `authors`
-  MODIFY `ar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `ar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT для таблицы `books`
 --
 ALTER TABLE `books`
-  MODIFY `bk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `bk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT для таблицы `books_authors`
 --
 ALTER TABLE `books_authors`
-  MODIFY `bkar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=158;
+  MODIFY `bkar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=162;
 
 --
 -- AUTO_INCREMENT для таблицы `books_genres`
 --
 ALTER TABLE `books_genres`
-  MODIFY `bkge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `bkge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
--- AUTO_INCREMENT для таблицы `books_sequence`
+-- AUTO_INCREMENT для таблицы `books_series`
 --
-ALTER TABLE `books_sequence`
-  MODIFY `bkse_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `books_series`
+  MODIFY `bkse_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT для таблицы `genres`
@@ -291,10 +296,10 @@ ALTER TABLE `genres_groups`
   MODIFY `gg_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
--- AUTO_INCREMENT для таблицы `sequence`
+-- AUTO_INCREMENT для таблицы `series`
 --
-ALTER TABLE `sequence`
-  MODIFY `se_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `series`
+  MODIFY `se_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
@@ -312,6 +317,26 @@ ALTER TABLE `users`
 ALTER TABLE `books_authors`
   ADD CONSTRAINT `bkar_ar_fk` FOREIGN KEY (`bkar_ar_id`) REFERENCES `authors` (`ar_id`),
   ADD CONSTRAINT `bkar_bk_fk` FOREIGN KEY (`bkar_bk_id`) REFERENCES `books` (`bk_id`);
+
+--
+-- Ограничения внешнего ключа таблицы `books_genres`
+--
+ALTER TABLE `books_genres`
+  ADD CONSTRAINT `bkge_bk_fk` FOREIGN KEY (`bkge_bk_id`) REFERENCES `books` (`bk_id`),
+  ADD CONSTRAINT `bkge_ge_fk` FOREIGN KEY (`bkge_ge_id`) REFERENCES `genres` (`ge_id`);
+
+--
+-- Ограничения внешнего ключа таблицы `books_series`
+--
+ALTER TABLE `books_series`
+  ADD CONSTRAINT `bkse_bk_fk` FOREIGN KEY (`bkse_bk_id`) REFERENCES `books` (`bk_id`),
+  ADD CONSTRAINT `bkse_se_fk` FOREIGN KEY (`bkse_se_id`) REFERENCES `series` (`se_id`);
+
+--
+-- Ограничения внешнего ключа таблицы `genres`
+--
+ALTER TABLE `genres`
+  ADD CONSTRAINT `ge_gg_fk` FOREIGN KEY (`ge_gg_id`) REFERENCES `genres_groups` (`gg_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
