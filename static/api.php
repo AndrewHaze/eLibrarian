@@ -144,7 +144,14 @@ if (isset($_POST["cmd"])) {
                                                 AND ar_id = bkar_ar_id
                                                 AND bk_ur_id = ur_id
                                                 AND ur_login = :login2
-                                              ) list_authors
+                                              ) list_authors,
+                                              (SELECT GROUP_CONCAT(ge_title ORDER BY ge_title ASC SEPARATOR ", ")
+                                                FROM books_genres, genres, users
+                                              WHERE bkge_bk_id = bk_id
+                                                AND ge_id = bkge_ge_id
+                                                AND bk_ur_id = ur_id
+                                                AND ur_login = :login3
+                                              ) list_genres
                                         FROM books_authors, books, books_series, series, users
                                        WHERE bkar_ar_id = :ai
                                          AND bkar_bk_id = bk_id
@@ -154,6 +161,7 @@ if (isset($_POST["cmd"])) {
                                          AND ur_login = :login1');
                 $stmt->bindValue(':login1', $username, PDO::PARAM_STR);
                 $stmt->bindValue(':login2', $username, PDO::PARAM_STR);
+                $stmt->bindValue(':login3', $username, PDO::PARAM_STR);
                 $stmt->bindValue(':ai', $ai, PDO::PARAM_INT);
                 if ($stmt->execute()) {
                     $result = $stmt->fetchAll();
@@ -164,6 +172,7 @@ if (isset($_POST["cmd"])) {
                                 "author" => ucwords($value[list_authors]),
                                 "title" => $value[bk_title],
                                 "cover" => base64_encode($value[bk_cover]),
+                                "genres" => $value[list_genres] ?: "Прочее",
                                 "seriesTitle" => $value[se_title], 
                                 "seriesNumber" => $value[bkse_number],    
                                 "isActive" => false,
