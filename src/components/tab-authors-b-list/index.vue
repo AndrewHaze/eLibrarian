@@ -10,6 +10,8 @@
               <div class = "info">
                 <div class="book-authors">{{ item.author }} </div>
                 <div class="book-title">{{ item.title }}</div>
+                <div>{{ item.seriesTitle }}</div>
+                <div>{{ item.seriesNumber }}</div>
               </div>
           </div>
       </div>
@@ -74,6 +76,7 @@ export default {
   props: ["curAI"],
   data: function() {
     return {
+      sTitle: '',
       bListItems: []
     };
   },
