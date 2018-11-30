@@ -3,8 +3,15 @@
     <h6 v-if="this.curAI == -1">Нет данных для отображения</h6>
     <div v-else>
       <div class="cover-book-list">
-        <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
-          <div class="series-title" v-if="sItem.seriesTitle != 'Ђ'"><span>{{ sItem.seriesTitle }}</span></div>
+        <div
+          class="series-wrap"
+          v-for="sItem in sListItems"
+          :key="sItem.id"
+          :class="{ shift: isShift }"
+        >
+          <div class="series-title" v-if="sItem.seriesTitle != 'Ђ'">
+            <span>{{ sItem.seriesTitle }}</span>
+          </div>
           <div
             class="item"
             v-for="bItem in bListItems"
@@ -28,18 +35,24 @@
 
 <style lang="scss">
 $line-color: #dee2e6;
+$item-mr: 0.5rem;
+$item-pd: 0.5rem;
+
 .content section {
   margin-left: -0.5rem;
 }
 .cover-book-list {
   display: flex;
+  flex-flow: column nowrap;
+  padding-left: 0.2rem;
   div {
     display: flex;
+    user-select: none;
+    cursor: pointer;
   }
   .series-wrap {
     flex-flow: row wrap;
     flex: 1 1 auto;
-    margin-bottom: 2rem;
     .series-title {
       position: relative;
       font-size: 1.3rem;
@@ -47,68 +60,68 @@ $line-color: #dee2e6;
       line-height: 1.2;
       min-width: 100%;
       justify-content: center;
-      margin: 1rem 0.5rem 1.2rem 0.5rem;
+      margin: 1rem .5rem 0 .25rem;
       &:first-child {
         margin-top: -0.3rem;
       }
       &::before {
         position: absolute;
-        content: '';
-        
+        content: "";
         border-bottom: 1px solid $line-color;
         left: 0;
-        right: .5rem;
-        top: .85rem;
+        right: 0.5rem;
+        top: 0.85rem;
       }
       span {
         z-index: 1;
         background-color: #fff;
-        padding: 0 .5rem;
+        padding: 0 0.5rem;
       }
     }
-  }
 
-  .series-wrap + .series-wrap {
+    .series-wrap + .series-wrap {
       border-bottom: 1px solid $line-color;
-  }
+    }
 
-  .item {
-    flex-flow: row nowrap;
-    width: 23.5rem;
-    margin-bottom: 2rem;
-    padding: 0.3rem;
-    &:first-child {
-      margin-left: 1.5rem;
-    }
-    &:hover {
-      background-color: $line-color;
-    }
-    .cover {
-      width: 160px;
-      min-width: 160px;
-      height: 220px;
-      margin-right: 1rem;
-      justify-content: center;
-      overflow: hidden;
-      > img {
-        height: 100%;
+    .item {
+      flex-flow: row nowrap;
+      width: 389px;
+      margin: $item-mr;
+      padding: $item-pd;
+      transition: background-color .2s;
+      &:hover {
+        background-color: rgba(221, 221, 221, 0.4);
+        transition: background-color .2s;
+
       }
-    }
-    .info {
-      flex-flow: column nowrap;
-      line-height: 1.3;
-      .book-authors {
-        color: #4c4c4c;
+      .cover {
+        width: 160px;
+        min-width: 160px;
+        height: 220px;
+        margin-right: 1rem;
+        justify-content: center;
+        overflow: hidden;
+        > img {
+          height: 100%;
+        }
       }
-      .book-title {
-        font-size: 1.2rem;
-        font-weight: 550;
-        margin-top: 0.3rem;
+      .info {
+        flex-flow: column nowrap;
+        line-height: 1.3;
+        .book-authors {
+          color: #4c4c4c;
+        }
+        .book-title {
+          font-size: 1.2rem;
+          font-weight: 550;
+          margin: 0.3rem 0 0.3rem;
+          line-height: 1.1;
+        }
       }
     }
   }
-  .item + .item {
-    margin-left: 1.5rem;
+  .shift {
+    margin-top: -($item-mr + $item-pd);
   }
 }
 </style>
@@ -135,7 +148,7 @@ export default {
         },
         "",
         function(rd) {
-          self.sListItems = rd; //возвр. данные (Responce)
+            self.sListItems = rd; //возвр. данные (Responce)
         }
       );
       this.callApi(
@@ -149,6 +162,15 @@ export default {
           self.bListItems = rd; //возвр. данные (Responce)
         }
       );
+    }
+  },
+  computed: {
+    isShift: function() {
+      if (this.sListItems[0].seriesTitle ==='Ђ') {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 };
