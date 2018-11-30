@@ -2,7 +2,7 @@
   <section>
     <h6 v-if="this.curAI == -1">Нет данных для отображения</h6>
     <div v-else>
-      <div class="cover-book-list">
+      <div class="cover-book-list" v-if="look === 'cover'">
         <div
           class="series-wrap"
           v-for="sItem in sListItems"
@@ -27,6 +27,14 @@
               <div>{{ bItem.genres }}</div>
             </div>
           </div>
+        </div>
+      </div>
+      <div v-else-if="look === 'tree'">B</div>
+      <div v-else-if="look === 'table'">
+        <div class v-for="bItem in bListItems" :key="bItem.id">
+          <div>{{ bItem.title }}</div>
+          <div>{{ bItem.genres }}</div>
+          <div v-if="bItem.seriesTitle != 'Ђ'">{{ bItem.seriesTitle }}</div>
         </div>
       </div>
     </div>
@@ -60,7 +68,7 @@ $item-pd: 0.5rem;
       line-height: 1.2;
       min-width: 100%;
       justify-content: center;
-      margin: 1rem .5rem 0 .25rem;
+      margin: 1rem 0.5rem 0 0.25rem;
       &:first-child {
         margin-top: -0.3rem;
       }
@@ -88,11 +96,10 @@ $item-pd: 0.5rem;
       width: 389px;
       margin: $item-mr;
       padding: $item-pd;
-      transition: background-color .2s;
+      transition: background-color 0.2s;
       &:hover {
         background-color: rgba(221, 221, 221, 0.4);
-        transition: background-color .2s;
-
+        transition: background-color 0.2s;
       }
       .cover {
         width: 160px;
@@ -127,6 +134,8 @@ $item-pd: 0.5rem;
 </style>
     
 <script>
+import store from "../../store";
+
 export default {
   name: "books-list",
   props: ["curAI"],
@@ -148,7 +157,7 @@ export default {
         },
         "",
         function(rd) {
-            self.sListItems = rd; //возвр. данные (Responce)
+          self.sListItems = rd; //возвр. данные (Responce)
         }
       );
       this.callApi(
@@ -166,11 +175,14 @@ export default {
   },
   computed: {
     isShift: function() {
-      if (this.sListItems[0].seriesTitle ==='Ђ') {
+      if (this.sListItems[0].seriesTitle === "Ђ") {
         return true;
       } else {
         return false;
       }
+    },
+    look: function() {
+      return store.getters.blLook;
     }
   }
 };

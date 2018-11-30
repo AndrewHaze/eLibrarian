@@ -3,7 +3,7 @@ const state = { link: "http://l.mgr.loc",
                 reg: false, 
                 at: 'eLibrarian v.0.0.1', 
                 ai: -1,
-                bsc: false,
+                bll: "cover",
               }
 
 const getters = {
@@ -15,8 +15,8 @@ const getters = {
   congratulation: state => state.reg,
   appTitle: state => state.at,
   authorID: state => state.ai,
-  //флаг: сканер книг отработал
-  bsJC: state => state.bsc,
+  //вид списка книг
+  blLook: state => state.bll,
 }
 
 const mutations = {
@@ -31,6 +31,9 @@ const mutations = {
   },
   setbsJC(state, value) {
     state.ai = value
+  },
+  setblLook(state, value) {
+    state.bll = value
   },
 }
 

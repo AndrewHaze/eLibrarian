@@ -6,8 +6,13 @@ import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import axios from "axios"
-
 import Loading from './components/lib/loading'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faTh, faStream, faTable  } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faTh, faStream, faTable)
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.use(BootstrapVue)
 Vue.component('loading', Loading)
@@ -46,7 +51,7 @@ Vue.mixin({
           this.errored = true;
         })
         .finally(() => (this.loading = false));
-    }
+    },
   }
 })
 
