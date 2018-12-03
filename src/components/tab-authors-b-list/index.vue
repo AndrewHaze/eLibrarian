@@ -29,12 +29,28 @@
           </div>
         </div>
       </div>
-      <div v-else-if="look === 'tree'">B</div>
-      <div v-else-if="look === 'table'">
-        <div class v-for="bItem in bListItems" :key="bItem.id">
-          <div>{{ bItem.title }}</div>
-          <div>{{ bItem.genres }}</div>
-          <div v-if="bItem.seriesTitle != 'Ђ'">{{ bItem.seriesTitle }}</div>
+      <!---------------------------------------------------------------------------------------------->
+      <div class="tree-book-list" v-else-if="look === 'tree'">B</div>
+      <!---------------------------------------------------------------------------------------------->
+      <div class="table-book-list" v-else-if="look === 'table'">
+        <button @click="titleWidth()">Calculate Height</button>
+        
+        <div class="tbl-header">
+            <div class="tbl-header-td" :style="{ width: titleWidth + 'px' }">Название</div>
+            <div class="tbl-header-td">Серия</div>
+            <div class="tbl-header-td">Жанр</div>
+        </div>
+
+        <div class="tbl-table">
+          <div class="tbl-table-body">
+            <div class="tbl-table-tr" v-for="bItem in bListItems" :key="bItem.id">
+              <div id="cTitle" ref="cTitle" class="tbl-table-td">{{ bItem.title }}</div>
+              <div class="tbl-table-td">
+                <span v-if="bItem.seriesTitle != 'Ђ'">{{ bItem.seriesTitle }}</span>
+              </div>
+              <div class="tbl-table-td">{{ bItem.genres }}</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -97,6 +113,7 @@ $item-pd: 0.5rem;
       margin: $item-mr;
       padding: $item-pd;
       transition: background-color 0.2s;
+      overflow: hidden;
       &:hover {
         background-color: rgba(221, 221, 221, 0.4);
         transition: background-color 0.2s;
@@ -129,6 +146,41 @@ $item-pd: 0.5rem;
   }
   .shift {
     margin-top: -($item-mr + $item-pd);
+  }
+}
+
+.table-book-list {
+  display: flex;
+  flex-flow: column nowrap;
+  padding-left: 0.2rem;
+  .tbl-header {
+    display: flex;
+    flex-flow: row nowrap;
+    border: 1px solid $line-color;
+  }
+  .tbl-table {
+    display: table;
+    width: 100%;
+    .tbl-table-body {
+      display: table-row-group;
+    }
+    .tbl-table-body {
+      .tbl-table-tr {
+        display: table-row;
+        width: 100%;
+        .tbl-table-td {
+          display: table-cell;
+          padding: 0.2rem;
+          border-top: 1px solid $line-color;
+        }
+        .tbl-table-td + .tbl-table-td {
+          border-left: 1px solid $line-color;
+        }
+      }
+    }
+    .tbl-table-body {
+      overflow-x: auto;
+    }
   }
 }
 </style>
@@ -184,6 +236,12 @@ export default {
     look: function() {
       return store.getters.blLook;
     }
+  }, 
+  methods: {
+    titleWidth: function() {
+      console.log(this.$refs.cTitle.clientWidth);
+      return 100;
+    },
   }
 };
 </script>
