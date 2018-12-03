@@ -33,18 +33,15 @@
       <div class="tree-book-list" v-else-if="look === 'tree'">B</div>
       <!---------------------------------------------------------------------------------------------->
       <div class="table-book-list" v-else-if="look === 'table'">
-        <button @click="titleWidth()">Calculate Height</button>
-        
         <div class="tbl-header">
-            <div class="tbl-header-td" :style="{ width: titleWidth + 'px' }">Название</div>
-            <div class="tbl-header-td">Серия</div>
-            <div class="tbl-header-td">Жанр</div>
+          <div class="tbl-header-td" :style="{ width: titleWidth + 'px' }">Название</div>
+          <div class="tbl-header-td">Серия</div>
+          <div class="tbl-header-td">Жанр</div>
         </div>
-
         <div class="tbl-table">
           <div class="tbl-table-body">
             <div class="tbl-table-tr" v-for="bItem in bListItems" :key="bItem.id">
-              <div id="cTitle" ref="cTitle" class="tbl-table-td">{{ bItem.title }}</div>
+              <div :id="bItem.id" ref="bItem.id" class="tbl-table-td">{{ bItem.title }}</div>
               <div class="tbl-table-td">
                 <span v-if="bItem.seriesTitle != 'Ђ'">{{ bItem.seriesTitle }}</span>
               </div>
@@ -65,18 +62,22 @@ $item-pd: 0.5rem;
 .content section {
   margin-left: -0.5rem;
 }
+
 .cover-book-list {
   display: flex;
   flex-flow: column nowrap;
   padding-left: 0.2rem;
+
   div {
     display: flex;
     user-select: none;
     cursor: pointer;
   }
+
   .series-wrap {
     flex-flow: row wrap;
     flex: 1 1 auto;
+
     .series-title {
       position: relative;
       font-size: 1.3rem;
@@ -85,9 +86,11 @@ $item-pd: 0.5rem;
       min-width: 100%;
       justify-content: center;
       margin: 1rem 0.5rem 0 0.25rem;
+
       &:first-child {
         margin-top: -0.3rem;
       }
+
       &::before {
         position: absolute;
         content: "";
@@ -96,6 +99,7 @@ $item-pd: 0.5rem;
         right: 0.5rem;
         top: 0.85rem;
       }
+
       span {
         z-index: 1;
         background-color: #fff;
@@ -114,10 +118,12 @@ $item-pd: 0.5rem;
       padding: $item-pd;
       transition: background-color 0.2s;
       overflow: hidden;
+
       &:hover {
         background-color: rgba(221, 221, 221, 0.4);
         transition: background-color 0.2s;
       }
+
       .cover {
         width: 160px;
         min-width: 160px;
@@ -125,16 +131,20 @@ $item-pd: 0.5rem;
         margin-right: 1rem;
         justify-content: center;
         overflow: hidden;
+
         > img {
           height: 100%;
         }
       }
+
       .info {
         flex-flow: column nowrap;
         line-height: 1.3;
+
         .book-authors {
           color: #4c4c4c;
         }
+
         .book-title {
           font-size: 1.2rem;
           font-weight: 550;
@@ -144,8 +154,10 @@ $item-pd: 0.5rem;
       }
     }
   }
+
   .shift {
     margin-top: -($item-mr + $item-pd);
+    margin-bottom: 1rem;
   }
 }
 
@@ -153,38 +165,45 @@ $item-pd: 0.5rem;
   display: flex;
   flex-flow: column nowrap;
   padding-left: 0.2rem;
+
   .tbl-header {
     display: flex;
     flex-flow: row nowrap;
     border: 1px solid $line-color;
   }
+
   .tbl-table {
     display: table;
     width: 100%;
+
     .tbl-table-body {
       display: table-row-group;
     }
+
     .tbl-table-body {
       .tbl-table-tr {
         display: table-row;
         width: 100%;
+
         .tbl-table-td {
           display: table-cell;
           padding: 0.2rem;
           border-top: 1px solid $line-color;
         }
+
         .tbl-table-td + .tbl-table-td {
           border-left: 1px solid $line-color;
         }
       }
     }
+
     .tbl-table-body {
       overflow-x: auto;
     }
   }
 }
 </style>
-    
+
 <script>
 import store from "../../store";
 
@@ -226,8 +245,13 @@ export default {
     }
   },
   computed: {
+    titleWidth: function() {
+      this.$nextTick(function () {
+        console.log(document.getElementsByClassName('tbl-table-td')[0].offsetWidth);
+      })
+    },
     isShift: function() {
-      if (this.sListItems[0].seriesTitle === "Ђ") {
+      if (this.sListItems[0].seriesTitle == "Ђ") {
         return true;
       } else {
         return false;
@@ -236,12 +260,6 @@ export default {
     look: function() {
       return store.getters.blLook;
     }
-  }, 
-  methods: {
-    titleWidth: function() {
-      console.log(this.$refs.cTitle.clientWidth);
-      return 100;
-    },
-  }
+  },
 };
 </script>

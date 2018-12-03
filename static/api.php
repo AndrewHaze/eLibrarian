@@ -190,7 +190,7 @@ if (isset($_POST["cmd"])) {
                                          AND se_id = bkse_se_id
                                          AND bk_ur_id = ur_id
                                          AND ur_login = :login1
-                                         ORDER BY se_title, bkse_number, bk_title');
+                                         ORDER BY se_title DESC, bkse_number, bk_title');
                 $stmt->bindValue(':login1', $username, PDO::PARAM_STR);
                 $stmt->bindValue(':login2', $username, PDO::PARAM_STR);
                 $stmt->bindValue(':login3', $username, PDO::PARAM_STR);
