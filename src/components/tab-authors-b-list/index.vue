@@ -33,19 +33,32 @@
       <div class="tree-book-list" v-else-if="look === 'tree'">B</div>
       <!---------------------------------------------------------------------------------------------->
       <div class="table-book-list" v-else-if="look === 'table'">
-        <div class="tbl-header">
-          <div class="tbl-header-td" :style="{ width: titleWidth + 'px' }">Название</div>
-          <div class="tbl-header-td">Серия</div>
-          <div class="tbl-header-td">Жанр</div>
-        </div>
         <div class="tbl-table">
+          <div class="tbl-header">
+            <div class="tbl-table-row">
+              <div class="tbl-table-cell cell-1"><font-awesome-icon icon="check"/></div>
+              <div class="tbl-table-cell cell-2"><font-awesome-icon icon="bell"/></div>
+              <div class="tbl-table-cell cell-3"><font-awesome-icon icon="heart"/></div>
+              <div class="tbl-table-cell cell-4">Название</div>
+              <div class="tbl-table-cell cell-5">Серия</div>
+              <div class="tbl-table-cell cell-6">№</div>
+              <div class="tbl-table-cell cell-7">Жанр</div>
+            </div>
+          </div>
+
           <div class="tbl-table-body">
-            <div class="tbl-table-tr" v-for="bItem in bListItems" :key="bItem.id">
-              <div :id="bItem.id" ref="bItem.id" class="tbl-table-td">{{ bItem.title }}</div>
-              <div class="tbl-table-td">
+            <div class="tbl-table-row" v-for="bItem in bListItems" :key="bItem.id" :id="bItem.id">
+              <div class="tbl-table-cell cell-1"></div>
+              <div class="tbl-table-cell cell-2"></div>
+              <div class="tbl-table-cell cell-3"></div>
+              <div class="tbl-table-cell cell-4">{{ bItem.title }}</div>
+              <div class="tbl-table-cell cell-5">
                 <span v-if="bItem.seriesTitle != 'Ђ'">{{ bItem.seriesTitle }}</span>
               </div>
-              <div class="tbl-table-td">{{ bItem.genres }}</div>
+              <div class="tbl-table-cell cell-6">
+                <span v-if="bItem.seriesTitle != 'Ђ'">{{ bItem.seriesNumber }}</span>
+              </div>
+              <div class="tbl-table-cell cell-7">{{ bItem.genres }}</div>
             </div>
           </div>
         </div>
@@ -58,16 +71,27 @@
 $line-color: #dee2e6;
 $item-mr: 0.5rem;
 $item-pd: 0.5rem;
+$header-font-color: #495057;
 
 .content section {
   margin-left: -0.5rem;
+  overflow: hidden;
+}
+
+.content section > div {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 1.2rem;
+  height: 100%;
+  position: relative;
 }
 
 .cover-book-list {
-  display: flex;
-  flex-flow: column nowrap;
+  display: block;
+  height: 100%;
   padding-left: 0.2rem;
-
+  overflow-y: auto;
+  overflow-x: hidden;
   div {
     display: flex;
     user-select: none;
@@ -76,8 +100,6 @@ $item-pd: 0.5rem;
 
   .series-wrap {
     flex-flow: row wrap;
-    flex: 1 1 auto;
-
     .series-title {
       position: relative;
       font-size: 1.3rem;
@@ -147,7 +169,7 @@ $item-pd: 0.5rem;
 
         .book-title {
           font-size: 1.2rem;
-          font-weight: 550;
+          font-weight: 600;
           margin: 0.3rem 0 0.3rem;
           line-height: 1.1;
         }
@@ -162,43 +184,81 @@ $item-pd: 0.5rem;
 }
 
 .table-book-list {
-  display: flex;
-  flex-flow: column nowrap;
-  padding-left: 0.2rem;
-
-  .tbl-header {
-    display: flex;
-    flex-flow: row nowrap;
-    border: 1px solid $line-color;
+  padding-left: 0.5rem;
+  display: block;
+  height: 100%;
+  div {
+    user-select: none;
+    cursor: pointer;
   }
-
   .tbl-table {
-    display: table;
-    width: 100%;
-
-    .tbl-table-body {
-      display: table-row-group;
-    }
-
-    .tbl-table-body {
-      .tbl-table-tr {
-        display: table-row;
-        width: 100%;
-
-        .tbl-table-td {
-          display: table-cell;
-          padding: 0.2rem;
-          border-top: 1px solid $line-color;
-        }
-
-        .tbl-table-td + .tbl-table-td {
-          border-left: 1px solid $line-color;
+    display: block;
+    height: 100%;
+    .tbl-header {
+      border-top: 1px solid $line-color;
+      border-bottom: 1px solid $line-color;
+      font-weight: 600;
+      color: $header-font-color;
+      .tbl-table-row {
+        border: none;
+        .tbl-table-cell {
+          padding: 0.8rem 0.5rem;
         }
       }
     }
 
     .tbl-table-body {
-      overflow-x: auto;
+      display: block;
+      height: calc(100% - 50px);
+      overflow-y: auto;
+    }
+
+    .tbl-table-row {
+      display: flex;
+      flex-flow: row nowrap;
+      width: 100%;
+      &:last-child {
+        border-bottom: 1px solid $line-color;
+      }
+      &:hover {
+        background-color: rgba(221, 221, 221, 0.4);
+        transition: background-color 0.2s;
+      }
+      .tbl-table-cell {
+        display: flex;
+        padding: 0.5rem;
+        align-items: center;
+      }
+      .cell-1,
+      .cell-2,
+      .cell-3,
+      .cell-6 {
+        justify-content: center;
+      }
+      .cell-1 {
+        width: 2rem;
+      }
+      .cell-2 {
+        width: 2rem;
+      }
+      .cell-3 {
+        width: 2rem;
+      }
+      .cell-4 {
+        width: calc(100% - 50% - 9rem);
+      }
+      .cell-5 {
+        width: 25%;
+      }
+      .cell-6 {
+        width: 3rem;
+      }
+      .cell-7 {
+        width: 25%;
+      }
+    }
+    .tbl-table-row + .tbl-table-row {
+      border-top: 1px solid $line-color;
     }
   }
 }
@@ -245,11 +305,6 @@ export default {
     }
   },
   computed: {
-    titleWidth: function() {
-      this.$nextTick(function () {
-        console.log(document.getElementsByClassName('tbl-table-td')[0].offsetWidth);
-      })
-    },
     isShift: function() {
       if (this.sListItems[0].seriesTitle == "Ђ") {
         return true;
@@ -260,6 +315,6 @@ export default {
     look: function() {
       return store.getters.blLook;
     }
-  },
+  }
 };
 </script>
