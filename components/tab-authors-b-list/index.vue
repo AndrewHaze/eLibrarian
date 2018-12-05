@@ -34,19 +34,24 @@
       <!---------------------------------------------------------------------------------------------->
       <div class="table-book-list" v-else-if="look === 'table'">
         <div class="tbl-table">
-          <div class="tbl-header">
+          <div class="tbl-header" :class="{ thPad: isPad }">
             <div class="tbl-table-row">
-              <div class="tbl-table-cell cell-1"><font-awesome-icon icon="check"/></div>
-              <div class="tbl-table-cell cell-2"><font-awesome-icon icon="bell"/></div>
-              <div class="tbl-table-cell cell-3"><font-awesome-icon icon="heart"/></div>
+              <div class="tbl-table-cell cell-1">
+                <font-awesome-icon icon="check"/>
+              </div>
+              <div class="tbl-table-cell cell-2">
+                <font-awesome-icon icon="bell"/>
+              </div>
+              <div class="tbl-table-cell cell-3">
+                <font-awesome-icon icon="heart"/>
+              </div>
               <div class="tbl-table-cell cell-4">Название</div>
               <div class="tbl-table-cell cell-5">Серия</div>
               <div class="tbl-table-cell cell-6">№</div>
               <div class="tbl-table-cell cell-7">Жанр</div>
             </div>
           </div>
-
-          <div class="tbl-table-body">
+          <div id="table-body" class="tbl-table-body">
             <div class="tbl-table-row" v-for="bItem in bListItems" :key="bItem.id" :id="bItem.id">
               <div class="tbl-table-cell cell-1"></div>
               <div class="tbl-table-cell cell-2"></div>
@@ -207,6 +212,10 @@ $header-font-color: #495057;
       }
     }
 
+    .thPad {
+      padding-right: 1rem;
+    }
+
     .tbl-table-body {
       display: block;
       height: calc(100% - 50px);
@@ -273,8 +282,11 @@ export default {
   data: function() {
     return {
       sTitle: "",
+      //список серий
       sListItems: [],
-      bListItems: []
+      //список книг
+      bListItems: [],
+      isPad: false
     };
   },
   watch: {
@@ -302,6 +314,9 @@ export default {
           self.bListItems = rd; //возвр. данные (Responce)
         }
       );
+    },
+    bListItems: function() {
+      this.setTableHeaderPad();
     }
   },
   computed: {
@@ -312,9 +327,42 @@ export default {
         return false;
       }
     },
+    //стиль отображения
     look: function() {
+      this.setTableHeaderPad();
       return store.getters.blLook;
     }
-  }
+  },
+  methods: {
+    /* добавляем отступ в заголовок таблицы <tbl-table> 
+       при появленни скрола у <table-body> 
+       Скролл может появится:
+          - при изменении массива bListItems (watch: bListItems);
+          - при маштабировании окна (хук: resize);
+          - при смене вида отображения (computed: look).
+    */
+    setTableHeaderPad() {
+      this.$nextTick(function() {
+        let el = document.getElementById("table-body");
+        if (el) {
+          let hSum = 0;
+          for (let i = 0; i < el.children.length; i++) {
+            hSum += el.children[i].clientHeight;
+          }
+          this.isPad = hSum > el.clientHeight;
+        }
+      });
+    },
+    handleResize() {
+      this.setTableHeaderPad();
+    },
+  },
+  mounted: function() {
+    window.addEventListener("resize", this.handleResize);
+    
+  },
+  beforeDestroy: function() {
+    window.removeEventListener("resize", this.handleResize);
+  },
 };
 </script>

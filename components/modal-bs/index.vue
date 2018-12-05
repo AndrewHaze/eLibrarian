@@ -637,8 +637,7 @@ export default {
       }
     },
     listInputFiles(val) {
-      setTimeout(() => {
-        //выжидаем мгновение, иначе не подхватываютя изменения
+      this.$nextTick(function () {
         let c = document.getElementById("fls").children;
         for (let i = 0; i < val.length; i++) {
           this.removeClasses(c[i]);
@@ -674,7 +673,7 @@ export default {
               break;
           }
         }
-      }, 0);
+      })
     },
     fCount(val) {
       if (val === 0) {

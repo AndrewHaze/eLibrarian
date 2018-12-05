@@ -61,7 +61,7 @@ export default {
     selected: function() {
       store.commit("setAuthorID", -1);
       this.aFilter = this.selected;
-    }
+    },
   },
   methods: {
     getAuthors() {
