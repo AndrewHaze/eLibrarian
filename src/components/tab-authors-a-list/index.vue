@@ -27,6 +27,7 @@
 
 <style lang="scss">
 $line-color: #dee2e6;
+$header-font-color: #495057;
 
 %flex {
     display: flex;
@@ -57,7 +58,8 @@ $line-color: #dee2e6;
         }
 
         .tb-header-title {
-            font-weight: bold;
+            font-weight: 600;
+            color: $header-font-color;
         }
 
         .tb-header-sort-arrows {

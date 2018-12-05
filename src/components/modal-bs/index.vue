@@ -76,6 +76,7 @@
 
 <style lang="scss">
 $line-color: #dee2e6;
+$header-font-color: #495057;
 .e-btn-group {
   & > .btn + .btn {
     margin-left: 0.12rem;
@@ -252,7 +253,8 @@ $line-color: #dee2e6;
       flex: 1 1 auto;
       position: relative;
       margin-left: 0.5rem;
-      font-weight: bold;
+      font-weight: 600;
+      $header-font-color: #495057;
       cursor: pointer;
     }
 
@@ -635,8 +637,7 @@ export default {
       }
     },
     listInputFiles(val) {
-      setTimeout(() => {
-        //выжидаем мгновение, иначе не подхватываютя изменения
+      this.$nextTick(function () {
         let c = document.getElementById("fls").children;
         for (let i = 0; i < val.length; i++) {
           this.removeClasses(c[i]);
@@ -672,7 +673,7 @@ export default {
               break;
           }
         }
-      }, 0);
+      })
     },
     fCount(val) {
       if (val === 0) {
