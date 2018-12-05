@@ -15,8 +15,11 @@
           <div
             class="item"
             v-for="bItem in bListItems"
+            :id="bItem.id"
             :key="bItem.id"
             v-if="bItem.seriesTitle == sItem.seriesTitle"
+            :class="{active: bItem.isActive}"
+            @click="itemClickHandler"
           >
             <div class="cover">
               <img :src="'data:image/jpg;base64,'+bItem.cover">
@@ -52,7 +55,16 @@
             </div>
           </div>
           <div id="table-body" class="tbl-table-body">
-            <div class="tbl-table-row" v-for="bItem in bListItems" :key="bItem.id" :id="bItem.id">
+            <div
+              class="tbl-table-row"
+              v-for="bItem in bListItems"
+              :key="bItem.id"
+              :id="bItem.id"
+              :class="{active: bItem.isActive}"
+              @click="itemClickHandler"
+              @mouseover="mouseOver"
+              @mouseleave="mouseOver"
+            >
               <div class="tbl-table-cell cell-1"></div>
               <div class="tbl-table-cell cell-2"></div>
               <div class="tbl-table-cell cell-3"></div>
@@ -68,15 +80,22 @@
           </div>
         </div>
       </div>
+      <div
+        v-show="bMenu"
+        class="book-menu"
+        :style="{ right: bMenuX +'px', top: bMenuY + 'px' }"
+      >{{bMenuY}}</div>
     </div>
   </section>
 </template>
 
 <style lang="scss">
 $line-color: #dee2e6;
+$header-font-color: #495057;
+$selected-color: #ddd;
+$hover-color: rgba(221, 221, 221, 0.4);
 $item-mr: 0.5rem;
 $item-pd: 0.5rem;
-$header-font-color: #495057;
 
 .content section {
   margin-left: -0.5rem;
@@ -89,6 +108,17 @@ $header-font-color: #495057;
   padding-bottom: 1.2rem;
   height: 100%;
   position: relative;
+}
+
+.book-menu {
+  position: absolute;
+  display: block;
+  width: 100px;
+  height: 100px !important;
+  background-color: #fff;
+  border: 1px solid #000;
+  right: 0;
+  top: 0;
 }
 
 .cover-book-list {
@@ -220,6 +250,12 @@ $header-font-color: #495057;
       display: block;
       height: calc(100% - 50px);
       overflow-y: auto;
+      .tbl-table-row {
+        &:hover {
+          background-color: $hover-color;
+          transition: background-color 0.2s;
+        }
+      }
     }
 
     .tbl-table-row {
@@ -229,14 +265,12 @@ $header-font-color: #495057;
       &:last-child {
         border-bottom: 1px solid $line-color;
       }
-      &:hover {
-        background-color: rgba(221, 221, 221, 0.4);
-        transition: background-color 0.2s;
-      }
+
       .tbl-table-cell {
         display: flex;
         padding: 0.5rem;
         align-items: center;
+        overflow: hidden;
       }
       .cell-1,
       .cell-2,
@@ -266,8 +300,20 @@ $header-font-color: #495057;
         width: 25%;
       }
     }
+
     .tbl-table-row + .tbl-table-row {
       border-top: 1px solid $line-color;
+    }
+  }
+}
+
+.content {
+  .active {
+    background-color: $selected-color;
+    transition: background-color 0.2s;
+    &:hover {
+      background-color: $selected-color !important;
+      transition: background-color 0.2s;
     }
   }
 }
@@ -286,7 +332,10 @@ export default {
       sListItems: [],
       //список книг
       bListItems: [],
-      isPad: false
+      isPad: false,
+      bMenu: false,
+      bMenuX: 200,
+      bMenuY: 0
     };
   },
   watch: {
@@ -356,13 +405,30 @@ export default {
     handleResize() {
       this.setTableHeaderPad();
     },
+    itemClickHandler(item) {
+      //сбросим атрибуты по всему массиву
+      this.bListItems.forEach(function(entry) {
+        entry.isActive = false;
+      });
+      let element = this.bListItems[
+        this.bListItems.map(el => el.id).indexOf(item.currentTarget.id)
+      ];
+      //store.commit("setAuthorID", element.id.substr(2));
+      element.isActive = true;
+      this.bMenu = element.isActive
+    },
+    mouseOver(item) {
+      let element = this.bListItems[
+        this.bListItems.map(el => el.id).indexOf(item.currentTarget.id)
+      ];
+      this.bMenu = element.isActive || false;
+    }
   },
   mounted: function() {
     window.addEventListener("resize", this.handleResize);
-    
   },
   beforeDestroy: function() {
     window.removeEventListener("resize", this.handleResize);
-  },
+  }
 };
 </script>
