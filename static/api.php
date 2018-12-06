@@ -367,7 +367,7 @@ if (isset($_POST["cmd"])) {
 
                             //Серия
                             if (empty($title_info->getElementsByTagName('sequence')->item(0))) {
-                                $sequence = "Ђ"; //Для сортировки
+                                $sequence = "яяяяяя"; //Для сортировки
                                 $sequence_number = 0;
                             } else {
                                 $sequence = trim($title_info->getElementsByTagName('sequence')->item(0)->GetAttribute('name'));
