@@ -8,10 +8,10 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import axios from "axios"
 import Loading from './components/lib/loading'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faTh, faStream, faTable  } from '@fortawesome/free-solid-svg-icons'
+import { faTh, faStream, faTable, faCheck, faHeart, faBell, faTrashAlt, faBookReader, faEdit, faStar, faStarHalfAlt  } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faTh, faStream, faTable)
+library.add(faTh, faStream, faTable, faCheck, faHeart, faBell, faTrashAlt, faBookReader, faEdit, faStar, faStarHalfAlt)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.use(BootstrapVue)
