@@ -55,11 +55,11 @@
 }
 
 .modal-max {
-    max-width: 80%;
+    max-width: 80% !important;
     min-width: 680px;
 
     @media (max-width: 576px) {
-        max-width: none;
+        max-width: none !important
     }
 }
 </style>
