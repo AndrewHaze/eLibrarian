@@ -1,15 +1,20 @@
 <template>
   <section>
     <h6 v-if="this.curAI == -1">Нет данных для отображения</h6>
-    <div v-else>
-      <div class="cover-book-list" v-if="look === 'cover'">
+    <div id="tad" v-else>
+      <div
+        class="cover-book-list"
+        v-if="look === 'cover'"
+        @mouseover.self="mouseOverTable"
+        @scroll="onScroll"
+      >
         <div
           class="series-wrap"
           v-for="sItem in sListItems"
           :key="sItem.id"
           :class="{ shift: isShift }"
         >
-          <div class="series-title" v-if="sItem.seriesTitle != 'Ђ'">
+          <div class="series-title" v-if="sItem.seriesTitle != 'яяяяяя'">
             <span>{{ sItem.seriesTitle }}</span>
           </div>
           <div
@@ -20,6 +25,7 @@
             v-if="bItem.seriesTitle == sItem.seriesTitle"
             :class="{active: bItem.isActive}"
             @click="itemClickHandler"
+            @mouseover="mouseOverRow"
           >
             <div class="cover">
               <img :src="'data:image/jpg;base64,'+bItem.cover">
@@ -54,7 +60,12 @@
               <div class="tbl-table-cell cell-7">Жанр</div>
             </div>
           </div>
-          <div id="table-body" class="tbl-table-body">
+          <div
+            id="table-body"
+            class="tbl-table-body"
+            @mouseover.self="mouseOverTable"
+            @scroll="onScroll"
+          >
             <div
               class="tbl-table-row"
               v-for="bItem in bListItems"
@@ -62,29 +73,85 @@
               :id="bItem.id"
               :class="{active: bItem.isActive}"
               @click="itemClickHandler"
-              @mouseover="mouseOver"
-              @mouseleave="mouseOver"
+              @mouseover="mouseOverRow"
             >
               <div class="tbl-table-cell cell-1"></div>
               <div class="tbl-table-cell cell-2"></div>
               <div class="tbl-table-cell cell-3"></div>
               <div class="tbl-table-cell cell-4">{{ bItem.title }}</div>
               <div class="tbl-table-cell cell-5">
-                <span v-if="bItem.seriesTitle != 'Ђ'">{{ bItem.seriesTitle }}</span>
+                <span v-if="bItem.seriesTitle != 'яяяяяя'">{{ bItem.seriesTitle }}</span>
               </div>
               <div class="tbl-table-cell cell-6">
-                <span v-if="bItem.seriesTitle != 'Ђ'">{{ bItem.seriesNumber }}</span>
+                <span v-if="bItem.seriesTitle != 'яяяяяя'">{{ bItem.seriesNumber }}</span>
               </div>
               <div class="tbl-table-cell cell-7">{{ bItem.genres }}</div>
             </div>
           </div>
         </div>
       </div>
-      <div
-        v-show="bMenu"
-        class="book-menu"
-        :style="{ right: bMenuX +'px', top: bMenuY + 'px' }"
-      >{{bMenuY}}</div>
+      <transition name="fade">
+        <div v-show="bMenu" class="book-menu" :style="{ top: bMenuY + 'px', left: bMenuX + 'px' }">
+          <b-button-toolbar key-nav aria-label="Toolbar with button groups">
+            <b-button-group class="mx-1" size="sm">
+              <b-btn variant="primary" title="Открыть книгу для чтения">
+                <font-awesome-icon icon="book-reader"/>
+              </b-btn>
+              <b-btn variant="primary" title="Править информацию о книге">
+                <font-awesome-icon icon="edit"/>
+              </b-btn>
+            </b-button-group>
+            <b-button-group class="mx-1" size="sm">
+              <b-btn variant="danger" title="Удалить книгу">
+                <font-awesome-icon icon="trash-alt"/>
+              </b-btn>
+            </b-button-group>
+            <b-button-group class="mx-1" size="sm">
+              <b-btn variant="success" title="Прочитано">
+                <font-awesome-icon icon="check"/>
+              </b-btn>
+              <b-btn variant="success" title="Запланировать">
+                <font-awesome-icon icon="bell"/>
+              </b-btn>
+              <b-btn variant="success" title="В избранное">
+                <font-awesome-icon icon="heart"/>
+              </b-btn>
+            </b-button-group>
+            <b-dropdown class="mx-1" right size="sm" variant="warning"  title="Оценить книгу">
+              <template slot="button-content">
+                <font-awesome-icon icon="star-half-alt"/>
+              </template>
+              <b-dropdown-item class="star">
+                <font-awesome-icon icon="star"/>
+              </b-dropdown-item>
+              <b-dropdown-item class="star">
+                <font-awesome-icon icon="star"/>
+                <font-awesome-icon icon="star"/>
+              </b-dropdown-item>
+              <b-dropdown-item class="star">
+                <font-awesome-icon icon="star"/>
+                <font-awesome-icon icon="star"/>
+                <font-awesome-icon icon="star"/>
+              </b-dropdown-item>
+              <b-dropdown-item class="star">
+                <font-awesome-icon icon="star"/>
+                <font-awesome-icon icon="star"/>
+                <font-awesome-icon icon="star"/>
+                <font-awesome-icon icon="star"/>
+              </b-dropdown-item>
+              <b-dropdown-item class="star">
+                <font-awesome-icon icon="star"/>
+                <font-awesome-icon icon="star"/>
+                <font-awesome-icon icon="star"/>
+                <font-awesome-icon icon="star"/>
+                <font-awesome-icon icon="star"/>
+              </b-dropdown-item>
+              <b-dropdown-divider></b-dropdown-divider>
+              <b-dropdown-item>Очистить</b-dropdown-item>
+            </b-dropdown>
+          </b-button-toolbar>
+        </div>
+      </transition>
     </div>
   </section>
 </template>
@@ -112,13 +179,23 @@ $item-pd: 0.5rem;
 
 .book-menu {
   position: absolute;
-  display: block;
-  width: 100px;
-  height: 100px !important;
-  background-color: #fff;
-  border: 1px solid #000;
-  right: 0;
+  display: flex;
+  width: auto;
+  height: auto !important;
+  //background-color: #fff;
   top: 0;
+  .star {
+    color: #ffd700;
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .cover-book-list {
@@ -130,7 +207,6 @@ $item-pd: 0.5rem;
   div {
     display: flex;
     user-select: none;
-    cursor: pointer;
   }
 
   .series-wrap {
@@ -175,6 +251,7 @@ $item-pd: 0.5rem;
       padding: $item-pd;
       transition: background-color 0.2s;
       overflow: hidden;
+      cursor: pointer;
 
       &:hover {
         background-color: rgba(221, 221, 221, 0.4);
@@ -250,6 +327,7 @@ $item-pd: 0.5rem;
       display: block;
       height: calc(100% - 50px);
       overflow-y: auto;
+      cursor: default;
       .tbl-table-row {
         &:hover {
           background-color: $hover-color;
@@ -262,6 +340,7 @@ $item-pd: 0.5rem;
       display: flex;
       flex-flow: row nowrap;
       width: 100%;
+      cursor: pointer;
       &:last-child {
         border-bottom: 1px solid $line-color;
       }
@@ -334,7 +413,7 @@ export default {
       bListItems: [],
       isPad: false,
       bMenu: false,
-      bMenuX: 200,
+      bMenuX: 0,
       bMenuY: 0
     };
   },
@@ -370,7 +449,7 @@ export default {
   },
   computed: {
     isShift: function() {
-      if (this.sListItems[0].seriesTitle == "Ђ") {
+      if (this.sListItems[0].seriesTitle == "яяяяяя") {
         return true;
       } else {
         return false;
@@ -404,6 +483,31 @@ export default {
     },
     handleResize() {
       this.setTableHeaderPad();
+      this.bMenu = false;
+    },
+    //кандитат в миксины
+    getViewportHeight(doc) {
+      doc = doc || document;
+      var elem =
+        doc.compatMode == "CSS1Compat" ? doc.documentElement : doc.body;
+      return elem.clientHeight;
+    },
+    menuPos(id) {
+      if (this.bMenu) {
+        //размеры меню
+        let mW = 264,
+          mH = 32;
+        //координаты родителя
+        let p = document.getElementById("tad").getBoundingClientRect();
+        //координаты относительно родителя
+        let c = document.getElementById(id).getBoundingClientRect();
+        this.bMenuX = c.left + (c.width - mW) / 2 - p.left;
+        if (this.getViewportHeight() > c.bottom + p.top - mH) {
+          this.bMenuY = c.bottom - p.top - 3;
+        } else {
+          this.bMenuY = c.top - p.top - mH + 3;
+        }
+      }
     },
     itemClickHandler(item) {
       //сбросим атрибуты по всему массиву
@@ -415,13 +519,21 @@ export default {
       ];
       //store.commit("setAuthorID", element.id.substr(2));
       element.isActive = true;
-      this.bMenu = element.isActive
+      this.bMenu = element.isActive;
+      this.menuPos(item.currentTarget.id);
     },
-    mouseOver(item) {
+    mouseOverRow(item) {
       let element = this.bListItems[
         this.bListItems.map(el => el.id).indexOf(item.currentTarget.id)
       ];
       this.bMenu = element.isActive || false;
+      this.menuPos(item.currentTarget.id);
+    },
+    onScroll() {
+      this.bMenu = false;
+    },
+    mouseOverTable(item) {
+      this.bMenu = false;
     }
   },
   mounted: function() {
