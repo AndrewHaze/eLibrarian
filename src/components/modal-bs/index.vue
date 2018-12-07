@@ -1,82 +1,139 @@
 <template>
-<b-modal id="bookScanner" @shown="showBookScanner" @hidden="bookScannerHidden" no-close-on-backdrop hide-footer size="max" title="Импорт книг">
+  <b-modal
+    id="bookScanner"
+    @shown="showBookScanner"
+    @hidden="bookScannerHidden"
+    no-close-on-backdrop
+    hide-footer
+    size="max"
+    title="Импорт книг"
+  >
     <b-container fluid>
-        <b-row class="mb-2">
-            <b-col>
-                <b-button-toolbar key-nav aria-label="Toolbar with button groups">
-                    <b-button variant="success" @click="openFiles" class="mr-2">Добавить файлы</b-button>
-                    <b-button variant="danger" :disabled="buttonStartProc" @click="startProc">Запуск</b-button>
-                    <input id="fi1" type="file" multiple @change="handleFileChange" accept=".fb2,.zip"/>
+      <b-row class="mb-3">
+        <b-col>
+          <b-button-toolbar key-nav aria-label="Toolbar with button groups">
+            <b-button variant="success" @click="openFiles" class="mr-2">Добавить файлы</b-button>
+            <b-button variant="danger" :disabled="buttonStartProc" @click="startProc">Запуск</b-button>
+            <input id="fi1" type="file" multiple @change="handleFileChange" accept=".fb2, .zip">
           </b-button-toolbar>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col class="col-5">
-                <div class="hm">Добавленные файлы</div>
-                <b-form-group>
-                    <div class="list-header">
-                        <b-form-checkbox v-model="allSelected" :disabled="!countLIF" :indeterminate="indeterminate" aria-describedby="listInputFiles" aria-controls="listInputFiles" @change="toggleAll" :title="allSelected ? 'Снять всё' : 'Выбрать всё'">
-                        </b-form-checkbox>
-                        <b-img :src="require('../../assets/info.png')" />
-                        <div class="list-header-body" @click="sortListInputFiles">Имя файла
-                            <span class="list-header-sort-desc" :class="{ active: iDesc }">&#8593;</span>
-                            <span class="list-header-sort-asc" :class="{ active: iAsc }">&#8595;</span>
-                        </div>
-                    </div>
-                    <div v-if="fCount > 0" class="animation-wrap">
-                        <div class="lds-ring">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>
-                    </div>
-                    <b-form-checkbox-group id="fls" class="f-list" :style="{ maxHeight: mHeight + 'px', minHeight: mHeight + 'px' }" stacked v-model="selected" :options=listInputFiles name="fls" aria-label="Individual files">
-                    </b-form-checkbox-group>
-                </b-form-group>
-            </b-col>
-            <b-col class="col-7 right-col">
-                <div class="hm">Обработанные файлы</div>
-                <div class="list-header">
-                    <b-img :src="require('../../assets/info.png')" />
-                    <div class="list-header-body" @click="sortListProcessingFiles">Имя файла
-                        <span class="list-header-sort-desc" :class="{ active: pDesc }">&#8593;</span>
-                        <span class="list-header-sort-asc" :class="{ active: pAsc }">&#8595;</span>
-                    </div>
-                </div>
-                <div class="f-list" :style="{ maxHeight: pHeight + 'px', minHeight: pHeight + 'px' }">
-                    <ListItems v-for="listItem in listProcessingFiles" :listItem="listItem" :key="listItem.id" />
-                </div>
-                <div class="info-panel" :style="{ maxHeight: pHeight + 'px', minHeight: pHeight + 'px' }">
-                    <div class="ip-legend">
-                        <div class="hm">Обозначения</div>
-                        <div class="ip-body">
-                            <ul>
-                                <li><img :src="this.$store.getters.prefix + '/static/assets/raw.png'">Отмечен для обработки</li>
-                                <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Успешно добавлен</li>
-                                <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Обновлено</li>
-                                <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Дубликат (идентичный)</li>
-                                <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Дубликат (старее)</li>
-                                <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Дубликат (ID отличается)</li>
-                                <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Дубликат (Название отличается)</li>
-                                <li><img :src="this.$store.getters.prefix + '/static/assets/add.png'">Дубликат (новее)</li>
-                                <li><img :src="this.$store.getters.prefix + '/static/assets/per.png'">Ошибка разбора</li>
-                                <li><img :src="this.$store.getters.prefix + '/static/assets/dma.png'">Повреждённый архив</li>
-                                <li><img :src="this.$store.getters.prefix + '/static/assets/dbe.png'">Ошибка обновления БД</li>
-                                <li><img :src="this.$store.getters.prefix + '/static/assets/ndf.png'">Требуется описание книги</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </b-col>
-        </b-row>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col class="col-5">
+          <div class="hm">Добавленные файлы</div>
+          <b-form-group>
+            <div class="list-header">
+              <b-form-checkbox
+                v-model="allSelected"
+                :disabled="!countLIF"
+                :indeterminate="indeterminate"
+                aria-describedby="listInputFiles"
+                aria-controls="listInputFiles"
+                @change="toggleAll"
+                :title="allSelected ? 'Снять всё' : 'Выбрать всё'"
+              ></b-form-checkbox>
+              <font-awesome-icon icon="info-circle" style="color: #35a0da"/>
+              <div class="list-header-body" @click="sortListInputFiles">
+                Имя файла
+                <span class="list-header-sort-desc" :class="{ active: iDesc }">&#8593;</span>
+                <span class="list-header-sort-asc" :class="{ active: iAsc }">&#8595;</span>
+              </div>
+            </div>
+            <div v-if="fCount > 0" class="animation-wrap">
+              <div class="lds-ring">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+            <b-form-checkbox-group
+              id="fls"
+              class="f-list"
+              :style="{ maxHeight: mHeight + 'px', minHeight: mHeight + 'px' }"
+              stacked
+              v-model="selected"
+              :options="listInputFiles"
+              name="fls"
+              aria-label="Individual files"
+            ></b-form-checkbox-group>
+          </b-form-group>
+        </b-col>
+        <b-col class="col-7 right-col">
+          <div class="hm">Обработанные файлы</div>
+          <div class="list-header">
+            <font-awesome-icon icon="info-circle" style="color: #35a0da"/>
+            <div class="list-header-body" @click="sortListProcessingFiles">
+              Имя файла
+              <span class="list-header-sort-desc" :class="{ active: pDesc }">&#8593;</span>
+              <span class="list-header-sort-asc" :class="{ active: pAsc }">&#8595;</span>
+            </div>
+          </div>
+          <div class="f-list" :style="{ maxHeight: pHeight + 'px', minHeight: pHeight + 'px' }">
+            <ListItems
+              v-for="listItem in listProcessingFiles"
+              :listItem="listItem"
+              :key="listItem.id"
+            />
+          </div>
+          <div class="info-panel" :style="{ maxHeight: pHeight + 'px', minHeight: pHeight + 'px' }">
+            <div class="ip-legend">
+              <div class="hm">Обозначения</div>
+              <div class="ip-body">
+                <ul>
+                  <li>
+                    <img :src="this.$store.getters.prefix + '/static/assets/raw.png'">Отмечен для обработки
+                  </li>
+                  <li>
+                    <img :src="this.$store.getters.prefix + '/static/assets/add.png'">Успешно добавлен
+                  </li>
+                  <li>
+                    <img :src="this.$store.getters.prefix + '/static/assets/upd.png'">Обновлено
+                  </li>
+                  <li>
+                    <img :src="this.$store.getters.prefix + '/static/assets/cle.png'">Дубликат (идентичный)
+                  </li>
+                  <li>
+                    <img :src="this.$store.getters.prefix + '/static/assets/clo.png'">Дубликат (старее)
+                  </li>
+                  <li>
+                    <img :src="this.$store.getters.prefix + '/static/assets/cli.png'">Дубликат (ID отличается)
+                  </li>
+                  <li>
+                    <img :src="this.$store.getters.prefix + '/static/assets/clt.png'">Дубликат (Название отличается)
+                  </li>
+                  <li>
+                    <img :src="this.$store.getters.prefix + '/static/assets/cln.png'">Дубликат (новее)
+                  </li>
+                  <li>
+                    <img :src="this.$store.getters.prefix + '/static/assets/per.png'">Ошибка разбора
+                  </li>
+                  <li>
+                    <img :src="this.$store.getters.prefix + '/static/assets/dma.png'">Повреждённый архив
+                  </li>
+                  <li>
+                    <img :src="this.$store.getters.prefix + '/static/assets/dbe.png'">Ошибка обновления БД
+                  </li>
+                  <li>
+                    <img :src="this.$store.getters.prefix + '/static/assets/ndf.png'">Требуется описание книги
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </b-col>
+      </b-row>
     </b-container>
-</b-modal>
+  </b-modal>
 </template>
 
 <style lang="scss">
 $line-color: #dee2e6;
 $header-font-color: #495057;
+$selected-color: #ddd;
+$hover-color: rgba(221, 221, 221, 0.4);
+$header-bk-color: #abafb4;
+
 .e-btn-group {
   & > .btn + .btn {
     margin-left: 0.12rem;
@@ -91,10 +148,12 @@ $header-font-color: #495057;
   user-select: none;
 
   .hm {
-    font-size: 1.15rem;
-    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    padding: 0.2rem 0.5rem 0.30rem;
     font-family: inherit;
-    color: #1414fc;
+    color: white;
+    background-color: $header-bk-color;
+    border-radius: 3px 3px 0 0;
     font-weight: 500;
     line-height: 1.2;
   }
@@ -115,7 +174,7 @@ $header-font-color: #495057;
       padding: 0.1rem 0.8rem 0.1rem 2rem;
 
       &:hover {
-        background-color: #eee;
+        background-color: $hover-color;
       }
     }
 
@@ -171,10 +230,12 @@ $header-font-color: #495057;
             line-height: 1.6;
 
             & > img {
+              height: 20px;
+              width: 20px;
               margin-right: 6px;
               margin-top: -3px;
-              border: 1px solid darkgray;
-              border-radius: 2px;
+              //border: 1px solid darkgray;
+              //border-radius: 2px;
               background-color: #f5f5fd;
             }
           }
@@ -183,7 +244,7 @@ $header-font-color: #495057;
     }
   }
 
-  #fls .custom-control-label > span {
+    #fls .custom-control-label > span {
     margin-left: 1.8rem;
 
     &:before {
@@ -191,18 +252,21 @@ $header-font-color: #495057;
       position: absolute;
       left: 0;
       top: 0.12rem;
+      background-size: 20px 20px;
+      width: 20px; 
+      height: 20px;
     }
   }
 
   #fls .raw span {
     &:before {
-      content: url("../../assets/raw.png");
+      background-image: url("../../assets/raw.png");
     }
   }
 
   #fls .add span {
     &:before {
-      content: url("../../assets/add.png");
+      background-image: url("../../assets/add.png");
     }
   }
 
@@ -210,31 +274,31 @@ $header-font-color: #495057;
     color: red;
 
     &:before {
-      content: url("../../assets/err.png");
+      background-image: url("../../assets/err.png");
     }
   }
 
   #fls .dma span {
     &:before {
-      content: url("../../assets/dma.png");
+      background-image: url("../../assets/dma.png");
     }
   }
 
   #fls .ndf span {
     &:before {
-      content: url("../../assets/ndf.png");
+      background-image: url("../../assets/ndf.png");
     }
   }
 
   #fls .per span {
     &:before {
-      content: url("../../assets/per.png");
+      background-image: url("../../assets/per.png");
     }
   }
 
   #fls .dbe span {
     &:before {
-      content: url("../../assets/dbe.png");
+      background-image: url("../../assets/dbe.png");
     }
   }
 
@@ -637,7 +701,7 @@ export default {
       }
     },
     listInputFiles(val) {
-      this.$nextTick(function () {
+      this.$nextTick(function() {
         let c = document.getElementById("fls").children;
         for (let i = 0; i < val.length; i++) {
           this.removeClasses(c[i]);
@@ -673,7 +737,7 @@ export default {
               break;
           }
         }
-      })
+      });
     },
     fCount(val) {
       if (val === 0) {

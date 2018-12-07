@@ -28,6 +28,8 @@
 <style lang="scss">
 $line-color: #dee2e6;
 $header-font-color: #495057;
+$selected-color: #ddd;
+$hover-color: rgba(221, 221, 221, 0.4);
 
 %flex {
     display: flex;
@@ -101,7 +103,7 @@ $header-font-color: #495057;
             cursor: pointer;
 
             &:hover {
-                background-color: #eee;
+                background-color: $hover-color;
             }
 
             &:last-child {
@@ -117,10 +119,10 @@ $header-font-color: #495057;
         }
 
         .active {
-            background-color: #ddd;
+            background-color: $selected-color;
 
             &:hover {
-                background-color: #ddd;
+                background-color: $selected-color;
             }
         }
     }
