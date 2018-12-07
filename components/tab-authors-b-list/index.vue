@@ -75,9 +75,9 @@
               @click="itemClickHandler"
               @mouseover="mouseOverRow"
             >
-              <div class="tbl-table-cell cell-1"></div>
-              <div class="tbl-table-cell cell-2"></div>
-              <div class="tbl-table-cell cell-3"></div>
+              <div class="tbl-table-cell cell-1"><font-awesome-icon v-if="bItem.isRead" icon="check" style="color: #30e52a"/></div>
+              <div class="tbl-table-cell cell-2"><font-awesome-icon v-if="bItem.isToPlan" icon="bell" style="color: #ffa500"/></div>
+              <div class="tbl-table-cell cell-3"><font-awesome-icon v-if="bItem.isFavorites" icon="heart" style="color: #c91212"/></div>
               <div class="tbl-table-cell cell-4">{{ bItem.title }}</div>
               <div class="tbl-table-cell cell-5">
                 <span v-if="bItem.seriesTitle != 'яяяяяя'">{{ bItem.seriesTitle }}</span>
@@ -102,22 +102,22 @@
               </b-btn>
             </b-button-group>
             <b-button-group class="mx-1" size="sm">
-              <b-btn variant="danger" title="Удалить книгу">
+              <b-btn variant="danger" title="Удалить книгу" v-b-modal.modal1>
                 <font-awesome-icon icon="trash-alt"/>
               </b-btn>
             </b-button-group>
             <b-button-group class="mx-1" size="sm">
-              <b-btn variant="success" title="Прочитано">
+              <b-btn variant="success" title="Прочитано" :pressed=Boolean(isRead) @click="readButtonClick">
                 <font-awesome-icon icon="check"/>
               </b-btn>
-              <b-btn variant="success" title="Запланировать">
+              <b-btn variant="success" title="Запланировать" :pressed=Boolean(isToPlan)>
                 <font-awesome-icon icon="bell"/>
               </b-btn>
-              <b-btn variant="success" title="В избранное">
+              <b-btn variant="success" title="В избранное" :pressed=Boolean(isFavorites)>
                 <font-awesome-icon icon="heart"/>
               </b-btn>
             </b-button-group>
-            <b-dropdown class="mx-1" right size="sm" variant="warning"  title="Оценить книгу">
+            <b-dropdown class="mx-1" right size="sm" variant="warning" title="Оценить книгу">
               <template slot="button-content">
                 <font-awesome-icon icon="star-half-alt"/>
               </template>
@@ -153,6 +153,9 @@
         </div>
       </transition>
     </div>
+    <b-modal id="modal1" size="lg" title="Удаление книги" @ok="delHandleOk" @shown="hideMenu" ok-title="Удалить" ok-variant="danger" cancel-title="Отмена">
+      <h4>Вы действительно хотите удалить выбранную книгу из библиотеки?</h4>
+    </b-modal>
   </section>
 </template>
 
@@ -411,6 +414,11 @@ export default {
       sListItems: [],
       //список книг
       bListItems: [],
+      bookID: '',
+      isRead: false,
+      isToPlan: false,
+      isFavorites: false,
+      //*********
       isPad: false,
       bMenu: false,
       bMenuX: 0,
@@ -462,6 +470,40 @@ export default {
     }
   },
   methods: {
+    delHandleOk(){
+      const self = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "del_book",
+          dat: this.bookID
+        },
+        "",
+        function(rd) {
+          
+        }
+      );
+    },
+    readButtonClick(){
+
+
+      
+      // const self = this;
+      // this.callApi(
+      //   this.$store.getters.prefix + "/static/api.php",
+      //   {
+      //     cmd: "status_read",
+      //     dat: this.bookID
+      //   },
+      //   "",
+      //   function(rd) {
+          
+      //   }
+      // );
+    },
+    hideMenu(){
+      this.bMenu = false;
+    },
     /* добавляем отступ в заголовок таблицы <tbl-table> 
        при появленни скрола у <table-body> 
        Скролл может появится:
@@ -517,9 +559,13 @@ export default {
       let element = this.bListItems[
         this.bListItems.map(el => el.id).indexOf(item.currentTarget.id)
       ];
-      //store.commit("setAuthorID", element.id.substr(2));
+      this.bookID = element.id.substr(2);
+      console.log(this.bookID);
       element.isActive = true;
-      this.bMenu = element.isActive;
+      this.bMenu = true;
+      this.isRead = element.isRead;
+      this.isToPlan = element.isToPlan;
+      this.isFavorites = element.isFavorites;
       this.menuPos(item.currentTarget.id);
     },
     mouseOverRow(item) {

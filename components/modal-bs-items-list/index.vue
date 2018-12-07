@@ -3,10 +3,12 @@
 </template>
 
 <style lang="scss">
+$hover-color: rgba(221, 221, 221, 0.4);
+
 .list-element {
   padding: 0.1rem 0.8rem 0.1rem 0.4rem;
   &:hover {
-    background-color: #eee;
+    background-color: $hover-color;
   }
   & > img {
     margin-top: -5px;
