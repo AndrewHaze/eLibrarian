@@ -167,7 +167,9 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $ai = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT bk_id, bk_title, bk_cover, bkse_number, se_title,
+                $stmt = $pdo->prepare('SELECT bk_id, bk_title, bk_cover, bk_read, bk_to_plan, bk_favorites, bk_stars,
+                                              bkse_number, 
+                                              se_title,
                                               (SELECT GROUP_CONCAT(ar_last_name, " ", ar_middle_name, " ", ar_first_name
                                                       ORDER BY ar_last_name, ar_middle_name, ar_first_name ASC SEPARATOR ", ")
                                                 FROM books_authors, authors, users
@@ -207,6 +209,10 @@ if (isset($_POST["cmd"])) {
                                 "genres" => $value[list_genres] ?: "Прочее",
                                 "seriesTitle" => $value[se_title],
                                 "seriesNumber" => $value[bkse_number],
+                                "isRead" => $value[bk_read],
+                                "isToPlan" => $value[bk_to_plan],
+                                "isFavorites" => $value[bk_favorites],
+                                "stars" => $value[bk_stars],
                                 "isActive" => false,
                             ));
                     }
