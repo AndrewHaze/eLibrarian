@@ -159,7 +159,7 @@ $item-pd: 0.5rem;
     display: flex;
     width: auto;
     height: auto !important;
-    //background-color: #fff;
+    z-index: 10;
     top: 0;
 
     .star {

@@ -12,6 +12,8 @@ $hover-color: rgba(221, 221, 221, 0.4);
   }
   & > img {
     margin-top: -5px;
+    width: 20px;
+    height: 20px;
   }
 }
 </style>
