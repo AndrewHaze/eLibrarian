@@ -111,7 +111,7 @@
               </b-btn>
             </b-button-group>
             <b-button-group class="mx-1" size="sm">
-              <b-btn
+              <b-btn id="b-read"
                 variant="success"
                 title="Прочитано"
                 :pressed="Boolean(isRead)"
@@ -451,6 +451,7 @@ export default {
       isRead: false,
       isToPlan: false,
       isFavorites: false,
+      selectedItem: null,
       //*********
       isPad: false,
       bMenu: false,
@@ -508,7 +509,12 @@ export default {
         function(rd) {}
       );
     },
-    readButtonClick() {
+    readButtonClick(item) {
+      this.bMenu = false;
+      let element = this.bListItems[
+        this.bListItems.map(el => el.id).indexOf(this.selectedItem.id)
+      ];
+      element.isRead = ! element.isRead;
       // const self = this;
       // this.callApi(
       //   this.$store.getters.prefix + "/static/api.php",
@@ -580,18 +586,19 @@ export default {
         this.bListItems.map(el => el.id).indexOf(item.currentTarget.id)
       ];
       this.bookID = element.id.substr(2);
-      console.log(this.bookID);
       element.isActive = true;
+      this.selectedItem = element;
       this.bMenu = true;
-      this.isRead = element.isRead;
-      this.isToPlan = element.isToPlan;
-      this.isFavorites = element.isFavorites;
       this.menuPos(item.currentTarget.id);
     },
     mouseOverRow(item) {
+      document.getElementById("b-read").classList.remove("focus");
       let element = this.bListItems[
         this.bListItems.map(el => el.id).indexOf(item.currentTarget.id)
       ];
+      this.isRead = element.isRead;
+      this.isToPlan = element.isToPlan;
+      this.isFavorites = element.isFavorites;
       this.bMenu = element.isActive || false;
       this.menuPos(item.currentTarget.id);
     },
