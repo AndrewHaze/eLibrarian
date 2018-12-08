@@ -212,7 +212,7 @@ if (isset($_POST["cmd"])) {
                                 "isRead" => $value[bk_read],
                                 "isToPlan" => $value[bk_to_plan],
                                 "isFavorites" => $value[bk_favorites],
-                                "stars" => $value[bk_stars],
+                                "howManyStars" => $value[bk_stars],
                                 "isActive" => false,
                             ));
                     }
