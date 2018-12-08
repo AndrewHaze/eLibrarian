@@ -619,7 +619,7 @@ export default {
             //       element.isFavorites = ! element.isFavorites;
             //   }
             // );
-            
+            element.isFavorites = ! element.isFavorites;
         },
         setStars(n) {
             this.bMenu = false;
