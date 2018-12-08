@@ -155,12 +155,11 @@ $item-pd: 0.5rem;
     overflow: hidden;
 }
 
-.content section>div {
+#tad {
     display: block;
     overflow: hidden;
     padding-bottom: 1.2rem;
     height: 100%;
-    position: relative;
 }
 
 .book-menu {
@@ -170,7 +169,6 @@ $item-pd: 0.5rem;
     height: auto !important;
     z-index: 10;
     top: 0;
-
     .btn:focus {
         box-shadow: none !important;
     }
@@ -556,6 +554,8 @@ export default {
             this.isToPlan = element.isToPlan;
             this.isFavorites = element.isFavorites;
             this.bMenu = element.isActive || false;
+            console.log(this.bMenu);
+
             this.menuPos(item.currentTarget.id);
         },
         readButtonClick(item) {
