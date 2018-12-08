@@ -66,7 +66,7 @@
                             <div class="tbl-table-cell cell-7">{{ bItem.genres }}</div>
                             <div class="tbl-table-cell cell-8">
                                 <template v-for="n in 5">
-                                    <font-awesome-icon icon="star" :class="{ star: (bItem.stars >= n) }" />
+                                    <font-awesome-icon icon="star" :class="{ star: (bItem.howManyStars >= n) }" />
                                 </template>
                             </div>
                         </div>
@@ -101,44 +101,42 @@
                             <font-awesome-icon icon="heart" />
                         </b-btn>
                     </b-button-group>
-                    <b-dropdown class="mx-1" right size="sm" variant="warning" title="Оценить книгу">
+                    <b-dropdown class="mx-1" right size="sm" variant="warning" title="Оценить книгу" >
                         <template slot="button-content">
                             <font-awesome-icon icon="star-half-alt" />
                         </template>
-                        <b-dropdown-item class="star">
+                        <b-dropdown-item class="star" @click="starsButton1Click">
                             <font-awesome-icon icon="star" />
                         </b-dropdown-item>
-                        <b-dropdown-item class="star">
-                            <font-awesome-icon icon="star" />
-                            <font-awesome-icon icon="star" />
+                        <b-dropdown-item class="star" @click="starsButton2Click">
+                            <template v-for="n in 2">
+                                <font-awesome-icon icon="star" />
+                            </template>
                         </b-dropdown-item>
-                        <b-dropdown-item class="star">
-                            <font-awesome-icon icon="star" />
-                            <font-awesome-icon icon="star" />
-                            <font-awesome-icon icon="star" />
+                        <b-dropdown-item class="star" @click="starsButton3Click">
+                            <template v-for="n in 3">
+                                <font-awesome-icon icon="star" />
+                            </template>
                         </b-dropdown-item>
-                        <b-dropdown-item class="star">
-                            <font-awesome-icon icon="star" />
-                            <font-awesome-icon icon="star" />
-                            <font-awesome-icon icon="star" />
-                            <font-awesome-icon icon="star" />
+                        <b-dropdown-item class="star" @click="starsButton4Click">
+                            <template v-for="n in 4">
+                                <font-awesome-icon icon="star" />
+                            </template>
                         </b-dropdown-item>
-                        <b-dropdown-item class="star">
-                            <font-awesome-icon icon="star" />
-                            <font-awesome-icon icon="star" />
-                            <font-awesome-icon icon="star" />
-                            <font-awesome-icon icon="star" />
-                            <font-awesome-icon icon="star" />
+                        <b-dropdown-item class="star" @click="starsButton5Click">
+                            <template v-for="n in 5">
+                                <font-awesome-icon icon="star" />
+                            </template>
                         </b-dropdown-item>
                         <b-dropdown-divider></b-dropdown-divider>
-                        <b-dropdown-item>Очистить</b-dropdown-item>
+                        <b-dropdown-item @click="starsButton0Click">Очистить</b-dropdown-item>
                     </b-dropdown>
                 </b-button-toolbar>
             </div>
         </transition>
-    <b-modal id="modal1" size="lg" title="Удаление книги" @ok="delHandleOk" @shown="hideMenu" ok-title="Удалить" ok-variant="danger" cancel-title="Отмена">
-        <h4>Вы действительно хотите удалить выбранную книгу из библиотеки?</h4>
-    </b-modal>
+        <b-modal id="modal1" size="lg" title="Удаление книги" @ok="delHandleOk" @shown="hideMenu" ok-title="Удалить" ok-variant="danger" cancel-title="Отмена">
+            <h4>Вы действительно хотите удалить выбранную книгу из библиотеки?</h4>
+        </b-modal>
 </section>
 </template>
 
@@ -169,6 +167,7 @@ $item-pd: 0.5rem;
     height: auto !important;
     z-index: 10;
     top: 0;
+
     .btn:focus {
         box-shadow: none !important;
     }
@@ -176,6 +175,10 @@ $item-pd: 0.5rem;
 
 .star {
     color: #ffd700;
+    &:hover,
+    &:focus {
+        color: #ffd700;
+    }
 }
 
 .fade-enter-active,
@@ -427,6 +430,7 @@ export default {
             isRead: false,
             isToPlan: false,
             isFavorites: false,
+            howManyStars: 0,
             selectedItem: null,
             //*********
             isPad: false,
@@ -487,12 +491,12 @@ export default {
         },
         setTableHeaderPad() {
             /* добавляем отступ в заголовок таблицы <tbl-table> 
-                       при появленни скрола у <table-body> 
-                       Скролл может появится:
-                          - при изменении массива bListItems (watch: bListItems);
-                          - при маштабировании окна (хук: resize);
-                          - при смене вида отображения (computed: look).
-                  */
+                             при появленни скрола у <table-body> 
+                             Скролл может появится:
+                                - при изменении массива bListItems (watch: bListItems);
+                                - при маштабировании окна (хук: resize);
+                                - при смене вида отображения (computed: look).
+                        */
             this.$nextTick(function () {
                 let el = document.getElementById("table-body");
                 if (el) {
@@ -553,9 +557,8 @@ export default {
             this.isRead = element.isRead;
             this.isToPlan = element.isToPlan;
             this.isFavorites = element.isFavorites;
+            this.howManyStars = element.isFavorites;
             this.bMenu = element.isActive || false;
-            console.log(this.bMenu);
-
             this.menuPos(item.currentTarget.id);
         },
         readButtonClick(item) {
@@ -616,8 +619,34 @@ export default {
             //       element.isFavorites = ! element.isFavorites;
             //   }
             // );
-            element.isFavorites = !element.isFavorites; //временно
+            
         },
+        setStars(n) {
+            this.bMenu = false;
+            let element = this.bListItems[
+                this.bListItems.map(el => el.id).indexOf(this.selectedItem.id)
+            ];
+            element.howManyStars = n;
+        },
+        starsButton0Click(item) {
+            this.setStars(0);
+        },   
+        starsButton1Click(item) {
+           this. setStars(1);
+        },    
+        starsButton2Click(item) {
+            this.setStars(2);
+        },  
+        starsButton3Click(item) {
+            this.setStars(3);
+        },  
+        starsButton4Click(item) {
+            this.setStars(4);
+        },  
+        starsButton5Click(item) {
+            this.setStars(5);
+        },  
+
         onScroll() {
             this.bMenu = false;
         },
