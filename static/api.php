@@ -85,9 +85,86 @@ if (isset($_POST["cmd"])) {
                 $res["error"] = "PDO Error";
             }
             break;
-        case "test":
-            $res["data"] = $_POST["dat"];
+        //Отметка о прочтении
+        case "status_read":
+            if ($pdo and $_SESSION["user"]) {
+                $username = $_SESSION["user"];
+                $b_id = $_POST["id"];
+                $b_state = $_POST["state"];
+                $stmt = $pdo->prepare('UPDATE `books`
+                SET bk_read = :b_state
+                WHERE bk_id = :b_id AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = :login);');
+                $stmt->bindValue(':b_state', $b_state, PDO::PARAM_INT);
+                $stmt->bindValue(':b_id', $b_id, PDO::PARAM_INT);
+                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
+                if ($stmt->execute()) {
+                    $res["data"] = true;
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "DB Update Error ".$username.' - '.$b_state;
+                }
+            }
             break;
+        //Отметка о предпочтении
+        case "status_favorites":
+            if ($pdo and $_SESSION["user"]) {
+                $username = $_SESSION["user"];
+                $b_id = $_POST["id"];
+                $b_state = $_POST["state"];
+                $stmt = $pdo->prepare('UPDATE `books`
+                SET bk_favorites = :b_state
+                WHERE bk_id = :b_id AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = :login);');
+                $stmt->bindValue(':b_state', $b_state, PDO::PARAM_INT);
+                $stmt->bindValue(':b_id', $b_id, PDO::PARAM_INT);
+                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
+                if ($stmt->execute()) {
+                    $res["data"] = true;
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "DB Update Error ".$username.' - '.$b_state;
+                }
+            }
+            break;
+        //Отметка о планировании
+        case "status_toplan":
+            if ($pdo and $_SESSION["user"]) {
+                $username = $_SESSION["user"];
+                $b_id = $_POST["id"];
+                $b_state = $_POST["state"];
+                $stmt = $pdo->prepare('UPDATE `books`
+                SET bk_to_plan = :b_state
+                WHERE bk_id = :b_id AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = :login);');
+                $stmt->bindValue(':b_state', $b_state, PDO::PARAM_INT);
+                $stmt->bindValue(':b_id', $b_id, PDO::PARAM_INT);
+                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
+                if ($stmt->execute()) {
+                    $res["data"] = true;
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "DB Update Error ".$username.' - '.$b_state;
+                }
+            }
+            break;       
+        //Отметка о планировании
+        case "set_stars":
+            if ($pdo and $_SESSION["user"]) {
+                $username = $_SESSION["user"];
+                $b_id = $_POST["id"];
+                $b_state = $_POST["state"];
+                $stmt = $pdo->prepare('UPDATE `books`
+                SET bk_stars = :b_state
+                WHERE bk_id = :b_id AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = :login);');
+                $stmt->bindValue(':b_state', $b_state, PDO::PARAM_INT);
+                $stmt->bindValue(':b_id', $b_id, PDO::PARAM_INT);
+                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
+                if ($stmt->execute()) {
+                    $res["data"] = true;
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "DB Update Error ".$username.' - '.$b_state;
+                }
+            }
+            break;          
         //набор букв для фильтра авторов
         case "с_list":
             if ($pdo and $_SESSION["user"]) {
@@ -370,7 +447,7 @@ if (isset($_POST["cmd"])) {
                                 //имя файла с книгой
                                 "hash_name" => $filename,
                             );
-
+ 
                             //Серия
                             if (empty($title_info->getElementsByTagName('sequence')->item(0))) {
                                 $sequence = "яяяяяя"; //Для сортировки

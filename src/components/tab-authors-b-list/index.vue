@@ -2,7 +2,7 @@
 <section>
     <h6 v-if="this.curAI == -1">Нет данных для отображения</h6>
     <div id="tad" v-else>
-        <div class="cover-book-list" v-if="look === 'cover'" @mouseover.self="mouseOverTable" @scroll="onScroll">
+        <div class="cover-book-list" v-if="look === 'cover'" @scroll="onScroll">
             <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
                 <div class="series-title" v-if="sItem.seriesTitle === 'яяяяяя'">
                     <span>Без серии</span>
@@ -10,7 +10,7 @@
                 <div class="series-title" v-else>
                     <span>{{ sItem.seriesTitle }}</span>
                 </div>
-                <div class="item" v-for="bItem in bListItems" :id="bItem.id" :key="bItem.id" v-if="bItem.seriesTitle == sItem.seriesTitle" :class="{active: bItem.isActive}" @click="itemClickHandler" @mouseover="mouseOverRow">
+                <div class="item" v-for="bItem in bListItems" :id="bItem.id" :key="bItem.id" v-if="bItem.seriesTitle == sItem.seriesTitle" :class="{active: bItem.isActive}" @click="itemClickHandler" @mouseover="mouseOverBook" @mouseleave="mouseLeaveBook">
                     <div class="cover">
                         <img :src="'data:image/jpg;base64,'+bItem.cover">
             </div>
@@ -45,8 +45,8 @@
                             <div class="tbl-table-cell cell-8">Рейтинг</div>
                         </div>
                     </div>
-                    <div id="table-body" class="tbl-table-body" @mouseover.self="mouseOverTable" @scroll="onScroll">
-                        <div class="tbl-table-row" v-for="bItem in bListItems" :key="bItem.id" :id="bItem.id" :class="{active: bItem.isActive}" @click="itemClickHandler" @mouseover="mouseOverRow">
+                    <div id="table-body" class="tbl-table-body" @scroll="onScroll">
+                        <div class="tbl-table-row" v-for="bItem in bListItems" :key="bItem.id" :id="bItem.id" :class="{active: bItem.isActive}" @click="itemClickHandler" @mouseover="mouseOverBook" @mouseleave="mouseLeaveBook">
                             <div class="tbl-table-cell cell-1">
                                 <font-awesome-icon v-if="bItem.isRead" icon="check" style="color: #30e52a" />
                             </div>
@@ -75,7 +75,7 @@
             </div>
         </div>
         <transition name="fade">
-            <div v-show="bMenu" class="book-menu" :style="{ top: bMenuY + 'px', left: bMenuX + 'px' }">
+            <div v-show="bMenu" class="book-menu" :style="{ top: bMenuY + 'px', left: bMenuX + 'px' }" @mouseover="mouseOverBookMenu" @mouseleave="mouseLeaveBook">
                 <b-button-toolbar key-nav aria-label="Toolbar with button groups">
                     <b-button-group class="mx-1" size="sm">
                         <b-btn variant="primary" title="Открыть книгу для чтения">
@@ -101,7 +101,7 @@
                             <font-awesome-icon icon="heart" />
                         </b-btn>
                     </b-button-group>
-                    <b-dropdown class="mx-1" right size="sm" variant="warning" title="Оценить книгу" >
+                    <b-dropdown class="mx-1" right size="sm" variant="warning" title="Оценить книгу">
                         <template slot="button-content">
                             <font-awesome-icon icon="star-half-alt" />
                         </template>
@@ -175,6 +175,7 @@ $item-pd: 0.5rem;
 
 .star {
     color: #ffd700;
+
     &:hover,
     &:focus {
         color: #ffd700;
@@ -491,12 +492,12 @@ export default {
         },
         setTableHeaderPad() {
             /* добавляем отступ в заголовок таблицы <tbl-table> 
-                             при появленни скрола у <table-body> 
-                             Скролл может появится:
-                                - при изменении массива bListItems (watch: bListItems);
-                                - при маштабировании окна (хук: resize);
-                                - при смене вида отображения (computed: look).
-                        */
+                                   при появленни скрола у <table-body> 
+                                   Скролл может появится:
+                                      - при изменении массива bListItems (watch: bListItems);
+                                      - при маштабировании окна (хук: resize);
+                                      - при смене вида отображения (computed: look).
+                              */
             this.$nextTick(function () {
                 let el = document.getElementById("table-body");
                 if (el) {
@@ -550,7 +551,7 @@ export default {
             this.bMenu = true;
             this.menuPos(item.currentTarget.id);
         },
-        mouseOverRow(item) {
+        mouseOverBook(item) {
             let element = this.bListItems[
                 this.bListItems.map(el => el.id).indexOf(item.currentTarget.id)
             ];
@@ -561,65 +562,68 @@ export default {
             this.bMenu = element.isActive || false;
             this.menuPos(item.currentTarget.id);
         },
+        mouseLeaveBook(item) {
+            this.bMenu = false;
+        },
+        mouseOverBookMenu(item) {
+            this.bMenu = true;
+        },
         readButtonClick(item) {
             this.bMenu = false;
             let element = this.bListItems[
                 this.bListItems.map(el => el.id).indexOf(this.selectedItem.id)
             ];
-            // const self = this;
-            // this.callApi(
-            //   this.$store.getters.prefix + "/static/api.php",
-            //   {
-            //     cmd: "status_read",
-            //     id: this.bookID,
-            //     state: element.isRead
-            //   },
-            //   "",
-            //   function(rd) {
-            //       element.isRead = ! element.isRead;
-            //   }
-            // );
-            element.isRead = !element.isRead; //временно
+            element.isRead = !element.isRead;
+            const self = this;
+            this.callApi(
+                this.$store.getters.prefix + "/static/api.php", {
+                    cmd: "status_read",
+                    id: this.bookID,
+                    state: element.isRead
+                },
+                "",
+                function (rd) {
+                    if (!rd) element.isRead = !element.isRead;
+                }
+            );
         },
         toPlanButtonClick(item) {
             this.bMenu = false;
             let element = this.bListItems[
                 this.bListItems.map(el => el.id).indexOf(this.selectedItem.id)
             ];
-            // const self = this;
-            // this.callApi(
-            //   this.$store.getters.prefix + "/static/api.php",
-            //   {
-            //     cmd: "status_read",
-            //     id: this.bookID,
-            //     state: element.isToPlan
-            //   },
-            //   "",
-            //   function(rd) {
-            //       element.isToPlan = !element.isToPlan;
-            //   }
-            // );
-            element.isToPlan = !element.isToPlan; //временно
+            element.isToPlan = !element.isToPlan;
+            const self = this;
+            this.callApi(
+                this.$store.getters.prefix + "/static/api.php", {
+                    cmd: "status_toplan",
+                    id: this.bookID,
+                    state: element.isToPlan
+                },
+                "",
+                function (rd) {
+                    if (!rd) element.isToPlan = !element.isToPlan;
+                }
+            );
         },
         favoritesButtonClick(item) {
             this.bMenu = false;
             let element = this.bListItems[
                 this.bListItems.map(el => el.id).indexOf(this.selectedItem.id)
             ];
-            // const self = this;
-            // this.callApi(
-            //   this.$store.getters.prefix + "/static/api.php",
-            //   {
-            //     cmd: "status_read",
-            //     id: this.bookID,
-            //     state: element.isFavorites
-            //   },
-            //   "",
-            //   function(rd) {
-            //       element.isFavorites = ! element.isFavorites;
-            //   }
-            // );
-            element.isFavorites = ! element.isFavorites;
+            element.isFavorites = !element.isFavorites;
+            const self = this;
+            this.callApi(
+                this.$store.getters.prefix + "/static/api.php", {
+                    cmd: "status_favorites",
+                    id: this.bookID,
+                    state: element.isFavorites
+                },
+                "",
+                function (rd) {
+                    if (!rd) element.isFavorites = !element.isFavorites;
+                }
+            );
         },
         setStars(n) {
             this.bMenu = false;
@@ -627,30 +631,39 @@ export default {
                 this.bListItems.map(el => el.id).indexOf(this.selectedItem.id)
             ];
             element.howManyStars = n;
+            const self = this;
+            this.callApi(
+                this.$store.getters.prefix + "/static/api.php", {
+                    cmd: "set_stars",
+                    id: this.bookID,
+                    state: element.howManyStars
+                },
+                "",
+                function (rd) {
+                    
+                }
+            );
         },
         starsButton0Click(item) {
             this.setStars(0);
-        },   
+        },
         starsButton1Click(item) {
-           this. setStars(1);
-        },    
+            this.setStars(1);
+        },
         starsButton2Click(item) {
             this.setStars(2);
-        },  
+        },
         starsButton3Click(item) {
             this.setStars(3);
-        },  
+        },
         starsButton4Click(item) {
             this.setStars(4);
-        },  
+        },
         starsButton5Click(item) {
             this.setStars(5);
-        },  
+        },
 
         onScroll() {
-            this.bMenu = false;
-        },
-        mouseOverTable(item) {
             this.bMenu = false;
         }
     },
