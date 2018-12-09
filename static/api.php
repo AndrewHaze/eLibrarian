@@ -379,6 +379,9 @@ if (isset($_POST["cmd"])) {
                                 $sequence = trim($title_info->getElementsByTagName('sequence')->item(0)->GetAttribute('name'));
                                 $sequence_number = $title_info->getElementsByTagName('sequence')->item(0)->GetAttribute('number');
                             }
+                            if (trim($sequence) == '') {
+                                $sequence = "яяяяяя";
+                            }
                             //Серия есть?
                             $stmt = $pdo->prepare('SELECT COUNT(*) FROM series
                                                     WHERE se_title = :se_title ');
