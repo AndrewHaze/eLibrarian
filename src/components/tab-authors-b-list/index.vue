@@ -31,17 +31,17 @@
             </div>
             <div class="mark-group">
               <div class="mg-left">
-                <span v-if="bItem.isRead">
+                <span v-if="bItem.isRead" title="Прочитано">
                   <font-awesome-icon icon="check" style="color: #30e52a"/>
                 </span>
-                <span v-if="bItem.isToPlan">
+                <span v-if="bItem.isToPlan"  title="Запланировано">
                   <font-awesome-icon icon="calendar-check" style="color: #ffa500"/>
                 </span>
-                <span v-if="bItem.isFavorites">
+                <span v-if="bItem.isFavorites" title="Понравилось">
                   <font-awesome-icon icon="heart" style="color: #c91212"/>
                 </span>
               </div>
-              <div class="mg-right">
+              <div class="mg-right" :title="'Оценка: '+ bItem.howManyStars">
                 <template v-for="n in 5">
                   <font-awesome-icon icon="star" :class="{ star: (bItem.howManyStars >= n) }"/>
                 </template>
@@ -84,17 +84,17 @@
               @mouseover="mouseOverBook"
               @mouseleave="mouseLeaveBook"
             >
-              <div class="tbl-table-cell cell-1">
+              <div class="tbl-table-cell cell-1" title="Прочитано">
                 <font-awesome-icon v-if="bItem.isRead" icon="check" style="color: #30e52a"/>
               </div>
-              <div class="tbl-table-cell cell-2">
+              <div class="tbl-table-cell cell-2" title="Запланировано">
                 <font-awesome-icon
                   v-if="bItem.isToPlan"
                   icon="calendar-check"
                   style="color: #ffa500"
                 />
               </div>
-              <div class="tbl-table-cell cell-3">
+              <div class="tbl-table-cell cell-3" title="Понравилось">
                 <font-awesome-icon v-if="bItem.isFavorites" icon="heart" style="color: #c91212"/>
               </div>
               <div class="tbl-table-cell cell-4">{{ bItem.title }}</div>
@@ -105,7 +105,7 @@
                 <span v-if="bItem.seriesTitle != 'яяяяяя'">{{ bItem.seriesNumber }}</span>
               </div>
               <div class="tbl-table-cell cell-7">{{ bItem.genres }}</div>
-              <div class="tbl-table-cell cell-8">
+              <div class="tbl-table-cell cell-8" :title="'Оценка: '+ bItem.howManyStars">
                 <template v-for="n in 5">
                   <font-awesome-icon icon="star" :class="{ star: (bItem.howManyStars >= n) }"/>
                 </template>
@@ -167,31 +167,31 @@
             <template slot="button-content">
               <font-awesome-icon icon="star-half-alt"/>
             </template>
-            <b-dropdown-item class="star" @click="starsButton1Click">
+            <b-dropdown-item class="star" @click="starsButton1Click" title="Оценить книгу на 1">
               <font-awesome-icon icon="star"/>
             </b-dropdown-item>
-            <b-dropdown-item class="star" @click="starsButton2Click">
+            <b-dropdown-item class="star" @click="starsButton2Click" title="Оценить книгу на 2">
               <template v-for="n in 2">
                 <font-awesome-icon icon="star"/>
               </template>
             </b-dropdown-item>
-            <b-dropdown-item class="star" @click="starsButton3Click">
+            <b-dropdown-item class="star" @click="starsButton3Click" title="Оценить книгу на 3">
               <template v-for="n in 3">
                 <font-awesome-icon icon="star"/>
               </template>
             </b-dropdown-item>
-            <b-dropdown-item class="star" @click="starsButton4Click">
+            <b-dropdown-item class="star" @click="starsButton4Click" title="Оценить книгу на 4">
               <template v-for="n in 4">
                 <font-awesome-icon icon="star"/>
               </template>
             </b-dropdown-item>
-            <b-dropdown-item class="star" @click="starsButton5Click">
+            <b-dropdown-item class="star" @click="starsButton5Click" title="Оценить книгу на 5">
               <template v-for="n in 5">
                 <font-awesome-icon icon="star"/>
               </template>
             </b-dropdown-item>
             <b-dropdown-divider></b-dropdown-divider>
-            <b-dropdown-item @click="starsButton0Click">Очистить</b-dropdown-item>
+            <b-dropdown-item @click="starsButton0Click" title="Удалить оценку">Очистить</b-dropdown-item>
           </b-dropdown>
         </b-button-toolbar>
       </div>
