@@ -1,6 +1,7 @@
 <template>
   <b-modal
     id="bookScanner"
+    ref="modal"
     @shown="showBookScanner"
     @hidden="bookScannerHidden"
     no-close-on-backdrop
@@ -11,9 +12,13 @@
     <b-container fluid>
       <b-row class="mb-3">
         <b-col>
-          <b-button-toolbar key-nav aria-label="Toolbar with button groups">
+          <b-button-toolbar class="justify-content-between" key-nav aria-label="Toolbar with button groups">
+            <div>
             <b-button variant="success" @click="openFiles" class="mr-2">Добавить файлы</b-button>
             <b-button variant="danger" :disabled="buttonStartProc" @click="startProc">Запуск</b-button>
+            
+            </div>
+            <b-button class="float-right" variant="secondary" @click="hideModal">Закрыть</b-button>
             <input id="fi1" type="file" multiple @change="handleFileChange" accept=".fb2, .zip">
           </b-button-toolbar>
         </b-col>
@@ -69,13 +74,21 @@
               <span class="list-header-sort-asc" :class="{ active: pAsc }">&#8595;</span>
             </div>
           </div>
-          <div class="f-list" :style="{ maxHeight: pHeight + 'px', minHeight: pHeight + 'px' }">
-            <ListItems
-              v-for="listItem in listProcessingFiles"
-              :listItem="listItem"
-              :key="listItem.id"
-            />
-          </div>
+            <div v-if="bCount > 0" class="animation-wrap" :style="{ bottom: pHeight-45 + 'px' }">
+              <div class="lds-ring">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+            <div class="f-list" :style="{ maxHeight: pHeight + 'px', minHeight: pHeight + 'px' }">
+              <ListItems
+                v-for="listItem in listProcessingFiles"
+                :listItem="listItem"
+                :key="listItem.id"
+              />
+            </div>
           <div class="info-panel" :style="{ maxHeight: pHeight + 'px', minHeight: pHeight + 'px' }">
             <div class="ip-legend">
               <div class="hm">Обозначения</div>
@@ -149,7 +162,7 @@ $header-bk-color: #abafb4;
 
   .hm {
     font-size: 1rem;
-    padding: 0.2rem 0.5rem 0.30rem;
+    padding: 0.2rem 0.5rem 0.3rem;
     font-family: inherit;
     color: white;
     background-color: $header-bk-color;
@@ -169,7 +182,7 @@ $header-bk-color: #abafb4;
     padding: 0;
     border: 1px solid $line-color;
     overflow: auto;
-
+    z-index: 1;
     .custom-control {
       padding: 0.1rem 0.8rem 0.1rem 2rem;
 
@@ -244,7 +257,7 @@ $header-bk-color: #abafb4;
     }
   }
 
-    #fls .custom-control-label > span {
+  #fls .custom-control-label > span {
     margin-left: 1.8rem;
 
     &:before {
@@ -253,7 +266,7 @@ $header-bk-color: #abafb4;
       left: 0;
       top: 0.12rem;
       background-size: 20px 20px;
-      width: 20px; 
+      width: 20px;
       height: 20px;
     }
   }
@@ -350,14 +363,12 @@ $header-bk-color: #abafb4;
 /* Animation */
 
 $ring_color: #cce5ff;
-$width: 15rem;
-$height: 15rem;
 
 .animation-wrap {
   position: absolute;
-  width: $width;
-  height: $height;
   margin: auto;
+  width: 14rem;
+  height: 14rem;
   top: 0;
   left: 0;
   bottom: 0;
@@ -367,16 +378,16 @@ $height: 15rem;
 .lds-ring {
   display: inline-block;
   position: relative;
-  width: $width;
-  height: $height;
+  width: 100%;
+  height: 100%;
 }
 
 .lds-ring div {
   box-sizing: border-box;
   display: block;
   position: absolute;
-  width: $width/1.25;
-  height: $height/1.25;
+  width: calc(100% / 1.25);
+  height: calc(100% / 1.25);
   margin: 16px;
   border: 16px solid $ring_color;
   border-radius: 50%;
@@ -433,6 +444,8 @@ export default {
   },
   data() {
     return {
+      mHeight: 100,
+      pHeight: 100,
       /* левая колонка */
       listInputFiles: [], //экранное представление
       buf: [],
@@ -440,8 +453,6 @@ export default {
       allSelected: false,
       indeterminate: false,
       buttonStartProc: true,
-      mHeight: 100,
-      pHeight: 100,
       iAsc: false,
       iDesc: false,
       fCount: -1, //счетчик добавляемых файлов
@@ -458,6 +469,7 @@ export default {
     if (this.mHeight > 1200) {
       this.mHeight = 1200;
     }
+    //высота панелей в правой части (50/50)
     this.pHeight = this.mHeight / 2 - shiftR;
   },
   beforeDestroy: function() {
@@ -560,6 +572,9 @@ export default {
     bookScannerHidden(evt) {
       this.$parent.updateAll();
     },
+    hideModal(){
+      this.$refs.modal.hide();
+    },
     multi2one(arr) {
       let newArr = [];
       for (let i = 0; i < arr.length; i++) {
@@ -575,6 +590,7 @@ export default {
       for (let i = 0; i < clsList.length; i++) {
         if (array.indexOf(clsList[i]) === -1) result.push(clsList[i]);
       }
+      //склеиваем элементы массива (оставшиеся имена классов) в строку через пробел
       obj.className = result.join(" ");
     },
     sortListInputFiles() {
