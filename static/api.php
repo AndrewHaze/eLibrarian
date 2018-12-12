@@ -208,6 +208,21 @@ if (isset($_POST["cmd"])) {
 
             }
             break;
+        //конкретный автор
+        case "author":
+            if ($pdo and $_SESSION["user"]) {
+                $stmt = $pdo->prepare('SELECT ar_last_name, ar_middle_name, ar_first_name
+                                       FROM authors
+                                       WHERE ar_id = :ai');
+                $stmt->bindValue(':ai', $username, PDO::PARAM_STR);
+                $stmt->execute();
+                $result = $stmt->fetchAll();
+                foreach ($result as $value) {
+                    $res["data"] = ucwords($value[ar_last_name] . ' ' . $value[ar_first_name] . ' ' . $value[ar_middle_name]);
+                }
+
+            }
+            break;    
         //список серий    
         case "as_list":
             if ($pdo and $_SESSION["user"]) {
