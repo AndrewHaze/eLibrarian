@@ -267,6 +267,7 @@ $ip-width: 21rem;
   left: calc(100% - 20.5rem);
   right: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 0 1rem 0;
   text-align: center;
   line-height: 1.3rem;
