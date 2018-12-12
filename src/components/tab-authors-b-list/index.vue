@@ -116,7 +116,7 @@
       </div>
     </div>
     <transition name="fade"> 
-      <div v-if="infoPanel && this.curAI >= 0" class="info-panel">
+      <div v-if="infoPanel && this.curAI >= 0 && selectedItem" class="info-panel">
         <div>{{ selectedItem.author }}</div>
         <div>{{ selectedItem.genres }}</div>
         <div>{{ selectedItem.title }}</div>
@@ -129,6 +129,9 @@
         -->
         <div>{{ selectedItem.annotation }}</div>
       </div>
+      <div v-else-if="selectedAuthor != ''">
+          {{ this.selectedAuthor }}
+      </div> 
     </transition>  
     <transition name="fade">
       <div
@@ -547,7 +550,7 @@ export default {
   props: ["curAI"],
   data: function() {
     return {
-      sTitle: "",
+      selectedAuthor: '',
       //список серий
       sListItems: [],
       //список книг
@@ -588,6 +591,18 @@ export default {
         "",
         function(rd) {
           self.bListItems = rd; //возвр. данные (Responce)
+          self.selectedItem = null;
+        }
+      );
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "author",
+          dat: val
+        },
+        "",
+        function(rd) {
+          self.selectedAuthor = rd; //возвр. данные (Responce)
         }
       );
     },
