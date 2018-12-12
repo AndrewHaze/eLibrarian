@@ -4,7 +4,7 @@ const state = { link: "http://l.mgr.loc",
                 at: 'eLibrarian v.0.0.1', 
                 ai: -1,
                 bll: "cover",
-                ip: "",
+                ip: "on",
               }
 
 const getters = {

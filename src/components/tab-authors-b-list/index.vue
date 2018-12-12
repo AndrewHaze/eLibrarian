@@ -1,7 +1,7 @@
 <template>
   <section>
     <h6 v-if="this.curAI == -1">Нет данных для отображения</h6>
-    <div  v-else id="tad" :class="{ rightmargin: infoPanel }">
+    <div v-else id="tad" :class="{ rightmargin: infoPanel }">
       <div class="cover-book-list" v-if="look === 'cover'" @scroll="onScroll">
         <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
           <div class="series-title" v-if="sItem.seriesTitle === 'яяяяяя'">
@@ -34,7 +34,7 @@
                 <span v-if="bItem.isRead" title="Прочитано">
                   <font-awesome-icon icon="check" style="color: #30e52a"/>
                 </span>
-                <span v-if="bItem.isToPlan"  title="Запланировано">
+                <span v-if="bItem.isToPlan" title="Запланировано">
                   <font-awesome-icon icon="calendar-check" style="color: #ffa500"/>
                 </span>
                 <span v-if="bItem.isFavorites" title="Понравилось">
@@ -115,24 +115,26 @@
         </div>
       </div>
     </div>
-    <transition name="fade"> 
-      <div v-if="infoPanel && this.curAI >= 0 && selectedItem" class="info-panel">
-        <div>{{ selectedItem.author }}</div>
-        <div>{{ selectedItem.genres }}</div>
-        <div>{{ selectedItem.title }}</div>
-        <div><img :src="'data:image/jpg;base64,'+selectedItem.cover"></div>
+    <transition name="fade">
+      <div v-if="infoPanel && this.curAI >= 0 && selectedItem" id="ip1" class="info-panel">
+        <div class="authors">{{ selectedItem.author }}</div>
+        <div class="genres">{{ selectedItem.genres }}</div>
+        <div class="title">{{ selectedItem.title }}</div>
+        <div class="cover">
+          <img :src="'data:image/jpg;base64,'+selectedItem.cover">
+        </div>
         <!--
         <div class="series-title" v-if="sItem.seriesTitle === 'яяяяяя'">
           {{ sItem.seriesTitle }}
           {{ bItem.seriesNumber }}
         </div>
         -->
-        <div>{{ selectedItem.annotation }}</div>
+        <div class="annotation">{{ selectedItem.annotation }}</div>
       </div>
-      <div v-else-if="selectedAuthor != ''">
-          {{ this.selectedAuthor }}
-      </div> 
-    </transition>  
+      <div v-else-if="infoPanel && selectedAuthor" class="info-panel">
+        <div class="book-author">{{ this.selectedAuthor }}</div>
+      </div>
+    </transition>
     <transition name="fade">
       <div
         v-show="bMenu"
@@ -236,7 +238,7 @@ $selected-color: #ddd;
 $hover-color: rgba(221, 221, 221, 0.4);
 $item-mr: 0.5rem;
 $item-pd: 0.5rem;
-$ip-width: 15rem;
+$ip-width: 21rem;
 
 .content section {
   position: relative;
@@ -259,11 +261,48 @@ $ip-width: 15rem;
   position: absolute;
   display: flex;
   flex-flow: column nowrap;
+  align-items: center;
   top: 0;
   bottom: 1.2rem;
-  left: calc(100% - 16rem);
+  left: calc(100% - 20.5rem);
   right: 0;
   overflow-y: auto;
+  padding: 0 1rem 0;
+  text-align: center;
+  line-height: 1.3rem;
+  border-left: 1px solid $line-color;
+
+  .book-author {
+    font-size: 1.5rem;
+  }
+
+  .authors {
+    font-weight: 600;
+  }
+
+  .genres {
+    font-size: 0.8rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+    line-height: 1.6rem;
+    font-weight: 600;
+    margin: 1rem 0;
+  }
+
+  .cover {
+    width: 100%;
+    margin: 0.5rem 0 1rem;
+    > img {
+      width: 100%;
+    }
+  }
+  .annotation {
+    font-size: 1rem;
+    line-height: 1rem;
+    text-align: left;
+  }
 }
 
 .book-menu {
@@ -389,6 +428,7 @@ $ip-width: 15rem;
           line-height: 1.1;
         }
       }
+
       .mark-group {
         position: absolute;
         left: 185px;
@@ -397,17 +437,19 @@ $ip-width: 15rem;
         display: flex;
         justify-content: space-between;
         font-size: 0.8rem;
+
         .mg-left {
           span + span {
             margin-left: 0.2rem;
           }
         }
+
         .mg-right {
           color: #eee;
           padding-right: 0.5rem;
           display: flex;
           align-items: flex-end;
-          padding-bottom: .2rem;
+          padding-bottom: 0.2rem;
         }
       }
     }
@@ -550,7 +592,7 @@ export default {
   props: ["curAI"],
   data: function() {
     return {
-      selectedAuthor: '',
+      selectedAuthor: "",
       //список серий
       sListItems: [],
       //список книг
@@ -617,8 +659,8 @@ export default {
       return store.getters.blLook;
     },
     infoPanel: function() {
-      return (store.getters.iPanel === 'on') ? true : false;
-    }   
+      return store.getters.iPanel === "on" ? true : false;
+    }
   },
   methods: {
     delHandleOk() {
@@ -638,12 +680,12 @@ export default {
     },
     setTableHeaderPad() {
       /* добавляем отступ в заголовок таблицы <tbl-table> 
-                                   при появленни скрола у <table-body> 
-                                   Скролл может появится:
-                                      - при изменении массива bListItems (watch: bListItems);
-                                      - при маштабировании окна (хук: resize);
-                                      - при смене вида отображения (computed: look).
-                              */
+                                         при появленни скрола у <table-body> 
+                                         Скролл может появится:
+                                            - при изменении массива bListItems (watch: bListItems);
+                                            - при маштабировании окна (хук: resize);
+                                            - при смене вида отображения (computed: look).
+                                    */
       this.$nextTick(function() {
         let el = document.getElementById("table-body");
         if (el) {
@@ -683,6 +725,29 @@ export default {
         }
       }
     },
+    scrollTo(element, to, duration) {
+      var start = element.scrollTop,
+        change = to - start,
+        currentTime = 0,
+        increment = 20;
+
+      Math.easeInOutQuad = function(t, b, c, d) {
+        t /= d / 2;
+        if (t < 1) return (c / 2) * t * t + b;
+        t--;
+        return (-c / 2) * (t * (t - 2) - 1) + b;
+      };
+
+      var animateScroll = function() {
+        currentTime += increment;
+        var val = Math.easeInOutQuad(currentTime, start, change, duration);
+        element.scrollTop = val;
+        if (currentTime < duration) {
+          setTimeout(animateScroll, increment);
+        }
+      };
+      animateScroll();
+    },
     itemClickHandler(item) {
       //сбросим атрибуты по всему массиву
       this.bListItems.forEach(function(entry) {
@@ -696,6 +761,9 @@ export default {
       this.selectedItem = element;
       this.bMenu = true;
       this.menuPos(item.currentTarget.id);
+      if (document.getElementById("ip1")) {
+        this.scrollTo(document.getElementById("ip1"), 0, 700);
+      }
     },
     mouseOverBook(item) {
       let element = this.bListItems[

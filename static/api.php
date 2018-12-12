@@ -101,7 +101,7 @@ if (isset($_POST["cmd"])) {
                     $res["data"] = true;
                 } else {
                     $res["success"] = false;
-                    $res["error"] = "DB Update Error ".$username.' - '.$b_state;
+                    $res["error"] = "DB Update Error " . $username . ' - ' . $b_state;
                 }
             }
             break;
@@ -121,7 +121,7 @@ if (isset($_POST["cmd"])) {
                     $res["data"] = true;
                 } else {
                     $res["success"] = false;
-                    $res["error"] = "DB Update Error ".$username.' - '.$b_state;
+                    $res["error"] = "DB Update Error " . $username . ' - ' . $b_state;
                 }
             }
             break;
@@ -141,10 +141,10 @@ if (isset($_POST["cmd"])) {
                     $res["data"] = true;
                 } else {
                     $res["success"] = false;
-                    $res["error"] = "DB Update Error ".$username.' - '.$b_state;
+                    $res["error"] = "DB Update Error " . $username . ' - ' . $b_state;
                 }
             }
-            break;       
+            break;
         //Отметка о планировании
         case "set_stars":
             if ($pdo and $_SESSION["user"]) {
@@ -161,10 +161,10 @@ if (isset($_POST["cmd"])) {
                     $res["data"] = true;
                 } else {
                     $res["success"] = false;
-                    $res["error"] = "DB Update Error ".$username.' - '.$b_state;
+                    $res["error"] = "DB Update Error " . $username . ' - ' . $b_state;
                 }
             }
-            break;          
+            break;
         //набор букв для фильтра авторов
         case "с_list":
             if ($pdo and $_SESSION["user"]) {
@@ -211,19 +211,18 @@ if (isset($_POST["cmd"])) {
         //конкретный автор
         case "author":
             if ($pdo and $_SESSION["user"]) {
+                $ai = $_POST["dat"];
                 $stmt = $pdo->prepare('SELECT ar_last_name, ar_middle_name, ar_first_name
                                        FROM authors
                                        WHERE ar_id = :ai');
-                $stmt->bindValue(':ai', $username, PDO::PARAM_STR);
+                $stmt->bindValue(':ai', $ai, PDO::PARAM_INT);
                 $stmt->execute();
-                $result = $stmt->fetchAll();
-                foreach ($result as $value) {
-                    $res["data"] = ucwords($value[ar_last_name] . ' ' . $value[ar_first_name] . ' ' . $value[ar_middle_name]);
-                }
+                $result = $stmt->fetch();
+                $res["data"] = ucwords($result[ar_last_name] . ' ' . $result[ar_first_name] . ' ' . $result[ar_middle_name]);
 
             }
-            break;    
-        //список серий    
+            break;
+        //список серий
         case "as_list":
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
@@ -261,7 +260,7 @@ if (isset($_POST["cmd"])) {
                 $username = $_SESSION["user"];
                 $ai = $_POST["dat"];
                 $stmt = $pdo->prepare('SELECT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars,
-                                              bkse_number, 
+                                              bkse_number,
                                               se_title,
                                               (SELECT GROUP_CONCAT(ar_last_name, " ", ar_middle_name, " ", ar_first_name
                                                       ORDER BY ar_last_name, ar_middle_name, ar_first_name ASC SEPARATOR ", ")
@@ -464,7 +463,7 @@ if (isset($_POST["cmd"])) {
                                 //имя файла с книгой
                                 "hash_name" => $filename,
                             );
- 
+
                             //Серия
                             if (empty($title_info->getElementsByTagName('sequence')->item(0))) {
                                 $sequence = "яяяяяя"; //Для сортировки
