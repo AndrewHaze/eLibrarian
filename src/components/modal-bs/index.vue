@@ -491,7 +491,7 @@ export default {
       }
       this.pHeight = this.mHeight / 2 - shiftR;
     },
-    openFiles(e) {
+    openFiles() {
       document.getElementById("fi1").click();
     },
     handleFileChange(e) {
@@ -550,7 +550,7 @@ export default {
       this.buf = this.multi2one(this.listInputFiles);
       this.selected = checked ? this.buf.slice() : [];
     },
-    showBookScanner(evt) {
+    showBookScanner() {
       this.listInputFiles = [];
       this.listProcessingFiles = [];
       this.mbsItems = [];
@@ -569,7 +569,7 @@ export default {
         function(rd) {}
       );
     },
-    bookScannerHidden(evt) {
+    bookScannerHidden() {
       this.$parent.updateAll();
     },
     hideModal(){

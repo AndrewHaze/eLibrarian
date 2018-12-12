@@ -4,6 +4,7 @@ const state = { link: "http://l.mgr.loc",
                 at: 'eLibrarian v.0.0.1', 
                 ai: -1,
                 bll: "cover",
+                ip: "",
               }
 
 const getters = {
@@ -17,6 +18,8 @@ const getters = {
   authorID: state => state.ai,
   //вид списка книг
   blLook: state => state.bll,
+  //Инфо панель книги
+  iPanel: state => state.ip,
 }
 
 const mutations = {
@@ -34,6 +37,9 @@ const mutations = {
   },
   setblLook(state, value) {
     state.bll = value
+  },
+  setInfoPanel(state, value) {
+    state.ip = value
   },
 }
 

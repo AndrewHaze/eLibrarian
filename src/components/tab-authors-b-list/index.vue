@@ -1,7 +1,7 @@
 <template>
   <section>
     <h6 v-if="this.curAI == -1">Нет данных для отображения</h6>
-    <div id="tad" v-else>
+    <div  v-else id="tad" :class="{ rightmargin: infoPanel }">
       <div class="cover-book-list" v-if="look === 'cover'" @scroll="onScroll">
         <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
           <div class="series-title" v-if="sItem.seriesTitle === 'яяяяяя'">
@@ -115,6 +115,21 @@
         </div>
       </div>
     </div>
+    <transition name="fade"> 
+      <div v-if="infoPanel && this.curAI >= 0" class="info-panel">
+        <div>{{ selectedItem.author }}</div>
+        <div>{{ selectedItem.genres }}</div>
+        <div>{{ selectedItem.title }}</div>
+        <div><img :src="'data:image/jpg;base64,'+selectedItem.cover"></div>
+        <!--
+        <div class="series-title" v-if="sItem.seriesTitle === 'яяяяяя'">
+          {{ sItem.seriesTitle }}
+          {{ bItem.seriesNumber }}
+        </div>
+        -->
+        <div>{{ selectedItem.annotation }}</div>
+      </div>
+    </transition>  
     <transition name="fade">
       <div
         v-show="bMenu"
@@ -218,8 +233,10 @@ $selected-color: #ddd;
 $hover-color: rgba(221, 221, 221, 0.4);
 $item-mr: 0.5rem;
 $item-pd: 0.5rem;
+$ip-width: 15rem;
 
 .content section {
+  position: relative;
   margin-left: -0.5rem;
   overflow: hidden;
 }
@@ -229,6 +246,21 @@ $item-pd: 0.5rem;
   overflow: hidden;
   padding-bottom: 1.2rem;
   height: 100%;
+}
+
+.rightmargin {
+  margin-right: $ip-width;
+}
+
+.info-panel {
+  position: absolute;
+  display: flex;
+  flex-flow: column nowrap;
+  top: 0;
+  bottom: 1.2rem;
+  left: calc(100% - 16rem);
+  right: 0;
+  overflow-y: auto;
 }
 
 .book-menu {
@@ -560,15 +592,18 @@ export default {
       );
     },
     bListItems: function() {
-      this.setTableHeaderPad();
+      this.setTableHeaderPad(); //проверяем и добавляем отступ в заголовок таблицы
     }
   },
   computed: {
     //стиль отображения
     look: function() {
-      this.setTableHeaderPad();
+      this.setTableHeaderPad(); //проверяем и добавляем отступ в заголовок таблицы
       return store.getters.blLook;
-    }
+    },
+    infoPanel: function() {
+      return (store.getters.iPanel === 'on') ? true : false;
+    }   
   },
   methods: {
     delHandleOk() {
