@@ -208,6 +208,7 @@ if (isset($_POST["cmd"])) {
 
             }
             break;
+        //список серий    
         case "as_list":
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
@@ -244,7 +245,7 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $ai = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT bk_id, bk_title, bk_cover, bk_read, bk_to_plan, bk_favorites, bk_stars,
+                $stmt = $pdo->prepare('SELECT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars,
                                               bkse_number, 
                                               se_title,
                                               (SELECT GROUP_CONCAT(ar_last_name, " ", ar_middle_name, " ", ar_first_name
@@ -284,6 +285,7 @@ if (isset($_POST["cmd"])) {
                                 "title" => $value[bk_title],
                                 "cover" => base64_encode($value[bk_cover]),
                                 "genres" => $value[list_genres] ?: "Прочее",
+                                "annotation" => $value[bk_annotation],
                                 "seriesTitle" => $value[se_title],
                                 "seriesNumber" => $value[bkse_number],
                                 "isRead" => $value[bk_read],
