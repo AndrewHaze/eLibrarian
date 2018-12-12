@@ -40,6 +40,14 @@
               </b-form-radio>
             </b-form-radio-group>
           </b-col>
+          <b-col class="col-auto text-right">
+            <b-form-checkbox-group v-model="selectedCheckbox" buttons size="sm" name="buttons2">
+              <b-form-checkbox value="on">
+                <font-awesome-icon icon="tag"/>
+              </b-form-checkbox>
+            </b-form-checkbox-group>
+          </b-col>
+
           <b-col class="col-auto text-right" v-if="isProfileLoaded">
             <b-img :src="require('./assets/owner.png')" height="29" class="mr-1"/>
             <b-dropdown id="ddown1" dropup right v-bind:text="name" size="sm">
@@ -61,7 +69,8 @@ import store from "./store";
 export default {
   data: function() {
     return {
-      picked: "cover"
+      picked: "cover",
+      selectedCheckbox: ['on']
     };
   },
   created: function() {
@@ -72,7 +81,7 @@ export default {
   methods: {
     logout: function() {
       this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push("/login"));
-    },
+    }
   },
   computed: {
     ...mapGetters([
@@ -88,11 +97,13 @@ export default {
     })
   },
   watch: {
-    picked: function () {
+    picked: function() {
       store.commit("setblLook", this.picked);
-    }
+    },
+    selectedCheckbox: function() {
+      store.commit("setInfoPanel", this.selectedCheckbox[0]);
+    }  
   }
-
 };
 </script>
 
