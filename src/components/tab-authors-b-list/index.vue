@@ -261,6 +261,7 @@ $ip-width: 21rem;
   top: 0;
   left: calc(100% - 20.5rem);
   right: 0;
+  bottom: 1.5rem;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0 1rem 0;
@@ -797,7 +798,7 @@ export default {
       this.selectedItem = element;
       this.bMenu = true;
       this.menuPos(item.currentTarget.id);
-      if (document.getElementById("ip1")) {
+      if (document.getElementById("ip1") && document.getElementById("ip1").scrollTop > 0) {
         this.scrollTo(document.getElementById("ip1"), 0, 100);
       }
     },
