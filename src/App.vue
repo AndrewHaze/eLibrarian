@@ -29,29 +29,29 @@
               size="sm"
               name="radiosBtnDefault2"
             >
-              <b-form-radio value="cover">
+              <b-form-radio value="cover" title="Режим отображения: «Плитка»">
                 <font-awesome-icon icon="th"/>
               </b-form-radio>
-              <b-form-radio value="tree">
+              <b-form-radio value="tree" title="Режим отображения: «Дерево»">
                 <font-awesome-icon icon="stream"/>
               </b-form-radio>
-              <b-form-radio value="table">
+              <b-form-radio value="table" title="Режим отображения: «Таблица»">
                 <font-awesome-icon icon="table"/>
               </b-form-radio>
             </b-form-radio-group>
           </b-col>
           <b-col class="col-auto text-right">
             <b-form-checkbox-group v-model="selectedCheckbox" buttons size="sm" name="buttons2">
-              <b-form-checkbox value="on">
+              <b-form-checkbox value="on" :title="this.$store.getters.iPanel ?  'Скрыть с информацией о книге или авторе' : 'Показать панель с информацией о книге или авторе'">
                 <font-awesome-icon icon="tag"/>
               </b-form-checkbox>
             </b-form-checkbox-group>
           </b-col>
 
-          <b-col class="col-auto text-right" v-if="isProfileLoaded">
+          <b-col class="col-auto text-right" v-if="isProfileLoaded"  title="Текущий пользователь">
             <b-img :src="require('./assets/owner.png')" height="29" class="mr-1"/>
             <b-dropdown id="ddown1" dropup right v-bind:text="name" size="sm">
-              <b-dropdown-item class="m0" v-if="isAuthenticated" @click="logout">Выйти</b-dropdown-item>
+              <b-dropdown-item class="m0" v-if="isAuthenticated" @click="logout" title="Сменить пользователя">Выйти</b-dropdown-item>
             </b-dropdown>
           </b-col>
         </b-row>
