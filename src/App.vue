@@ -20,7 +20,7 @@
     </b-container>
     <footer class="footer">
       <b-container fluid>
-        <b-row>
+        <b-row v-if="isProfileLoaded">
           <b-col class="text-right">
             <b-form-radio-group
               id="btnradios2"
@@ -48,7 +48,7 @@
             </b-form-checkbox-group>
           </b-col>
 
-          <b-col class="col-auto text-right" v-if="isProfileLoaded"  title="Текущий пользователь">
+          <b-col class="col-auto text-right" title="Текущий пользователь">
             <b-img :src="require('./assets/owner.png')" height="29" class="mr-1"/>
             <b-dropdown id="ddown1" dropup right v-bind:text="name" size="sm">
               <b-dropdown-item class="m0" v-if="isAuthenticated" @click="logout" title="Сменить пользователя">Выйти</b-dropdown-item>
