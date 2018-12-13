@@ -7,6 +7,8 @@ require_once 'functions.php';
 
 set_cors();
 
+$dbe = 'dbe';
+
 $res = array("data" => array(), "success" => true, "error" => "");
 
 $_POST = json_decode(file_get_contents("php://input"), true);
@@ -229,7 +231,7 @@ if (isset($_POST["cmd"])) {
                     if ($result[se_title] == 'яяяяяя') {
                         $res["data"] = '';
                     } else {
-                        $res["data"] = ucwords($result[se_title]) . ' №' . $result[bkse_number] ;
+                        $res["data"] = ucwords($result[se_title]) . ' №' . $result[bkse_number];
                     }
                 } else {
                     $res["success"] = false;
@@ -369,6 +371,8 @@ if (isset($_POST["cmd"])) {
                     if ($description) {
                         //Подгружаем секцию 'title-info'
                         $title_info = $description->getElementsByTagName('title-info')->item(0);
+                        //Подгружаем секцию 'src-title-info'
+                        $src_title_info = $description->getElementsByTagName('src-title-info')->item(0);
 
                         //Название книги
                         $book_title = $title_info->getElementsByTagName('book-title')->item(0)->nodeValue;
@@ -377,25 +381,34 @@ if (isset($_POST["cmd"])) {
                         $book_annotation = trim($title_info->getElementsByTagName('annotation')->item(0)->nodeValue);
 
                         //Обложка
+
                         $coverpage = $title_info->getElementsByTagName('coverpage')->item(0);
-                        $cover_id = substr($coverpage->getElementsByTagName('image')->item(0)->getAttribute('l:href'), 1);
-                        $nodes = $doc->getElementsByTagName('binary');
-                        foreach ($nodes as $node) {
-                            if ($node->getAttribute('id') == $cover_id) {
-                                $cover = base64_decode($node->nodeValue);
-                                break;
+                        if (!$coverpage) {
+                            $coverpage = $src_title_info->getElementsByTagName('coverpage')->item(0);
+                        }
+                        if ($coverpage) {
+                            $cover_id = substr($coverpage->getElementsByTagName('image')->item(0)->getAttribute('l:href'), 1);
+                            $nodes = $doc->getElementsByTagName('binary');
+                            foreach ($nodes as $node) {
+                                if ($node->getAttribute('id') == $cover_id) {
+                                    $cover = base64_decode($node->nodeValue);
+                                    break;
+                                }
                             }
+
+                        } else {
+                            $cover = '';
                         }
 
                         //Дата
                         $book_date = $title_info->getElementsByTagName('date')->item(0)->nodeValue;
 
+                        $time = strtotime($book_date);
                         //Подгружаем секцию 'document-info'
                         $document_info = $description->getElementsByTagName('document-info')->item(0);
 
                         //book id
                         $book_id = $document_info->getElementsByTagName('id')->item(0)->nodeValue;
-                        $time = strtotime($book_date);
 
                         /********************************** QUERIES ***********************************************/
 
@@ -517,7 +530,7 @@ if (isset($_POST["cmd"])) {
                         } else {
                             //Ошибка обновления БД
                             $res["success"] = false;
-                            $res["error"] = "dbe";
+                            $res["error"] = $dbe;
                         }
 
                     } else {
