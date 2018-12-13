@@ -120,15 +120,12 @@
         <div class="authors">{{ selectedItem.author }}</div>
         <div class="genres">{{ selectedItem.genres }}</div>
         <div class="title">{{ selectedItem.title }}</div>
+        <div class="series" v-if="selectedSeries != ''">
+          {{ selectedSeries }}
+        </div>
         <div class="cover">
           <img :src="'data:image/jpg;base64,'+selectedItem.cover">
         </div>
-        <!--
-        <div class="series-title" v-if="sItem.seriesTitle === 'яяяяяя'">
-          {{ sItem.seriesTitle }}
-          {{ bItem.seriesNumber }}
-        </div>
-        -->
         <div class="annotation">{{ selectedItem.annotation }}</div>
       </div>
       <div v-else-if="infoPanel && selectedAuthor" class="book-info-panel">
@@ -161,23 +158,23 @@
             <b-btn
               variant="success"
               :title="isRead ? 'Снять отметку «Прочитано»' : 'Поставить отметку «Прочитано»'"
-              :pressed="isRead"
+              :pressed="Boolean(isRead)"
               @click="readButtonClick"
             >
               <font-awesome-icon icon="check"/>
             </b-btn>
             <b-btn
               variant="success"
-              :title="isToPlan ? 'Снять отметку «Запланировать»' : 'Поставить отметку «Запланировать»'"
-              :pressed="isToPlan"
+              :title="isToPlan ? 'Снять отметку «Запланировано»' : 'Поставить отметку «Запланировано»'"
+              :pressed="Boolean(isToPlan)"
               @click="toPlanButtonClick"
             >
               <font-awesome-icon icon="calendar-check"/>
             </b-btn>
             <b-btn
               variant="success"
-              :title="isFavorites ? 'Снять отметку «В избранное»' : 'Поставить отметку «В избранное»'"
-              :pressed="isFavorites"
+              :title="isFavorites ? 'Снять отметку «Понравилось»' : 'Поставить отметку «Понравилось»'"
+              :pressed="Boolean(isFavorites)"
               @click="favoritesButtonClick"
             >
               <font-awesome-icon icon="heart"/>
@@ -259,11 +256,10 @@ $ip-width: 21rem;
 
 .book-info-panel {
   position: absolute;
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: center;
+  display: block;
+  height: calc(100% - 1.2rem);
+  box-sizing: border-box;
   top: 0;
-  bottom: 1.2rem;
   left: calc(100% - 20.5rem);
   right: 0;
   overflow-y: auto;
@@ -282,28 +278,35 @@ $ip-width: 21rem;
     font-weight: 600;
   }
 
-  .genres {
+  .genres,
+  .series {
     font-size: 0.8rem;
     line-height: 0.9rem;
+  }
+
+  .series {
+    font-size: 0.8rem;
+    line-height: 0.9rem;
+    margin-top: .3rem;
   }
 
   .title {
     font-size: 1.5rem;
     line-height: 1.6rem;
     font-weight: 600;
-    margin: 1rem 0;
+    margin: 1rem 0 0;
   }
 
   .cover {
     width: 100%;
-    margin: 0.5rem 0 1.5rem;
+    margin: 1.5rem 0 1.5rem;
     box-shadow: 5px 5px 5px #aaaaaa;
     > img {
-      width: 100%;
+      width: 99%;
     }
   }
   .annotation {
-    font-size: .9rem;
+    font-size: 0.9rem;
     line-height: 1rem;
     text-align: left;
   }
@@ -590,18 +593,16 @@ $ip-width: 21rem;
 }
 
 .slide-enter-active {
-  transition: all .3s ease;
+  transition: all 0.3s ease;
 }
 .slide-leave-active {
-  transition: all .4s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  transition: all 0.4s cubic-bezier(1, 0.5, 0.8, 1);
 }
-.slide-enter, .slide-leave-to {
+.slide-enter,
+.slide-leave-to {
   transform: translateX(20rem);
   //opacity: 0;
 }
-
-
-
 </style>
 
 <script>
@@ -613,6 +614,8 @@ export default {
   data: function() {
     return {
       selectedAuthor: "",
+      selectedSeries: "",
+      selectedSeriesNumber: 0,
       //список серий
       sListItems: [],
       //список книг
@@ -665,6 +668,20 @@ export default {
         "",
         function(rd) {
           self.selectedAuthor = rd; //возвр. данные (Responce)
+        }
+      );
+    },
+    bookID: function(val) {
+      const self = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "series",
+          dat: val
+        },
+        "",
+        function(rd) {
+          self.selectedSeries = rd;
         }
       );
     },
