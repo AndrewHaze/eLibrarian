@@ -85,8 +85,7 @@ if (isset($_POST["cmd"])) {
                 $res["error"] = "PDO Error";
             }
             break;
-        //Отметка о прочтении
-        case "status_read":
+        case "status_read": //Отметка о прочтении
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $b_id = $_POST["id"];
@@ -105,8 +104,7 @@ if (isset($_POST["cmd"])) {
                 }
             }
             break;
-        //Отметка о предпочтении
-        case "status_favorites":
+        case "status_favorites": //Отметка о предпочтении
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $b_id = $_POST["id"];
@@ -125,8 +123,7 @@ if (isset($_POST["cmd"])) {
                 }
             }
             break;
-        //Отметка о планировании
-        case "status_toplan":
+        case "status_toplan": //Отметка о планировании
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $b_id = $_POST["id"];
@@ -145,8 +142,7 @@ if (isset($_POST["cmd"])) {
                 }
             }
             break;
-        //Отметка о планировании
-        case "set_stars":
+        case "set_stars": //Рейтинг
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $b_id = $_POST["id"];
@@ -165,8 +161,7 @@ if (isset($_POST["cmd"])) {
                 }
             }
             break;
-        //набор букв для фильтра авторов
-        case "с_list":
+        case "с_list": //набор букв для фильтра авторов
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $stmt = $pdo->prepare('SELECT DISTINCT SUBSTR(ar_last_name, 1, 1) FROM authors, books_authors, books
@@ -181,8 +176,7 @@ if (isset($_POST["cmd"])) {
                 array_unshift($res["data"], array("text" => "*", "value" => "*"));
             }
             break;
-        //список авторов
-        case "a_list":
+        case "a_list": //список авторов
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $stmt = $pdo->prepare('SELECT ar_id, ar_last_name, ar_middle_name, ar_first_name, COUNT(*) cnt
@@ -208,8 +202,7 @@ if (isset($_POST["cmd"])) {
 
             }
             break;
-        //конкретный автор
-        case "author":
+        case "author": //выбраный автор
             if ($pdo and $_SESSION["user"]) {
                 $ai = $_POST["dat"];
                 $stmt = $pdo->prepare('SELECT ar_last_name, ar_middle_name, ar_first_name
@@ -222,8 +215,29 @@ if (isset($_POST["cmd"])) {
 
             }
             break;
-        //список серий
-        case "as_list":
+        case "series": //серия выбранной книги
+            if ($pdo and $_SESSION["user"]) {
+                $b_id = $_POST["dat"];
+                $stmt = $pdo->prepare('SELECT se_title, bkse_number
+                                        FROM books, books_series, series
+                                        WHERE bk_id = :b_id
+                                        AND bkse_bk_id = bk_id
+                                        AND se_id = bkse_se_id');
+                $stmt->bindValue(':b_id', $b_id, PDO::PARAM_INT);
+                if ($stmt->execute()) {
+                    $result = $stmt->fetch();
+                    if ($result[se_title] == 'яяяяяя') {
+                        $res["data"] = '';
+                    } else {
+                        $res["data"] = ucwords($result[se_title]) . ' №' . $result[bkse_number] ;
+                    }
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "dbe";
+                }
+            }
+            break;
+        case "as_list": //список серий
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $ai = $_POST["dat"];
@@ -254,8 +268,7 @@ if (isset($_POST["cmd"])) {
                 }
             }
             break;
-        //список книг
-        case "ab_list":
+        case "ab_list": //список книг
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $ai = $_POST["dat"];
@@ -322,7 +335,7 @@ if (isset($_POST["cmd"])) {
                 $res["error"] = "I/O Error (Clear Upload)";
             }
             break;
-        case "proc":
+        case "proc": //Загрузка книг в БД
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $filename = $_POST["file"];
