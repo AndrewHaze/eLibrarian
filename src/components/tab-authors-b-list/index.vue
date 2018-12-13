@@ -257,7 +257,6 @@ $ip-width: 21rem;
 .book-info-panel {
   position: absolute;
   display: block;
-  height: calc(100% - 1.2rem);
   box-sizing: border-box;
   top: 0;
   left: calc(100% - 20.5rem);
