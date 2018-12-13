@@ -115,8 +115,8 @@
         </div>
       </div>
     </div>
-    <transition name="fade">
-      <div v-if="infoPanel && this.curAI >= 0 && selectedItem" id="ip1" class="info-panel">
+    <transition name="slide">
+      <div v-if="infoPanel && this.curAI >= 0 && selectedItem" id="ip1" class="book-info-panel">
         <div class="authors">{{ selectedItem.author }}</div>
         <div class="genres">{{ selectedItem.genres }}</div>
         <div class="title">{{ selectedItem.title }}</div>
@@ -131,7 +131,7 @@
         -->
         <div class="annotation">{{ selectedItem.annotation }}</div>
       </div>
-      <div v-else-if="infoPanel && selectedAuthor" class="info-panel">
+      <div v-else-if="infoPanel && selectedAuthor" class="book-info-panel">
         <div class="book-author">{{ this.selectedAuthor }}</div>
       </div>
     </transition>
@@ -160,24 +160,24 @@
           <b-button-group class="mx-1" size="sm">
             <b-btn
               variant="success"
-              title="Прочитано"
-              :pressed="Boolean(isRead)"
+              :title="isRead ? 'Снять отметку «Прочитано»' : 'Поставить отметку «Прочитано»'"
+              :pressed="isRead"
               @click="readButtonClick"
             >
               <font-awesome-icon icon="check"/>
             </b-btn>
             <b-btn
               variant="success"
-              title="Запланировать"
-              :pressed="Boolean(isToPlan)"
+              :title="isToPlan ? 'Снять отметку «Запланировать»' : 'Поставить отметку «Запланировать»'"
+              :pressed="isToPlan"
               @click="toPlanButtonClick"
             >
               <font-awesome-icon icon="calendar-check"/>
             </b-btn>
             <b-btn
               variant="success"
-              title="В избранное"
-              :pressed="Boolean(isFavorites)"
+              :title="isFavorites ? 'Снять отметку «В избранное»' : 'Поставить отметку «В избранное»'"
+              :pressed="isFavorites"
               @click="favoritesButtonClick"
             >
               <font-awesome-icon icon="heart"/>
@@ -257,7 +257,7 @@ $ip-width: 21rem;
   margin-right: $ip-width;
 }
 
-.info-panel {
+.book-info-panel {
   position: absolute;
   display: flex;
   flex-flow: column nowrap;
@@ -272,6 +272,7 @@ $ip-width: 21rem;
   text-align: center;
   line-height: 1.3rem;
   border-left: 1px solid $line-color;
+  background-color: #fff;
 
   .book-author {
     font-size: 1.5rem;
@@ -283,6 +284,7 @@ $ip-width: 21rem;
 
   .genres {
     font-size: 0.8rem;
+    line-height: 0.9rem;
   }
 
   .title {
@@ -294,13 +296,14 @@ $ip-width: 21rem;
 
   .cover {
     width: 100%;
-    margin: 0.5rem 0 1rem;
+    margin: 0.5rem 0 1.5rem;
+    box-shadow: 5px 5px 5px #aaaaaa;
     > img {
       width: 100%;
     }
   }
   .annotation {
-    font-size: 1rem;
+    font-size: .9rem;
     line-height: 1rem;
     text-align: left;
   }
@@ -326,16 +329,6 @@ $ip-width: 21rem;
   &:focus {
     color: #ffd700;
   }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
-}
-
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
 }
 
 .cover-book-list {
@@ -583,6 +576,32 @@ $ip-width: 21rem;
     }
   }
 }
+
+//Переходы
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active {
+  transition: all .3s ease;
+}
+.slide-leave-active {
+  transition: all .4s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-enter, .slide-leave-to {
+  transform: translateX(20rem);
+  //opacity: 0;
+}
+
+
+
 </style>
 
 <script>
@@ -730,7 +749,7 @@ export default {
       var start = element.scrollTop,
         change = to - start,
         currentTime = 0,
-        increment = 20;
+        increment = 2;
 
       Math.easeInOutQuad = function(t, b, c, d) {
         t /= d / 2;
@@ -763,7 +782,7 @@ export default {
       this.bMenu = true;
       this.menuPos(item.currentTarget.id);
       if (document.getElementById("ip1")) {
-        this.scrollTo(document.getElementById("ip1"), 0, 700);
+        this.scrollTo(document.getElementById("ip1"), 0, 100);
       }
     },
     mouseOverBook(item) {
