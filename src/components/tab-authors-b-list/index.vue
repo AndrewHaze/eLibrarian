@@ -21,8 +21,8 @@
             @mouseover="mouseOverBook"
             @mouseleave="mouseLeaveBook"
           >
-            <div class="cover">
-              <img :src="'data:image/jpg;base64,'+bItem.cover">
+            <div class="cover" :class="{ nocover: bItem.cover === '' }">
+              <img v-if="bItem.cover" :src="'data:image/jpg;base64,'+bItem.cover">
             </div>
             <div class="info">
               <div class="book-authors">{{ bItem.author }}</div>
@@ -120,11 +120,9 @@
         <div class="authors">{{ selectedItem.author }}</div>
         <div class="genres">{{ selectedItem.genres }}</div>
         <div class="title">{{ selectedItem.title }}</div>
-        <div class="series" v-if="selectedSeries != ''">
-          {{ selectedSeries }}
-        </div>
-        <div class="cover">
-          <img :src="'data:image/jpg;base64,'+selectedItem.cover">
+        <div class="series" v-if="selectedSeries != ''">{{ selectedSeries }}</div>
+        <div class="cover" :class="{ nocover: selectedItem.cover === '' }">
+          <img v-if="selectedItem.cover" :src="'data:image/jpg;base64,'+selectedItem.cover">
         </div>
         <div class="annotation">{{ selectedItem.annotation }}</div>
       </div>
@@ -272,6 +270,7 @@ $ip-width: 21rem;
 
   .book-author {
     font-size: 1.5rem;
+    line-height: 1.6rem;
   }
 
   .authors {
@@ -287,7 +286,7 @@ $ip-width: 21rem;
   .series {
     font-size: 0.8rem;
     line-height: 0.9rem;
-    margin-top: .3rem;
+    margin-top: 0.3rem;
   }
 
   .title {
@@ -302,9 +301,18 @@ $ip-width: 21rem;
     margin: 1.5rem 0 1.5rem;
     box-shadow: 5px 5px 5px #aaaaaa;
     > img {
-      width: 99%;
+      width: 100%;
     }
   }
+
+  .nocover {
+    height: 400px;
+    background-image: url("/static/assets/covertexture.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
   .annotation {
     font-size: 0.9rem;
     line-height: 1rem;
@@ -340,6 +348,7 @@ $ip-width: 21rem;
   padding-left: 0.2rem;
   overflow-y: auto;
   overflow-x: hidden;
+  //transition: width 10s ease-out 5s;
 
   div {
     display: flex;
@@ -386,6 +395,7 @@ $ip-width: 21rem;
       position: relative;
       flex-flow: row nowrap;
       width: 389px;
+      max-height: 236px;
       margin: $item-mr;
       padding: $item-pd;
       transition: background-color 0.2s;
@@ -408,6 +418,13 @@ $ip-width: 21rem;
         > img {
           height: 100%;
         }
+      }
+
+      .nocover {
+        background-image: url("/static/assets/covertexture.jpg");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
       }
 
       .info {
@@ -798,7 +815,10 @@ export default {
       this.selectedItem = element;
       this.bMenu = true;
       this.menuPos(item.currentTarget.id);
-      if (document.getElementById("ip1") && document.getElementById("ip1").scrollTop > 0) {
+      if (
+        document.getElementById("ip1") &&
+        document.getElementById("ip1").scrollTop > 0
+      ) {
         this.scrollTo(document.getElementById("ip1"), 0, 100);
       }
     },

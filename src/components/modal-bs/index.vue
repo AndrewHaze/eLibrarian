@@ -95,7 +95,7 @@
               <div class="ip-body">
                 <ul>
                   <li>
-                    <img :src="this.$store.getters.prefix + '/static/assets/raw.png'">Отмечен для обработки
+                    <img :src="this.$store.getters.prefix + '/static/assets/raw.png'">Загружен для обработки
                   </li>
                   <li>
                     <img :src="this.$store.getters.prefix + '/static/assets/add.png'">Успешно добавлен
