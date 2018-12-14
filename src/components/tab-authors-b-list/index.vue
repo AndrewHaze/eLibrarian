@@ -25,9 +25,9 @@
               <img v-if="bItem.cover" :src="'data:image/jpg;base64,'+bItem.cover">
             </div>
             <div class="info">
-              <div class="book-authors">{{ bItem.author }}</div>
+              <div class="book-authors">{{ strAuthor(bItem.author) }}</div>
               <div class="book-title">{{ bItem.title }}</div>
-              <div>{{ bItem.genres }}</div>
+              <div>{{ strGenres(bItem.genres) }}</div>
             </div>
             <div class="mark-group">
               <div class="mg-left">
@@ -537,6 +537,7 @@ $ip-width: 21rem;
         padding: 0.5rem;
         align-items: center;
         overflow: hidden;
+        line-height: 1.2rem;
       }
 
       .cell-1,
@@ -717,6 +718,14 @@ export default {
     }
   },
   methods: {
+    strAuthor: function(val) {
+        if (val.length > 200) {
+          return "Коллектив авторов"
+        } else return val;
+    },
+    strGenres: function(val) {
+        return val.replace(" (то, что не вошло в другие категории)","");
+    },
     delHandleOk() {
       const self = this;
       this.callApi(

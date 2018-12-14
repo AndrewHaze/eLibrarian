@@ -101,7 +101,7 @@ $hover-color: rgba(221, 221, 221, 0.4);
             border-bottom: none;
             padding: 0.8rem 0.3rem 0.8rem 0.65rem;
             cursor: pointer;
-
+            line-height: 1.2rem;
             &:hover {
                 background-color: $hover-color;
             }
