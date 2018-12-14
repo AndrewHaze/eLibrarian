@@ -178,7 +178,7 @@
               <font-awesome-icon icon="heart"/>
             </b-btn>
           </b-button-group>
-          <b-dropdown class="mx-1" right size="sm" variant="warning" title="Оценить книгу">
+          <b-dropdown class="mx-1" right size="sm" variant="success" title="Оценить книгу">
             <template slot="button-content">
               <font-awesome-icon icon="star-half-alt"/>
             </template>
@@ -764,30 +764,6 @@ export default {
       this.setTableHeaderPad();
       this.bMenu = false;
     },
-    //кандитат в миксины
-    getViewportHeight(doc) {
-      doc = doc || document;
-      var elem =
-        doc.compatMode == "CSS1Compat" ? doc.documentElement : doc.body;
-      return elem.clientHeight;
-    },
-    menuPos(id) {
-      if (this.bMenu) {
-        //размеры меню
-        let mW = 264,
-          mH = 32;
-        //координаты родителя
-        let p = document.getElementById("tad").getBoundingClientRect();
-        //координаты относительно родителя
-        let c = document.getElementById(id).getBoundingClientRect();
-        this.bMenuX = c.left + (c.width - mW) / 2 - p.left;
-        if (this.getViewportHeight() > c.bottom + p.top - mH) {
-          this.bMenuY = c.bottom - p.top - 3;
-        } else {
-          this.bMenuY = c.top - p.top - mH + 3;
-        }
-      }
-    },
     scrollTo(element, to, duration) {
       var start = element.scrollTop,
         change = to - start,
@@ -810,6 +786,23 @@ export default {
         }
       };
       animateScroll();
+    },
+    menuPos(id) {
+      if (this.bMenu) {
+        //размеры меню
+        let mW = 264,
+          mH = 32;
+        //координаты родителя
+        let p = document.getElementById("tad").getBoundingClientRect();
+        //координаты относительно родителя
+        let c = document.getElementById(id).getBoundingClientRect();
+        this.bMenuX = c.left + (c.width - mW) / 2 - p.left;
+        if (this.getViewportHeight() > c.bottom + p.top - mH*2.5) {
+          this.bMenuY = c.bottom - p.top - 3;
+        } else {
+          this.bMenuY = c.top - p.top - mH + 3;
+        }
+      }
     },
     itemClickHandler(item) {
       //сбросим атрибуты по всему массиву
@@ -842,11 +835,14 @@ export default {
       this.bMenu = element.isActive || false;
       this.menuPos(item.currentTarget.id);
     },
-    mouseLeaveBook(item) {
+    mouseLeaveBook() {
       this.bMenu = false;
     },
-    mouseOverBookMenu(item) {
+    mouseOverBookMenu() {
       this.bMenu = true;
+    },
+    onScroll() {
+      this.bMenu = false;
     },
     readButtonClick(item) {
       this.bMenu = false;
@@ -944,10 +940,6 @@ export default {
     starsButton5Click(item) {
       this.setStars(5);
     },
-
-    onScroll() {
-      this.bMenu = false;
-    }
   },
   mounted: function() {
     window.addEventListener("resize", this.handleResize);
