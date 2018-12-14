@@ -277,8 +277,8 @@ if (isset($_POST["cmd"])) {
                 $stmt = $pdo->prepare('SELECT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars,
                                               bkse_number,
                                               se_title,
-                                              (SELECT GROUP_CONCAT(ar_last_name, " ", ar_middle_name, " ", ar_first_name
-                                                      ORDER BY ar_last_name, ar_middle_name, ar_first_name ASC SEPARATOR ", ")
+                                              (SELECT GROUP_CONCAT(ar_last_name, " ", ar_first_name, " ", ar_middle_name
+                                                      ORDER BY ar_last_name, ar_first_name, ar_middle_name ASC SEPARATOR ", ")
                                                 FROM books_authors, authors, users
                                               WHERE bkar_bk_id = bk_id
                                                 AND ar_id = bkar_ar_id
@@ -341,6 +341,7 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $filename = $_POST["file"];
+                //$handle = fopen("uploads/bookparsing.log", "w");
                 $file = 'uploads/' . $filename;
                 $fileext = pathinfo($file, PATHINFO_EXTENSION);
                 //Создаем XML документ
@@ -354,17 +355,19 @@ if (isset($_POST["cmd"])) {
                 } else if ($fileext == "zip") {
                     $zip = new ZipArchive();
                     if ($zip->open($file)) {
-                        $res["error"] = "per";
+                        $res["error"] = "per"; //Ошибка разбора
                         $data = $zip->getFromIndex(0);
                         $load = $doc->loadXML($data);
                     } else {
                         $load = false;
-                        $res["error"] = "dma";
+                        //fwrite($handle, "Поврежденный архив\n\n");
+                        $res["error"] = "dma"; //Поврежденный архив
                     }
                 }
                 // Нужно проверить документ перед тем как ссылаться по идентификатору
                 $doc->validateOnParse = true;
                 if ($load) {
+                    //fwrite($handle, "Файл открыт\n\n");
                     //Получаем содержимое секции <description>
                     $description = $doc->getElementsByTagName('description');
                     $description = $description->item(0);
@@ -376,16 +379,25 @@ if (isset($_POST["cmd"])) {
 
                         //Название книги
                         $book_title = $title_info->getElementsByTagName('book-title')->item(0)->nodeValue;
+                        //fwrite($handle, "Название книги: ".$book_title."\n\n");
 
                         //Аннотация
                         $book_annotation = trim($title_info->getElementsByTagName('annotation')->item(0)->nodeValue);
+                        //fwrite($handle, "Аннотация: ".$book_annotation."\n\n");
 
                         //Обложка
-
-                        $coverpage = $title_info->getElementsByTagName('coverpage')->item(0);
-                        if (!$coverpage) {
-                            $coverpage = $src_title_info->getElementsByTagName('coverpage')->item(0);
+                        //fwrite($handle, "Обложка: " . $coverpage . "\n");
+                        if (empty($title_info->getElementsByTagName('coverpage')->item(0))) {
+                            $coverpage = false;
+                            if ($src_title_info) {
+                                if (!empty($src_title_info->getElementsByTagName('coverpage')->item(0))) {
+                                    $coverpage = $src_title_info->getElementsByTagName('coverpage')->item(0);
+                                }
+                            }
+                        } else {
+                            $coverpage = $title_info->getElementsByTagName('coverpage')->item(0);
                         }
+
                         if ($coverpage) {
                             $cover_id = substr($coverpage->getElementsByTagName('image')->item(0)->getAttribute('l:href'), 1);
                             $nodes = $doc->getElementsByTagName('binary');
@@ -402,13 +414,18 @@ if (isset($_POST["cmd"])) {
 
                         //Дата
                         $book_date = $title_info->getElementsByTagName('date')->item(0)->nodeValue;
-
+                        if (!$book_date || $book_date == '') {
+                            $book_date = '2099-01-01';
+                        }
                         $time = strtotime($book_date);
+                        //fwrite($handle, "Дата написания".$book_date."\n\n");
+
                         //Подгружаем секцию 'document-info'
                         $document_info = $description->getElementsByTagName('document-info')->item(0);
 
                         //book id
                         $book_id = $document_info->getElementsByTagName('id')->item(0)->nodeValue;
+                        //fwrite($handle, "ID книги: ".$book_id."\n\n");
 
                         /********************************** QUERIES ***********************************************/
 
@@ -496,7 +513,11 @@ if (isset($_POST["cmd"])) {
                                 $sequence_number = 0;
                             } else {
                                 $sequence = trim($title_info->getElementsByTagName('sequence')->item(0)->GetAttribute('name'));
-                                $sequence_number = $title_info->getElementsByTagName('sequence')->item(0)->GetAttribute('number');
+                                if (empty($title_info->getElementsByTagName('sequence')->item(0)->GetAttribute('number'))) {
+                                    $sequence_number = 0;
+                                } else {
+                                    $sequence_number = $title_info->getElementsByTagName('sequence')->item(0)->GetAttribute('number');
+                                }
                             }
                             if (trim($sequence) == '') {
                                 $sequence = "яяяяяя";
