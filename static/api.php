@@ -476,8 +476,9 @@ if (isset($_POST["cmd"])) {
                                     $stmt->execute();
                                     $count = $stmt->fetchColumn();
                                     if ($count === 0) {
-                                        $stmt = $pdo->prepare('INSERT INTO authors (ar_first_name, ar_last_name, ar_middle_name)
-                                                                   VALUES (:first_name, :last_name, :middle_name);');
+                                        $stmt = $pdo->prepare('INSERT INTO authors (ar_owner, ar_first_name, ar_last_name, ar_middle_name)
+                                                                   VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), :first_name, :last_name, :middle_name);');
+                                        $stmt->bindValue(':login', $username, PDO::PARAM_STR);
                                         $stmt->bindValue(':first_name', $first_name, PDO::PARAM_STR);
                                         $stmt->bindValue(':last_name', $last_name, PDO::PARAM_STR);
                                         $stmt->bindValue(':middle_name', $middle_name, PDO::PARAM_STR);
