@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost
--- Время создания: Дек 07 2018 г., 16:35
+-- Время создания: Дек 19 2018 г., 13:39
 -- Версия сервера: 5.7.20
 -- Версия PHP: 7.2.0
 
@@ -30,6 +30,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `authors` (
   `ar_id` int(11) NOT NULL,
+  `ar_owner` int(11) NOT NULL,
   `ar_first_name` varchar(255) DEFAULT NULL,
   `ar_last_name` varchar(255) NOT NULL,
   `ar_middle_name` varchar(255) DEFAULT NULL
@@ -46,10 +47,10 @@ CREATE TABLE `books` (
   `bk_ur_id` int(11) NOT NULL,
   `bk_book_id` varchar(255) NOT NULL,
   `bk_title` varchar(255) NOT NULL,
-  `bk_annotation` text NOT NULL,
+  `bk_annotation` mediumtext NOT NULL,
   `bk_file_date` date NOT NULL,
   `bk_file` varchar(255) NOT NULL,
-  `bk_cover` mediumblob NOT NULL,
+  `bk_cover` longblob NOT NULL,
   `bk_read` tinyint(1) NOT NULL DEFAULT '0',
   `bk_to_plan` tinyint(1) NOT NULL DEFAULT '0',
   `bk_favorites` tinyint(1) NOT NULL DEFAULT '0',
@@ -282,7 +283,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`ur_id`, `ur_login`, `ur_hash`) VALUES
 (1, 'qwerty', '$2y$10$aUvnivc6AVIoF4wMRd06AOk45/NN0RX0sIUxKaaUK56LhHmrPV1lu'),
-(2, 'qaz', '$2y$10$IGDpEFci.272f2G3MQAvOeU6vcC7ceSJBa0p8dpTNLE1Qt0q5H/3a');
+(2, 'qaz', '$2y$10$IGDpEFci.272f2G3MQAvOeU6vcC7ceSJBa0p8dpTNLE1Qt0q5H/3a'),
+(3, 'pupkin', '$2y$10$Ivei5yX16FYRkIsRMiWZfutyvQz7.ktUI5C.BM6B8nXeY1GCeMkJC');
 
 --
 -- Индексы сохранённых таблиц
@@ -359,31 +361,31 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `authors`
 --
 ALTER TABLE `authors`
-  MODIFY `ar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
+  MODIFY `ar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=608;
 
 --
 -- AUTO_INCREMENT для таблицы `books`
 --
 ALTER TABLE `books`
-  MODIFY `bk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=121;
+  MODIFY `bk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=780;
 
 --
 -- AUTO_INCREMENT для таблицы `books_authors`
 --
 ALTER TABLE `books_authors`
-  MODIFY `bkar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=243;
+  MODIFY `bkar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1050;
 
 --
 -- AUTO_INCREMENT для таблицы `books_genres`
 --
 ALTER TABLE `books_genres`
-  MODIFY `bkge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=178;
+  MODIFY `bkge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1424;
 
 --
 -- AUTO_INCREMENT для таблицы `books_series`
 --
 ALTER TABLE `books_series`
-  MODIFY `bkse_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
+  MODIFY `bkse_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=768;
 
 --
 -- AUTO_INCREMENT для таблицы `genres`
@@ -401,13 +403,13 @@ ALTER TABLE `genres_groups`
 -- AUTO_INCREMENT для таблицы `series`
 --
 ALTER TABLE `series`
-  MODIFY `se_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `se_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=349;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `ur_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ur_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
