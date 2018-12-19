@@ -148,7 +148,7 @@
             </b-btn>
           </b-button-group>
           <b-button-group class="mx-1" size="sm">
-            <b-btn variant="danger" title="Удалить книгу" v-b-modal.modal1>
+            <b-btn variant="danger" title="Удалить книгу" v-b-modal.b-modal3>
               <font-awesome-icon icon="trash-alt"/>
             </b-btn>
           </b-button-group>
@@ -212,7 +212,7 @@
       </div>
     </transition>
     <b-modal
-      id="modal1"
+      id="b-modal3"
       size="lg"
       title="Удаление книги"
       @ok="delHandleOk"
@@ -221,7 +221,14 @@
       ok-variant="danger"
       cancel-title="Отмена"
     >
-      <h4>Вы действительно хотите удалить выбранную книгу из библиотеки?</h4>
+      <b-row>
+        <b-col md="1">
+          <font-awesome-icon class="question-modal-icon" icon="question-circle"/>
+        </b-col>
+        <b-col>
+          <h4>Вы действительно хотите удалить выбранную книгу из библиотеки?</h4>
+        </b-col>
+      </b-row>
     </b-modal>
   </section>
 </template>
@@ -719,12 +726,12 @@ export default {
   },
   methods: {
     strAuthor: function(val) {
-        if (val.length > 200) {
-          return "Коллектив авторов"
-        } else return val;
+      if (val.length > 200) {
+        return "Коллектив авторов";
+      } else return val;
     },
     strGenres: function(val) {
-        return val.replace(" (то, что не вошло в другие категории)","");
+      return val.replace(" (то, что не вошло в другие категории)", "");
     },
     delHandleOk() {
       const self = this;
@@ -797,7 +804,7 @@ export default {
         //координаты относительно родителя
         let c = document.getElementById(id).getBoundingClientRect();
         this.bMenuX = c.left + (c.width - mW) / 2 - p.left;
-        if (this.getViewportHeight() > c.bottom + p.top - mH*2.5) {
+        if (this.getViewportHeight() > c.bottom + p.top - mH * 2.5) {
           this.bMenuY = c.bottom - p.top - 3;
         } else {
           this.bMenuY = c.top - p.top - mH + 3;
@@ -939,7 +946,7 @@ export default {
     },
     starsButton5Click(item) {
       this.setStars(5);
-    },
+    }
   },
   mounted: function() {
     window.addEventListener("resize", this.handleResize);

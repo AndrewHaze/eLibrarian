@@ -1,73 +1,88 @@
 <template>
-<section>
-    <loading v-if="loading" />
+  <section>
+    <loading v-if="loading"/>
     <div v-if="isAuthenticated">
-        <b-modal v-model="congShow" no-close-on-backdrop ok-only size="lg" :title="appTitle">
-            <div class="d-block fileName-center">
-                <h4>Поздравляем! Вы успешно зарегистрировались!</h4>
-            </div>
-        </b-modal>
-        <ModalBooksScanner/>
-        <b-row class="z100">
-            <b-col>
-                <b-tabs>
-                    <b-tab title="Авторы" active>
-                        <AuthorsTab ref="aTab"/>
-                    </b-tab>
-                    <b-tab title="Жанры">
-                        <GenresTab />
-                    </b-tab>
-                    <b-tab title="Серии">
-                        <SeriesTab />
-                    </b-tab>
-                </b-tabs>
-            </b-col>
+      <b-modal v-model="congShow" no-close-on-backdrop ok-only size="lg" :title="appTitle">
+        <b-row>
+          <b-col md="1">
+            <font-awesome-icon class="info-modal-icon" icon="question-circle"/>
+          </b-col>
+          <b-col>
+            <h4 class="mt-1">Поздравляем! Вы успешно зарегистрировались!</h4>
+          </b-col>
         </b-row>
+      </b-modal>
+      <ModalBooksScanner/>
+      <b-row class="z100">
+        <b-col>
+          <b-tabs>
+            <b-tab title="Авторы" active>
+              <AuthorsTab ref="aTab"/>
+            </b-tab>
+            <b-tab title="Жанры">
+              <GenresTab/>
+            </b-tab>
+            <b-tab title="Серии">
+              <SeriesTab/>
+            </b-tab>
+          </b-tabs>
+        </b-col>
+      </b-row>
     </div>
     <div v-if="!isAuthenticated && authStatus !== 'loading'" class="h-100">
-        <login />
+      <login/>
     </div>
-</section>
+  </section>
 </template>
 
 <style lang="scss">
 .fix-height {
-    height: calc(100vh - 240px);
+  height: calc(100vh - 240px);
 }
 
 .sidebar {
-    display: flex;
-    flex-flow: column nowrap;
-    flex: 0 0 16rem !important;
-    min-width: 16rem;
-    height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  flex: 0 0 16rem !important;
+  min-width: 16rem;
+  height: 100%;
 }
 
 // для табов
 .content {
-    height: 100%;
-    overflow-y: auto;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .control-element {
-    cursor: pointer;
-    user-select: none;
+  cursor: pointer;
+  user-select: none;
 }
 
 .modal-max {
-    max-width: 80% !important;
-    min-width: 680px;
+  max-width: 80% !important;
+  min-width: 680px;
 
-    @media (max-width: 576px) {
-        max-width: none !important
-    }
+  @media (max-width: 576px) {
+    max-width: none !important;
+  }
+}
+
+.info-modal-icon {
+  color: #007bff;
+  font-size: 2.6rem;
+  margin: 0 0 0.25rem;
+}
+
+.question-modal-icon {
+  color: #007bff;
+  font-size: 2.6rem;
+  margin: 0 0 0 0.25rem;
 }
 </style>
 
 <script>
-import {
-    mapGetters
-} from "vuex";
+import { mapGetters } from "vuex";
 import store from "../../store";
 import Login from "../login";
 import ModalBooksScanner from "../modal-bs";
@@ -76,42 +91,40 @@ import GenresTab from "../tab-genres";
 import SeriesTab from "../tab-series";
 
 export default {
-    name: "home",
-    components: {
-        Login,
-        ModalBooksScanner,
-        AuthorsTab,
-        GenresTab,
-        SeriesTab
-    },
-    data() {
-        return {
-            congShow: false,
-        };
-    },
-    created: function () {
-        if (this.congratulation) {
-            this.congShow = true;
-        }
-
-    },
-    methods: {
-      updateAll() {
-            store.commit("setAuthorID", -1);
-            this.$refs.aTab.getAuthors();
-        },
-    },
-    computed: {
-        ...mapGetters([
-            "isAuthenticated",
-            "authStatus",
-            "congratulation",
-            "appTitle"
-        ]),
-        loading: function () {
-            return this.authStatus === "loading" && !this.isAuthenticated;
-        },
-    },
-    
+  name: "home",
+  components: {
+    Login,
+    ModalBooksScanner,
+    AuthorsTab,
+    GenresTab,
+    SeriesTab
+  },
+  data() {
+    return {
+      congShow: false
+    };
+  },
+  created: function() {
+    if (this.congratulation) {
+      this.congShow = true;
+    }
+  },
+  methods: {
+    updateAll() {
+      store.commit("setAuthorID", -1);
+      this.$refs.aTab.getAuthors();
+    }
+  },
+  computed: {
+    ...mapGetters([
+      "isAuthenticated",
+      "authStatus",
+      "congratulation",
+      "appTitle"
+    ]),
+    loading: function() {
+      return this.authStatus === "loading" && !this.isAuthenticated;
+    }
+  }
 };
 </script>

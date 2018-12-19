@@ -422,7 +422,7 @@ $ring_color: #cce5ff;
 import axios from "axios";
 import ListItems from "../modal-bs-items-list";
 
-const shiftL = 280;
+const shiftL = 285;
 const shiftR = 6;
 
 function sortASC(a, b) {
