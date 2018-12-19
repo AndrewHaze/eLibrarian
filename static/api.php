@@ -197,7 +197,8 @@ if (isset($_POST["cmd"])) {
                         array(
                             "id" => "ai" . $value[ar_id],
                             "books" => $value[cnt],
-                            "author" => ucwords($value[ar_last_name] . ' ' . $value[ar_first_name] . ' ' . $value[ar_middle_name]),
+                                        //Склеиваем и удаляем лишнии пробелы + все заглавные
+                            "author" => preg_replace('/^ +| +$|( ) +/m', '$1', ucwords($value[ar_last_name] . ' ' . $value[ar_first_name] . ' ' . $value[ar_middle_name])),
                             "isActive" => false,
                         ));
                 }
@@ -464,9 +465,9 @@ if (isset($_POST["cmd"])) {
                                         $element->getElementsByTagName('last-name')->item(0)->nodeValue,
                                         $element->getElementsByTagName('middle-name')->item(0)->nodeValue);
 
-                                    $first_name = $author[0] ?: "";
-                                    $last_name = $author[1] ?: "";
-                                    $middle_name = $author[2] ?: "";
+                                    $first_name = trim($author[0]) ?: "";
+                                    $last_name = trim($author[1]) ?: "";
+                                    $middle_name = trim($author[2]) ?: "";
 
                                     $stmt = $pdo->prepare('SELECT COUNT(*) FROM authors
                                                                WHERE ar_first_name = :first_name AND ar_last_name = :last_name AND ar_middle_name = :middle_name ');
