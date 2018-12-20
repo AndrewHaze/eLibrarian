@@ -1,12 +1,13 @@
-const state = { link: "http://l.mgr.loc", 
-                possibility: true, 
-                reg: false, 
-                at: 'eLibrarian v.0.0.1', 
-                ai: -1,
-                si: -1,
-                bll: "cover",
-                ip: "on",
-              }
+const state = {
+  link: "http://l.mgr.loc",
+  possibility: true,
+  reg: false,
+  at: 'eLibrarian v.0.0.1',
+  ai: -1,
+  si: -1,
+  bll: "cover",
+  ip: "on",
+}
 
 const getters = {
   //домен для подстановки в пути к файлам

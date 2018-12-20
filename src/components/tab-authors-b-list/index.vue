@@ -1,6 +1,8 @@
 <template>
   <section>
-    <h6 v-if="(this.curAI == -1 || !this.curAI) && (this.curSI == -1 || !this.curSI)">Нет данных для отображения</h6>
+    <h6
+      v-if="(this.curAI == -1 || !this.curAI) && (this.curSI == -1 || !this.curSI)"
+    >Нет данных для отображения</h6>
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
       <div class="cover-book-list" v-if="look === 'cover'" @scroll="onScroll">
         <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
@@ -311,6 +313,7 @@ $ip-width: 21rem;
     width: 100%;
     margin: 1.5rem 0 1.5rem;
     box-shadow: 5px 5px 5px #aaaaaa;
+
     > img {
       width: 100%;
     }
@@ -624,9 +627,11 @@ $ip-width: 21rem;
 .slide-enter-active {
   transition: all 0.3s ease;
 }
+
 .slide-leave-active {
   transition: all 0.4s cubic-bezier(1, 0.5, 0.8, 1);
 }
+
 .slide-enter,
 .slide-leave-to {
   transform: translateX(20rem);
@@ -639,7 +644,7 @@ import store from "../../store";
 
 export default {
   name: "books-list",
-  props: ["curAI","curSI", "sid"],
+  props: ["curAI", "curSI", "sid"],
   data: function() {
     return {
       curAuthor: null,
@@ -665,7 +670,7 @@ export default {
   },
   watch: {
     curAI: function(val) {
-      //this.curAuthor = null;
+      this.curAuthor = null;
       const self = this;
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
@@ -690,6 +695,7 @@ export default {
           self.selectedItem = null;
         }
       );
+      if (val === -1) return;
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {
@@ -701,7 +707,6 @@ export default {
           self.curAuthor = rd; //возвр. данные (Responce)
         }
       );
-      console.log(">",val,self.curAuthor)
     },
     curSI: function(val) {
       this.curSeries = null;
@@ -732,7 +737,6 @@ export default {
           }
         }
       );
-      console.log(">",val,self.curSeries)
     },
     bookID: function(val) {
       const self = this;
@@ -788,14 +792,14 @@ export default {
     },
     setTableHeaderPad() {
       /* добавляем отступ в заголовок таблицы <tbl-table> 
-                                         при появленни скрола у <table-body> 
-                                         Скролл может появится:
-                                            - при изменении массива bListItems (watch: bListItems);
-                                            - при маштабировании окна (хук: resize);
-                                            - при смене вида отображения (computed: look).
-                                    */
+                                               при появленни скрола у <table-body> 
+                                               Скролл может появится:
+                                                  - при изменении массива bListItems (watch: bListItems);
+                                                  - при маштабировании окна (хук: resize);
+                                                  - при смене вида отображения (computed: look).
+                                          */
       this.$nextTick(function() {
-        let el = document.getElementById(this.sid+"table-body");
+        let el = document.getElementById(this.sid + "table-body");
         if (el) {
           let hSum = 0;
           for (let i = 0; i < el.children.length; i++) {
@@ -863,10 +867,10 @@ export default {
       this.bMenu = true;
       this.menuPos(item.currentTarget.id);
       if (
-        document.getElementById(this.sid+"ip1") &&
-        document.getElementById(this.sid+"ip1").scrollTop > 0
+        document.getElementById(this.sid + "ip1") &&
+        document.getElementById(this.sid + "ip1").scrollTop > 0
       ) {
-        this.scrollTo(document.getElementById(this.sid+"ip1"), 0, 100);
+        this.scrollTo(document.getElementById(this.sid + "ip1"), 0, 100);
       }
     },
     mouseOverBook(item) {
