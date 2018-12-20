@@ -1,5 +1,5 @@
 ﻿<template>
-  <div id="tb" class="tb">
+  <div id="tba" class="tb">
     <div class="tb-header">
       <div class="tb-header-left" @click="sortText">
         <div class="tb-header-title">Авторы</div>
@@ -73,6 +73,7 @@
         </b-button-toolbar>
       </div>
     </transition>
+    
     <b-modal
       id="a-modal2"
       size="lg"
@@ -382,7 +383,7 @@ function sortNdesc(a, b) {
   return x > y ? -1 : x < y ? 1 : 0;
 }
 
-const shiftL = 315;
+const shiftL = 515;
 
 export default {
   name: "items-list",
@@ -549,7 +550,7 @@ export default {
         let mW = 149,
           mH = 32;
         //координаты родителя
-        let p = document.getElementById("tb").getBoundingClientRect();
+        let p = document.getElementById("tba").getBoundingClientRect();
         //координаты относительно родителя
         let c = document.getElementById(id).getBoundingClientRect();
         this.aMenuX = c.left + (c.width - mW) / 2 - p.left;

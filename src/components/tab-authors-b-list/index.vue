@@ -1,7 +1,7 @@
 <template>
   <section>
-    <h6 v-if="this.curAI == -1">Нет данных для отображения</h6>
-    <div v-else id="tad" :class="{ rightmargin: infoPanel }">
+    <h6 v-if="(this.curAI == -1 || !this.curAI) && (this.curSI == -1 || !this.curSI)">Нет данных для отображения</h6>
+    <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
       <div class="cover-book-list" v-if="look === 'cover'" @scroll="onScroll">
         <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
           <div class="series-title" v-if="sItem.seriesTitle === 'яяяяяя'">
@@ -73,7 +73,7 @@
               <div class="tbl-table-cell cell-8">Рейтинг</div>
             </div>
           </div>
-          <div id="table-body" class="tbl-table-body" @scroll="onScroll">
+          <div :id="sid+'table-body'" class="tbl-table-body" @scroll="onScroll">
             <div
               class="tbl-table-row"
               v-for="bItem in bListItems"
@@ -116,7 +116,7 @@
       </div>
     </div>
     <transition name="slide">
-      <div v-if="infoPanel && this.curAI >= 0 && selectedItem" id="ip1" class="book-info-panel">
+      <div v-if="infoPanel && selectedItem" :id="sid+'ip1'" class="book-info-panel">
         <div class="authors">{{ selectedItem.author }}</div>
         <div class="genres">{{ selectedItem.genres }}</div>
         <div class="title">{{ selectedItem.title }}</div>
@@ -126,8 +126,11 @@
         </div>
         <div class="annotation">{{ selectedItem.annotation }}</div>
       </div>
-      <div v-else-if="infoPanel && selectedAuthor" class="book-info-panel">
-        <div class="book-author">{{ this.selectedAuthor }}</div>
+      <div v-else-if="infoPanel && curAuthor" class="book-info-panel">
+        <div class="book-author">{{ this.curAuthor }}</div>
+      </div>
+      <div v-else-if="infoPanel && curSeries" class="book-info-panel">
+        <div class="book-author">{{ this.curSeries }}</div>
       </div>
     </transition>
     <transition name="fade">
@@ -248,7 +251,8 @@ $ip-width: 21rem;
   overflow: hidden;
 }
 
-#tad {
+#tad,
+#tsd {
   display: block;
   overflow: hidden;
   padding-bottom: 1.2rem;
@@ -635,10 +639,11 @@ import store from "../../store";
 
 export default {
   name: "books-list",
-  props: ["curAI"],
+  props: ["curAI","curSI", "sid"],
   data: function() {
     return {
-      selectedAuthor: "",
+      curAuthor: null,
+      curSeries: null,
       selectedSeries: "",
       selectedSeriesNumber: 0,
       //список серий
@@ -660,11 +665,12 @@ export default {
   },
   watch: {
     curAI: function(val) {
+      //this.curAuthor = null;
       const self = this;
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {
-          cmd: "as_list",
+          cmd: "as_list", //список серий автора
           dat: val
         },
         "",
@@ -675,7 +681,7 @@ export default {
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {
-          cmd: "ab_list",
+          cmd: "ab_list", //список книг
           dat: val
         },
         "",
@@ -687,14 +693,46 @@ export default {
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {
-          cmd: "author",
+          cmd: "author", //выбраный автор
           dat: val
         },
         "",
         function(rd) {
-          self.selectedAuthor = rd; //возвр. данные (Responce)
+          self.curAuthor = rd; //возвр. данные (Responce)
         }
       );
+      console.log(">",val,self.curAuthor)
+    },
+    curSI: function(val) {
+      this.curSeries = null;
+      const self = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "sb_list",
+          dat: val
+        },
+        "",
+        function(rd) {
+          self.bListItems = rd; //возвр. данные (Responce)
+          self.selectedItem = null;
+        }
+      );
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "ser", //выбраная серия
+          dat: val
+        },
+        "",
+        function(rd) {
+          self.sListItems = rd; //возвр. данные (Responce)
+          if (rd) {
+            self.curSeries = self.sListItems[0].seriesTitle;
+          }
+        }
+      );
+      console.log(">",val,self.curSeries)
     },
     bookID: function(val) {
       const self = this;
@@ -757,7 +795,7 @@ export default {
                                             - при смене вида отображения (computed: look).
                                     */
       this.$nextTick(function() {
-        let el = document.getElementById("table-body");
+        let el = document.getElementById(this.sid+"table-body");
         if (el) {
           let hSum = 0;
           for (let i = 0; i < el.children.length; i++) {
@@ -800,7 +838,7 @@ export default {
         let mW = 264,
           mH = 32;
         //координаты родителя
-        let p = document.getElementById("tad").getBoundingClientRect();
+        let p = document.getElementById(this.sid).getBoundingClientRect();
         //координаты относительно родителя
         let c = document.getElementById(id).getBoundingClientRect();
         this.bMenuX = c.left + (c.width - mW) / 2 - p.left;
@@ -825,10 +863,10 @@ export default {
       this.bMenu = true;
       this.menuPos(item.currentTarget.id);
       if (
-        document.getElementById("ip1") &&
-        document.getElementById("ip1").scrollTop > 0
+        document.getElementById(this.sid+"ip1") &&
+        document.getElementById(this.sid+"ip1").scrollTop > 0
       ) {
-        this.scrollTo(document.getElementById("ip1"), 0, 100);
+        this.scrollTo(document.getElementById(this.sid+"ip1"), 0, 100);
       }
     },
     mouseOverBook(item) {

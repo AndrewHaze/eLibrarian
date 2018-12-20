@@ -19,7 +19,7 @@
         <AuthorsList :aItems="items" :aFilter="aFilter"/>
       </b-col>
       <b-col class="content">
-        <books-list :curAI="currentAI"></books-list>
+        <books-list :sid="sid" :curAI="currentAI"></books-list>
       </b-col>
     </b-row>
   </section>
@@ -46,7 +46,8 @@ export default {
       options: [],
       //Массив авторов
       items: [],
-      aFilter: "*"
+      aFilter: "*",
+      sid: "tad"
     };
   },
   mounted: function() {
@@ -71,7 +72,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "с_list",
-          dat: ""
+          dat: "authors"
         },
         "",
         function(rd) {
