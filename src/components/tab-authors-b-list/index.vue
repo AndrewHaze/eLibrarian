@@ -3,6 +3,7 @@
     <h6
       v-if="(this.curAI == -1 || !this.curAI) && (this.curSI == -1 || !this.curSI)"
     >Нет данных для отображения</h6>
+
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
       <div class="cover-book-list" v-if="look === 'cover'" @scroll="onScroll">
         <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
@@ -670,7 +671,6 @@ export default {
   },
   watch: {
     curAI: function(val) {
-      this.curAuthor = null;
       const self = this;
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
@@ -695,6 +695,7 @@ export default {
           self.selectedItem = null;
         }
       );
+      this.curAuthor = null;
       if (val === -1) return;
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
@@ -709,7 +710,9 @@ export default {
       );
     },
     curSI: function(val) {
-      this.curSeries = null;
+      // this.curSeries = null;
+      // if (val === -1) return;
+
       const self = this;
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
@@ -792,12 +795,12 @@ export default {
     },
     setTableHeaderPad() {
       /* добавляем отступ в заголовок таблицы <tbl-table> 
-                                               при появленни скрола у <table-body> 
-                                               Скролл может появится:
-                                                  - при изменении массива bListItems (watch: bListItems);
-                                                  - при маштабировании окна (хук: resize);
-                                                  - при смене вида отображения (computed: look).
-                                          */
+                                                     при появленни скрола у <table-body> 
+                                                     Скролл может появится:
+                                                        - при изменении массива bListItems (watch: bListItems);
+                                                        - при маштабировании окна (хук: resize);
+                                                        - при смене вида отображения (computed: look).
+                                                */
       this.$nextTick(function() {
         let el = document.getElementById(this.sid + "table-body");
         if (el) {
