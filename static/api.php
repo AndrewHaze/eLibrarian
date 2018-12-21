@@ -461,6 +461,46 @@ if (isset($_POST["cmd"])) {
 
             }
             break;
+        case "g_list": //список жанров
+            if ($pdo and $_SESSION["user"]) {
+                $si = $_POST["dat"];
+                $stmt = $pdo->prepare('SELECT gg_title, ge_title, (SELECT COUNT(1) FROM books_genres WHERE bkge_ge_id = ge_id) cnt
+                                       FROM genres_groups,genres
+                                       WHERE ge_gg_id = gg_id
+                                       ORDER BY 1,2');
+
+                $stmt->execute();
+                $result = $stmt->fetchAll();
+                $g_group = '';
+                $gm_array = [];
+                foreach ($result as $value) {
+                    if ($value[gg_title] != $g_group) {
+                        if ($g_group != '') {
+                            array_push($gm_array,
+                                array(
+                                    "text" => $g_group,
+                                    "children" => $gc_array,
+                                ));
+                        }
+                        $g_group = $value[gg_title];
+                        $gc_array = [];
+                        $gg_count = 0;
+                        array_push($gc_array,
+                            array(
+                                "text" => $value[ge_title],
+                            ));
+                        $gg_count += $value[cnt];
+                    } else {
+                        array_push($gc_array,
+                            array(
+                                "text" => $value[ge_title],
+                            ));
+                        $gg_count += $value[cnt];
+                    }
+                }
+                $res["data"] = $gm_array;
+            }
+            break;
         case "clear_upload": //очистка папки uploads, для текщей сессии
             $res["data"] = clear_dir('uploads');
             if (!$res["data"]) {
