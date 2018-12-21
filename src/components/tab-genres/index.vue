@@ -16,7 +16,7 @@
     </b-row>
     <b-row class="fix-height">
       <b-col class="sidebar ml-3 p-0">
-        <GenresTree/>
+        <GenresTree :gItems="items"/>
       </b-col>
       <b-col class="content">
         Книги здесь...
@@ -54,14 +54,26 @@ export default {
     this.getSeries();
   },
   computed: {
-    currentSI: function() {
+    currentGI: function() {
       return this.$store.getters.seriesID;
     }
   },
   watch: {
     selected: function() {
-      store.commit("setSeriesID", -1);
-      this.sFilter = this.selected;
+      //store.commit("setSeriesID", -1);
+      //this.gFilter = this.selected;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "g_list",
+          dat: ""
+        },
+        "",
+        function(rd) {
+          self.items = rd; //возвр. данные (Responce)
+          console.log(rd[0].text, rd[0].children[11].text)
+        }
+      );
     },
   },
   methods: {
@@ -82,12 +94,13 @@ export default {
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {
-          cmd: "sa_list",
+          cmd: "g_list",
           dat: ""
         },
         "",
         function(rd) {
           self.items = rd; //возвр. данные (Responce)
+          console.log(rd[0].text, rd[0].children[11].text)
         }
       );
     }

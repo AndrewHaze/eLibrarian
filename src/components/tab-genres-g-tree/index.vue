@@ -1,14 +1,14 @@
 <template>
   <div id="tbs" class="tb">
     <div class="tb-header">
-      <div class="tb-header-left" @click="sortText">
+      <div class="tb-header-left" >
         <div class="tb-header-title">Серия</div>
         <div class="tb-header-sort-arrows">
           <span class="tb-header-sort-desc" :class="{ active: aDesc }">&#8593;</span>
           <span class="tb-header-sort-asc" :class="{ active: aAsc }">&#8595;</span>
         </div>
       </div>
-      <div class="tb-header-right" @click="sortNumeric">
+      <div class="tb-header-right">
         <div class="tb-header-title">Книг</div>
         <div class="tb-header-sort-arrows">
           <span class="tb-header-sort-desc" :class="{ active: bDesc }">&#8593;</span>
@@ -17,7 +17,13 @@
       </div>
     </div>
     <div class="tb-body">
-        <v-tree-select :data="data" value-field-name="id" v-model="selectItem"></v-tree-select>
+      <v-jstree :data="gItems" whole-row  size="large" klass="genres-tree" @item-click="itemClick">
+        <template slot-scope="_">
+          <div class="tree-item">
+            {{_.model.text}}
+          </div>
+        </template>
+      </v-jstree>
     </div>
   </div>
 </template>
@@ -90,19 +96,6 @@ $hover-color: rgba(221, 221, 221, 0.4);
   }
 }
 
-.series-menu {
-  position: absolute;
-  display: flex;
-  width: auto;
-  height: auto !important;
-  z-index: 10;
-  top: 0;
-
-  .btn:focus {
-    box-shadow: none !important;
-  }
-}
-
 .tb {
   display: flex;
   flex-flow: column nowrap;
@@ -161,80 +154,35 @@ $hover-color: rgba(221, 221, 221, 0.4);
     overflow: auto;
     height: calc(100% - 70px);
 
-    .tb-body-element {
-      @extend %flex;
-      border: 1px solid $line-color;
-      border-bottom: none;
-      padding: 0.8rem 0.3rem 0.8rem 0.65rem;
-      cursor: pointer;
-      line-height: 1.2rem;
-      &:hover {
-        background-color: $hover-color;
+    .genres-tree {
+      //padding: .5rem 0;
+      .tree-wholerow-hovered {
+        background-color:$hover-color;
       }
-
-      &:last-child {
-        border-bottom: 1px solid $line-color;
+      .tree-wholerow-clicked {
+        background-color:$selected-color;
       }
-
-      .tb-body-element-right {
-        display: flex;
-        min-width: 4rem;
-        justify-content: center;
-        align-items: center;
+      .tree-item {
+        display: inherit; 
+        font-size: 1rem; 
+        width: 100%;
       }
     }
 
-    .active {
-      background-color: $selected-color;
-
-      &:hover {
-        background-color: $selected-color;
-      }
-    }
   }
 }
 </style>
 
 <script>
-import VTreeselect from 'vue-treeselect'
 import store from "../../store";
-
-function sortTasc(a, b) {
-  let x = a.seriesTitle.toLowerCase();
-  let y = b.seriesTitle.toLowerCase();
-  return x < y ? -1 : x > y ? 1 : 0;
-}
-
-function sortTdesc(a, b) {
-  let x = a.seriesTitle.toLowerCase();
-  let y = b.seriesTitle.toLowerCase();
-  return x > y ? -1 : x < y ? 1 : 0;
-}
-
-function sortNasc(a, b) {
-  let x = a.books;
-  let y = b.books;
-  return x < y ? -1 : x > y ? 1 : 0;
-}
-
-function sortNdesc(a, b) {
-  let x = a.books;
-  let y = b.books;
-  return x > y ? -1 : x < y ? 1 : 0;
-}
-
-const shiftL = 515;
 
 export default {
   name: "items-list",
-  props: ["sItems", "sFilter"],
-  components: {
-    VTreeselect
-  },
+  props: ["gItems"],
   data: function() {
     return {
       seriesID: "",
-      
+
       status: "no",
       aAsc: true,
       aDesc: false,
@@ -243,134 +191,22 @@ export default {
       //
       sMenu: false,
       sMenuX: 0,
-      sMenuY: 0,
-      data: [
-            {
-              "id": 1,
-              "text": "Same but with checkboxes",
-              "children": [
-                {
-                  "id": 2,
-                  "text": "initially selected",
-                },
-                {
-                  "id": 3,
-                  "text": "custom icon",
-                },
-                {
-                  "id": 4,
-                  "text": "initially open",
-                  "children": [
-                    {
-                      "id": 5,
-                      "text": "Another node"
-                    }
-                  ]
-                },
-                {
-                  "id": 6,
-                  "text": "custom icon",
-                },
-                {
-                  "id": 7,
-                  "text": "disabled node",
-                  "disabled": true
-                }
-              ]
-            },
-            {
-              "id": 8,
-              "text": "Same but with checkboxes",
-              "children": [
-                {
-                  "id": 9,
-                  "text": "initially selected",
-                },
-                {
-                  "id": 10,
-                  "text": "custom icon",
-                },
-                {
-                  "id": 11,
-                  "text": "initially open",
-                  "children": [
-                    {
-                      "id": 12,
-                      "text": "Another node"
-                    }
-                  ]
-                },
-                {
-                  "id": 13,
-                  "text": "custom icon",
-                },
-                {
-                  "id": 14,
-                  "text": "disabled node",
-                  "disabled": true
-                }
-              ]
-            },
-            {
-              "id": 15,
-              "text": "And wholerow selection"
-            }
-          ],
-          selectItem: null
-      
+      sMenuY: 0
     };
   },
-  computed: {
-    sortOptions() {
-      // Create an options list from our fields
-      return this.fields
-        .filter(f => f.sortable)
-        .map(f => {
-          return { text: f.label, value: f.key };
-        });
-    }
-  },
   methods: {
-    sortText() {
-      this.bAsc = false;
-      this.bDesc = false;
-      if (this.aAsc) {
-        this.aDesc = true;
-        this.aAsc = false;
-      } else if (this.aDesc) {
-        this.aDesc = false;
-        this.aAsc = true;
-      } else {
-        this.aDesc = false;
-        this.aAsc = true;
-      }
-      if (this.aAsc) this.sItems.sort(sortTasc);
-      else this.sItems.sort(sortTdesc);
+    itemClick(node) {
+      console.log(node.model.text + " clicked !");
     },
-    sortNumeric() {
-      this.aAsc = false;
-      this.aDesc = false;
-      if (this.bAsc) {
-        this.bDesc = true;
-        this.bAsc = false;
-      } else if (this.bDesc) {
-        this.bDesc = false;
-        this.bAsc = true;
-      } else {
-        this.bDesc = false;
-        this.bAsc = true;
-      }
-      if (this.bAsc) this.sItems.sort(sortNasc);
-      else this.sItems.sort(sortNdesc);
-    }
+    
   },
   //Хук <UPDATED> вызывается после изменения данных в компоненте и перерисовки DOM
   updated: function() {
-    if (store.getters.seriesID === -1) {
-      this.sItems.forEach(function(entry) {
-        entry.isActive = false;
-      });
-    }
+    // if (store.getters.seriesID === -1) {
+    //   this.sItems.forEach(function(entry) {
+    //     entry.isActive = false;
+    //   });
+    // }
   }
 };
 </script>
