@@ -2,6 +2,7 @@ import Vue from 'vue';
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import VJstree from 'vue-jstree'
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -13,9 +14,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 library.add(faTh, faStream, faTable, faCheck, faHeart, faBell, faTrashAlt, faBookReader, faEdit, faStar, faStarHalfAlt, faInfoCircle, faCalendarCheck, faTag, faAddressCard, faUserFriends, faUserMinus, faUserTimes, faTimes, faQuestionCircle )
 Vue.component('font-awesome-icon', FontAwesomeIcon)
-
-Vue.use(BootstrapVue)
 Vue.component('loading', Loading)
+
+Vue.use(VJstree)
+Vue.use(BootstrapVue)
 
 Vue.config.productionTip = false
 
