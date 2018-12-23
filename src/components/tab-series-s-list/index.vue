@@ -44,7 +44,7 @@
         <b-button-toolbar key-nav aria-label="Toolbar with button groups">
           
           <b-button-group class="mx-1" size="sm">
-            <b-btn variant="danger" title="Удалить Автора" v-b-modal.a-modal4>
+            <b-btn variant="danger" title="Удалить Автора" v-b-modal.s-modal1>
               <font-awesome-icon icon="user-times"/>
             </b-btn>
           </b-button-group>
@@ -54,7 +54,7 @@
     
     
     <b-modal
-      id="a-modal4"
+      id="s-modal1"
       size="lg"
       title="Удаление автора"
       @ok="delHandleOk"
