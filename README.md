@@ -4,10 +4,10 @@
 
 ## Build Setup
 
+``` bash
 # add db 'elib' to local host
 import db\elib.sql to phpMyAdmin
 
-``` bash
 # install dependencies
 npm install
 
