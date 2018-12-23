@@ -30,6 +30,8 @@
 import GenresTree from "../tab-genres-g-tree";
 import store from "../../store";
 
+
+
 export default {
   name: "tab-authors",
   components: {
@@ -51,6 +53,7 @@ export default {
     };
   },
   mounted: function() {
+   
     this.getSeries();
   },
   computed: {
@@ -61,19 +64,9 @@ export default {
   watch: {
     selected: function() {
       //store.commit("setSeriesID", -1);
-      //this.gFilter = this.selected;
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "g_list",
-          dat: ""
-        },
-        "",
-        function(rd) {
-          self.items = rd; //возвр. данные (Responce)
-          console.log(rd[0].text, rd[0].children[11].text)
-        }
-      );
+     this.gFilter = this.selected;
+     this.getSeries();
+      
     },
   },
   methods: {
@@ -95,14 +88,14 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "g_list",
-          dat: ""
+          filter: self.gFilter
         },
         "",
         function(rd) {
           self.items = rd; //возвр. данные (Responce)
-          console.log(rd[0].text, rd[0].children[11].text)
         }
       );
+      
     }
   }
 };

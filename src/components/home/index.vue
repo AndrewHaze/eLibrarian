@@ -20,10 +20,10 @@
               <AuthorsTab ref="aTab"/>
             </b-tab>
             <b-tab title="Жанры">
-              <GenresTab/>
+              <GenresTab ref="gTab"/>
             </b-tab>
             <b-tab title="Серии">
-              <SeriesTab/>
+              <SeriesTab ref="sTab"/>
             </b-tab>
           </b-tabs>
         </b-col>
@@ -113,6 +113,7 @@ export default {
     updateAll() {
       store.commit("setAuthorID", -1);
       this.$refs.aTab.getAuthors();
+      this.$refs.sTab.getGenres();
     }
   },
   computed: {

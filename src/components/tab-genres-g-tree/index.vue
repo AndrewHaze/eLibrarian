@@ -1,5 +1,5 @@
 <template>
-  <div id="tbs" class="tb">
+  <div id="tbg" class="tb">
     <div class="tb-header">
       <div class="tb-header-left" >
         <div class="tb-header-title">Серия</div>
@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="tb-body">
-      <v-jstree :data="gItems" whole-row  size="large" klass="genres-tree" @item-click="itemClick">
+      <v-jstree ref="tree" :data="gItems" whole-row  size="large" klass="genres-tree" @item-click="itemClick">
         <template slot-scope="_">
           <div class="tree-item">
             {{_.model.text}}
@@ -156,6 +156,9 @@ $hover-color: rgba(221, 221, 221, 0.4);
 
     .genres-tree {
       //padding: .5rem 0;
+      li {
+        width: auto;
+      }
       .tree-wholerow-hovered {
         background-color:$hover-color;
       }
@@ -181,8 +184,6 @@ export default {
   props: ["gItems"],
   data: function() {
     return {
-      seriesID: "",
-
       status: "no",
       aAsc: true,
       aDesc: false,
@@ -191,8 +192,15 @@ export default {
       //
       sMenu: false,
       sMenuX: 0,
-      sMenuY: 0
+      sMenuY: 0,
+      
+      
     };
+  },
+  watch: {
+      gItems : function() {
+        this.$refs.tree.initializeData(this.gItems);
+      }
   },
   methods: {
     itemClick(node) {
