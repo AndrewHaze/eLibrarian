@@ -2,7 +2,7 @@
   <div id="tbg" class="tb">
     <div class="tb-header">
       <div class="tb-header-left" >
-        <div class="tb-header-title">Серия</div>
+        <div class="tb-header-title">Жанры</div>
         <div class="tb-header-sort-arrows">
           <span class="tb-header-sort-desc" :class="{ active: aDesc }">&#8593;</span>
           <span class="tb-header-sort-asc" :class="{ active: aAsc }">&#8595;</span>
