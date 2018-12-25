@@ -5,6 +5,9 @@ const state = {
   at: 'eLibrarian v.0.0.1',
   ai: -1,
   si: -1,
+  gi: -1,
+  gt: '',
+  gty: '',
   oc: 0,
   bll: "cover",
   ip: "on",
@@ -20,6 +23,10 @@ const getters = {
   appTitle: state => state.at,
   authorID: state => state.ai,
   seriesID: state => state.si,
+  genresID: state => state.gi,
+  //для жанров
+  genresType: state => state.gty,
+  genresTitle: state => state.gt,
   orderCode: state => state.oc,
   //вид списка книг
   blLook: state => state.bll,
@@ -39,6 +46,15 @@ const mutations = {
   },
   setSeriesID(state, value) {
     state.si = value
+  },
+  setGenresID(state, value) {
+    state.gi = value
+  },
+  setGenresType(state, value) {
+    state.gty = value
+  },
+  setGenresTitle(state, value) {
+    state.gt = value
   },
   setOrderCode(state, value) {
     state.oc = value

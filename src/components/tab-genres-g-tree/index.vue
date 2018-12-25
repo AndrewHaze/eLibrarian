@@ -221,7 +221,10 @@ export default {
   },
   methods: {
     itemClick(node) {
-      console.log(node.model.text + " clicked !");
+      console.log(node.model.text + " " + node.model.type+ " " + node.model.id);
+      store.commit("setGenresID", node.model.id);
+      store.commit("setGenresType", node.model.type);
+      store.commit("setGenresTitle", node.model.text);
     },
     sortText() {
       this.bAsc = false;

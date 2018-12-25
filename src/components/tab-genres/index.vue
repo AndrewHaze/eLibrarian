@@ -18,20 +18,22 @@
       <b-col class="sidebar sidebar-genres ml-3 p-0">
         <GenresTree :gItems="items"/>
       </b-col>
-      <b-col class="content">Книги здесь...</b-col>
+      <b-col class="content">
+        <books-list :sid="sid" :curGI="currentGI"></books-list>
+      </b-col>
     </b-row>
   </section>
 </template>
 
 <script>
-//import BooksList from "../tab-authors-b-list";
+import BooksList from "../tab-authors-b-list";
 import GenresTree from "../tab-genres-g-tree";
 import store from "../../store";
 
 export default {
   name: "tab-authors",
   components: {
-    //BooksList,
+    BooksList,
     GenresTree
   },
   data: function() {
@@ -45,29 +47,34 @@ export default {
       //Массив авторов
       items: [],
       sFilter: "*",
-      sid: "tsg"
+      sid: "tgd"
     };
   },
   mounted: function() {
-    this.getSeries();
+    this.getGenres();
   },
   computed: {
+    //текущая серия
+    currentGI: function() {
+      return this.$store.getters.genresID;
+    },
+    //порядок сортировки
     currentOC: function() {
       return this.$store.getters.orderCode;
     }
   },
   watch: {
     currentOC: function() {
-      this.getSeries();
+      this.getGenres();
     },
     selected: function() {
-      //store.commit("setSeriesID", -1);
+      store.commit("setGenresID", -1);
       this.gFilter = this.selected;
-      this.getSeries();
+      this.getGenres();
     }
   },
   methods: {
-    getSeries() {
+    getGenres() {
       const self = this;
       //Вызов функции из глобального миксина
       this.callApi(
@@ -81,7 +88,6 @@ export default {
           self.options = rd; //возвр. данные (Responce)
         }
       );
-      console.log(self.currentOC)
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {

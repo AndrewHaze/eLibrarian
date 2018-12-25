@@ -1,6 +1,6 @@
 <template>
   <section>
-    <h6  v-if="(!this.curAuthor && !this.curSeries)">Нет данных для отображения</h6>
+    <h6  v-if="(!this.curAuthor && !this.curSeries && !this.curGenres)">Нет данных для отображения</h6>
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
       <div class="cover-book-list" v-if="look === 'cover'" @scroll="onScroll">
         <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
@@ -133,6 +133,9 @@
       <div v-else-if="infoPanel && curSeries" class="book-info-panel">
         <div class="book-author">{{ this.curSeries }}</div>
       </div>
+      <div v-else-if="infoPanel && curGenres" class="book-info-panel">
+        <div class="book-author">{{ this.curGenres }}</div>
+      </div>
     </transition>
     <transition name="fade">
       <div
@@ -253,7 +256,8 @@ $ip-width: 21rem;
 }
 
 #tad,
-#tsd {
+#tsd,
+#tgd {
   display: block;
   overflow: hidden;
   padding-bottom: 1.2rem;
@@ -643,11 +647,12 @@ import store from "../../store";
 
 export default {
   name: "books-list",
-  props: ["curAI", "curSI", "sid"],
+  props: ["curAI", "curSI", "curGI", "sid"],
   data: function() {
     return {
       curAuthor: null,
       curSeries: null,
+      curGenres: null,
       selectedSeries: "",
       selectedSeriesNumber: 0,
       //список серий
@@ -711,6 +716,7 @@ export default {
         }
       );
     },
+    //////////////////////////////////////////////////////
     curSI: function(val) {
       if (val === -1) {
         this.curSeries = null;
@@ -745,6 +751,46 @@ export default {
           }
         }
       );
+    },
+    //////////////////////////////////////////////////////
+    curGI: function(val) {
+      if (val === -1) {
+        this.curGenres = null;
+        this.selectedItem = null;
+        return;
+      }
+
+      const self = this;
+      this.curGenres = this.$store.getters.genresTitle;
+      let type = this.$store.getters.genresType;
+
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "gs_list", //список серий в жанре
+          id: val,
+          type: self.type
+        },
+        "",
+        function(rd) {
+          self.sListItems = rd; //возвр. данные (Responce)
+        }
+      );
+
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "gb_list",
+          id: val,
+          type: self.type
+        },
+        "",
+        function(rd) {
+          self.bListItems = rd; //возвр. данные (Responce)
+          self.selectedItem = null;
+        }
+      );
+      
     },
     bookID: function(val) {
       const self = this;
