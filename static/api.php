@@ -192,6 +192,17 @@ if (isset($_POST["cmd"])) {
                             array_push($res["data"], array("text" => $value, "value" => $value));
                         }
                         break;
+                    case "genres":
+                        $stmt = $pdo->prepare('SELECT SUBSTR(gg_title, 1, 1) FROM genres_groups
+                                               UNION
+                                               SELECT SUBSTR(ge_title, 1, 1) FROM genres
+                                               ORDER BY 1');
+                        $stmt->execute();
+                        $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
+                        foreach ($result as $value) {
+                            array_push($res["data"], array("text" => $value, "value" => $value));
+                        }
+                        break;
                 }
                 array_unshift($res["data"], array("text" => "*", "value" => "*"));
             }
@@ -463,12 +474,39 @@ if (isset($_POST["cmd"])) {
             break;
         case "g_list": //список жанров
             if ($pdo and $_SESSION["user"]) {
-                $si = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT gg_title, ge_title, (SELECT COUNT(1) FROM books_genres WHERE bkge_ge_id = ge_id) cnt
+                switch ($_POST["order"]) {
+                    case 0:
+                        $order_str = ' ORDER BY 1 , 2 ';
+                        break;
+                    case 1:
+                        $order_str = ' ORDER BY 1 DESC, 2';
+                        break;
+                    case 2:
+                        $order_str = ' ORDER BY 3 ASC';
+                        break;
+                    case 3:
+                        $order_str = ' ORDER BY 3 DESC';
+                        break;
+                }
+                $username = $_SESSION["user"];
+                $filter = $_POST["filter"];
+                if ($filter === "*") {
+                    $filter = null;
+                }
+                $stmt = $pdo->prepare('SELECT gg_title, ge_title, 
+                                                                    (SELECT COUNT(1) FROM books_genres, books, users
+                                                                    WHERE bkge_ge_id = ge_id
+                                                                     AND bk_id = bkge_bk_id
+                                                                     AND ur_id = bk_ur_id
+                                                                     AND ur_login = :login
+                                                                    ) cnt
                                        FROM genres_groups,genres
                                        WHERE ge_gg_id = gg_id
-                                       ORDER BY 1,2');
+                                       AND (gg_title LIKE :filter1 OR ge_title LIKE :filter2)' . $order_str);
 
+                $stmt->bindValue(':filter1', $filter . "%", PDO::PARAM_STR);
+                $stmt->bindValue(':filter2', $filter . "%", PDO::PARAM_STR);
+                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
                 $stmt->execute();
                 $result = $stmt->fetchAll();
                 $g_group = '';
@@ -480,6 +518,8 @@ if (isset($_POST["cmd"])) {
                                 array(
                                     "text" => $g_group,
                                     "children" => $gc_array,
+                                    "count" => $gg_count,
+                                    "disabled" => ($gg_count > 0) ? false : true,
                                 ));
                         }
                         $g_group = $value[gg_title];
@@ -487,17 +527,31 @@ if (isset($_POST["cmd"])) {
                         $gg_count = 0;
                         array_push($gc_array,
                             array(
-                                "text" => $value[ge_title],
+                                "text" => str_replace(" (то, что не вошло в другие категории)", "", $value[ge_title]),
+                                "count" => $value[cnt],
+                                "disabled" => ($value[cnt] > 0) ? false : true,
+                                "isLeaf" => true,
                             ));
                         $gg_count += $value[cnt];
                     } else {
                         array_push($gc_array,
                             array(
-                                "text" => $value[ge_title],
+                                "text" => str_replace(" (то, что не вошло в другие категории)", "", $value[ge_title]),
+                                "count" => $value[cnt],
+                                "disabled" => ($value[cnt] > 0) ? false : true,
+                                "isLeaf" => true,
                             ));
                         $gg_count += $value[cnt];
                     }
                 }
+                //Последняя группа вне цикла
+                array_push($gm_array,
+                    array(
+                        "text" => $g_group,
+                        "children" => $gc_array,
+                        "count" => $gg_count,
+                        "disabled" => ($gg_count > 0) ? false : true,
+                    ));
                 $res["data"] = $gm_array;
             }
             break;
