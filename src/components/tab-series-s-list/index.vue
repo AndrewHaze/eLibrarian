@@ -1,5 +1,5 @@
 ﻿<template>
-  <div id="tbs" class="tb">
+  <div id="tbs" class="tbs">
     <div class="tb-header">
       <div class="tb-header-left" @click="sortText">
         <div class="tb-header-title">Серии</div>
@@ -163,7 +163,7 @@ $hover-color: rgba(221, 221, 221, 0.4);
   }
 }
 
-.tb {
+.tbs {
   display: flex;
   flex-flow: column nowrap;
   flex: 1 1 auto;
@@ -182,7 +182,7 @@ $hover-color: rgba(221, 221, 221, 0.4);
     }
 
     .tb-header-left {
-      width: 140px;
+      width: 160px;
     }
 
     .tb-header-title {

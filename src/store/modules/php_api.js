@@ -5,6 +5,7 @@ const state = {
   at: 'eLibrarian v.0.0.1',
   ai: -1,
   si: -1,
+  oc: 0,
   bll: "cover",
   ip: "on",
 }
@@ -19,6 +20,7 @@ const getters = {
   appTitle: state => state.at,
   authorID: state => state.ai,
   seriesID: state => state.si,
+  orderCode: state => state.oc,
   //вид списка книг
   blLook: state => state.bll,
   //Инфо панель книги
@@ -37,6 +39,9 @@ const mutations = {
   },
   setSeriesID(state, value) {
     state.si = value
+  },
+  setOrderCode(state, value) {
+    state.oc = value
   },
   setblLook(state, value) {
     state.bll = value

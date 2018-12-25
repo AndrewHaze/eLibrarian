@@ -1,5 +1,5 @@
 ﻿<template>
-  <div id="tba" class="tb">
+  <div id="tba" class="tba">
     <div class="tb-header">
       <div class="tb-header-left" @click="sortText">
         <div class="tb-header-title">Авторы</div>
@@ -264,7 +264,7 @@ $hover-color: rgba(221, 221, 221, 0.4);
   }
 }
 
-.tb {
+.tba {
   display: flex;
   flex-flow: column nowrap;
   flex: 1 1 auto;
@@ -283,7 +283,7 @@ $hover-color: rgba(221, 221, 221, 0.4);
     }
 
     .tb-header-left {
-      width: 140px;
+      width: 160px;
     }
 
     .tb-header-title {

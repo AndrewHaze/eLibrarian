@@ -1,14 +1,14 @@
 <template>
-  <div id="tbg" class="tb">
+  <div id="tbg" class="tbg">
     <div class="tb-header">
-      <div class="tb-header-left" >
+      <div class="tb-header-left" @click="sortText">
         <div class="tb-header-title">Жанры</div>
         <div class="tb-header-sort-arrows">
-          <span class="tb-header-sort-desc" :class="{ active: aDesc }">&#8593;</span>
-          <span class="tb-header-sort-asc" :class="{ active: aAsc }">&#8595;</span>
+          <span class="tb-header-sort-desc" :class="{ active: gDesc }">&#8593;</span>
+          <span class="tb-header-sort-asc" :class="{ active: gAsc }">&#8595;</span>
         </div>
       </div>
-      <div class="tb-header-right">
+      <div class="tb-header-right" @click="sortNumeric">
         <div class="tb-header-title">Книг</div>
         <div class="tb-header-sort-arrows">
           <span class="tb-header-sort-desc" :class="{ active: bDesc }">&#8593;</span>
@@ -17,10 +17,17 @@
       </div>
     </div>
     <div class="tb-body">
-      <v-jstree ref="tree" :data="gItems" whole-row  size="large" klass="genres-tree" @item-click="itemClick">
+      <v-jstree
+        ref="tree"
+        :data="gItems"
+        whole-row
+        size="large"
+        klass="genres-tree"
+        @item-click="itemClick">
         <template slot-scope="_">
           <div class="tree-item">
-            {{_.model.text}}
+            <span>{{ _.model.text }}</span>
+            <span>{{ _.model.count }}</span>
           </div>
         </template>
       </v-jstree>
@@ -96,7 +103,7 @@ $hover-color: rgba(221, 221, 221, 0.4);
   }
 }
 
-.tb {
+.tbg {
   display: flex;
   flex-flow: column nowrap;
   flex: 1 1 auto;
@@ -115,7 +122,7 @@ $hover-color: rgba(221, 221, 221, 0.4);
     }
 
     .tb-header-left {
-      width: 140px;
+      width: 360px;
     }
 
     .tb-header-title {
@@ -159,19 +166,34 @@ $hover-color: rgba(221, 221, 221, 0.4);
       li {
         width: auto;
       }
-      .tree-wholerow-hovered {
-        background-color:$hover-color;
+      .tree-icon {
+        float: left;
       }
-      .tree-wholerow-clicked {
-        background-color:$selected-color;
+      .tree-anchor {
+        display: flex;
+        flex: 1 1 auto;
+        width: calc(100% - 45px);
       }
+
       .tree-item {
-        display: inherit; 
-        font-size: 1rem; 
+        @extend %flex;
+        font-size: 1rem;
         width: 100%;
       }
-    }
+      
+      .tree-wholerow-hovered {
+        background-color: $hover-color;
+      }
+      .tree-wholerow-clicked {
+        background-color: $selected-color;
+      }
+       
+      .tree-disabled {
+        opacity: .5;
+      }
 
+      
+    }
   }
 }
 </style>
@@ -185,28 +207,54 @@ export default {
   data: function() {
     return {
       status: "no",
-      aAsc: true,
-      aDesc: false,
+      gAsc: true,
+      gDesc: false,
       bAsc: false,
       bDesc: false,
-      //
-      sMenu: false,
-      sMenuX: 0,
-      sMenuY: 0,
-      
-      
+      orderCode: 0
     };
   },
   watch: {
-      gItems : function() {
-        this.$refs.tree.initializeData(this.gItems);
-      }
+    gItems: function() {
+      this.$refs.tree.initializeData(this.gItems);
+    }
   },
   methods: {
     itemClick(node) {
       console.log(node.model.text + " clicked !");
     },
-    
+    sortText() {
+      this.bAsc = false;
+      this.bDesc = false;
+      if (this.gAsc) {
+        this.gDesc = true;
+        this.gAsc = false;
+      } else if (this.gDesc) {
+        this.gDesc = false;
+        this.gAsc = true;
+      } else {
+        this.gDesc = false;
+        this.gAsc = true;
+      }
+      this.orderCode = this.gDesc ? 1 : 0;
+      store.commit("setOrderCode", this.orderCode);
+    },
+    sortNumeric() {
+      this.gAsc = false;
+      this.gDesc = false;
+      if (this.bAsc) {
+        this.bDesc = true;
+        this.bAsc = false;
+      } else if (this.bDesc) {
+        this.bDesc = false;
+        this.bAsc = true;
+      } else {
+        this.bDesc = false;
+        this.bAsc = true;
+      }
+      this.orderCode = this.bDesc ? 3 : 2;
+      store.commit("setOrderCode", this.orderCode);
+    }
   },
   //Хук <UPDATED> вызывается после изменения данных в компоненте и перерисовки DOM
   updated: function() {

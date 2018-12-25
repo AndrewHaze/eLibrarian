@@ -671,6 +671,7 @@ export default {
     curAI: function(val) {
       if (val === -1) {
         this.curAuthor = null;
+        this.selectedItem = null;
         return;
       }
 
@@ -713,6 +714,7 @@ export default {
     curSI: function(val) {
       if (val === -1) {
         this.curSeries = null;
+        this.selectedItem = null;
         return;
       }
 
@@ -797,13 +799,13 @@ export default {
       this.bMenu = false;
     },
     setTableHeaderPad() {
-      /* добавляем отступ в заголовок таблицы <tbl-table> 
-                                                     при появленни скрола у <table-body> 
-                                                     Скролл может появится:
-                                                        - при изменении массива bListItems (watch: bListItems);
-                                                        - при маштабировании окна (хук: resize);
-                                                        - при смене вида отображения (computed: look).
-                                                */
+      /*  добавляем отступ в заголовок таблицы <tbl-table> 
+          при появленни скрола у <table-body> 
+          Скролл может появится:
+              - при изменении массива bListItems (watch: bListItems);
+              - при маштабировании окна (хук: resize);
+              - при смене вида отображения (computed: look).
+      */
       this.$nextTick(function() {
         let el = document.getElementById(this.sid + "table-body");
         if (el) {
