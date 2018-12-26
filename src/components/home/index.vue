@@ -36,6 +36,18 @@
 </template>
 
 <style lang="scss">
+$line-color: #dee2e6;
+$header-font-color: #495057;
+$selected-color: #ddd;
+$hover-color: rgba(221, 221, 221, 0.4);
+
+%flex {
+  display: flex;
+  flex: row, nowrap;
+  justify-content: space-between;
+}
+
+
 .fix-height {
   height: calc(100vh - 240px);
 }
@@ -43,8 +55,8 @@
 .sidebar {
   display: flex;
   flex-flow: column nowrap;
-  flex: 0 0 16rem !important;
-  min-width: 16rem;
+  flex: 0 0 29rem !important;
+  min-width: 29rem;
   height: 100%;
 }
 
@@ -78,6 +90,153 @@
   color: #007bff;
   font-size: 2.6rem;
   margin: 0 0 0 0.25rem;
+}
+
+.table-wrap {
+  user-select: none;
+  border: 1px solid $line-color;
+  .modal-tb-header {
+    @extend %flex;
+    cursor: pointer;
+    position: relative;
+    width: 100%;
+    padding: 0.4rem 0.75rem 0.5rem;
+    border-bottom: 1px solid $line-color;
+    .modal-tb-header-left {
+      font-weight: 600;
+      color: $header-font-color;
+    }
+    .modal-tb-header-right-asc,
+    .modal-tb-header-right-desc {
+      position: absolute;
+      top: 0.3rem;
+      opacity: 0.4;
+    }
+    .modal-tb-header-right-asc {
+      right: 1rem;
+    }
+    .modal-tb-header-right-desc {
+      right: 0.5rem;
+    }
+    .active {
+      opacity: 1;
+    }
+  }
+
+  .table-body-wrap {
+    width: 100%;
+    overflow: auto;
+    .table {
+      margin: 0;
+      td {
+        padding: 0.35rem 0.75rem 0.4rem;
+        border: none;
+        cursor: pointer;
+      }
+      .active {
+        background-color: $selected-color;
+      }
+    }
+  }
+
+  .b-table-head {
+    th {
+      padding: 0;
+      overflow: hidden;
+      border: 0 !important;
+    }
+  }
+}
+
+.tba, .tbs, .tbg {
+  display: flex;
+  flex-flow: column nowrap;
+  flex: 1 1 auto;
+  height: 100%;
+  user-select: none;
+
+  .tb-header {
+    @extend %flex;
+    border: 1px solid $line-color;
+    padding: 0.5rem 0.3rem 0.5rem 0.65rem;
+
+    .tb-header-left,
+    .tb-header-right {
+      cursor: pointer;
+      @extend %flex;
+    }
+
+    .tb-header-left {
+      width: 360px;
+    }
+
+    .tb-header-title {
+      font-weight: 600;
+      color: $header-font-color;
+    }
+
+    .tb-header-sort-arrows {
+      position: relative;
+      width: 1.5rem;
+
+      .tb-header-sort-desc,
+      .tb-header-sort-asc {
+        position: absolute;
+        margin: 0;
+        padding: 0;
+        opacity: 0.4;
+        top: 0;
+      }
+
+      .tb-header-sort-desc {
+        right: 8px;
+      }
+
+      .tb-header-sort-asc {
+        right: 0px;
+      }
+
+      .active {
+        opacity: 1;
+      }
+    }
+  }
+
+  .tb-body {
+    overflow: auto;
+    height: calc(100% - 70px);
+
+    .tb-body-element {
+      @extend %flex;
+      border-left: 1px solid $line-color;
+      border-right: 1px solid $line-color;
+      padding: 0.4rem 0.3rem 0.4rem 0.65rem;
+      cursor: pointer;
+      line-height: 1.2rem;
+      &:hover {
+        background-color: $hover-color;
+      }
+
+      &:last-child {
+        border-bottom: 1px solid $line-color;
+      }
+
+      .tb-body-element-right {
+        display: flex;
+        min-width: 4rem;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+
+    .active {
+      background-color: $selected-color;
+
+      &:hover {
+        background-color: $selected-color;
+      }
+    }
+  }
 }
 </style>
 

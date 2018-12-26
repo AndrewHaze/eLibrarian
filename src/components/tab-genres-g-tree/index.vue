@@ -23,7 +23,8 @@
         whole-row
         size="large"
         klass="genres-tree"
-        @item-click="itemClick">
+        @item-click="itemClick"
+      >
         <template slot-scope="_">
           <div class="tree-item">
             <span>{{ _.model.text }}</span>
@@ -37,7 +38,6 @@
 
 <style lang="scss">
 $line-color: #dee2e6;
-$header-font-color: #495057;
 $selected-color: #ddd;
 $hover-color: rgba(221, 221, 221, 0.4);
 
@@ -47,153 +47,40 @@ $hover-color: rgba(221, 221, 221, 0.4);
   justify-content: space-between;
 }
 
-.table-wrap {
-  user-select: none;
+.genres-tree {
   border: 1px solid $line-color;
-  .modal-tb-header {
+
+  .tree-container-ul {
+    margin-bottom: -6px;
+  }
+
+  li {
+    width: auto;
+  }
+  .tree-icon {
+    float: left;
+  }
+  .tree-anchor {
+    display: flex;
+    flex: 1 1 auto;
+    width: calc(100% - 45px);
+  }
+
+  .tree-item {
     @extend %flex;
-    cursor: pointer;
-    position: relative;
+    font-size: 1rem;
     width: 100%;
-    padding: 0.4rem 0.75rem 0.5rem;
-    border-bottom: 1px solid $line-color;
-    .modal-tb-header-left {
-      font-weight: 600;
-      color: $header-font-color;
-    }
-    .modal-tb-header-right-asc,
-    .modal-tb-header-right-desc {
-      position: absolute;
-      top: 0.3rem;
-      opacity: 0.4;
-    }
-    .modal-tb-header-right-asc {
-      right: 1rem;
-    }
-    .modal-tb-header-right-desc {
-      right: 0.5rem;
-    }
-    .active {
-      opacity: 1;
-    }
   }
 
-  .table-body-wrap {
-    width: 100%;
-    overflow: auto;
-    .table {
-      margin: 0;
-      td {
-        padding: 0.35rem 0.75rem 0.4rem;
-        border: none;
-        cursor: pointer;
-      }
-      .active {
-        background-color: $selected-color;
-      }
-    }
+  .tree-wholerow-hovered {
+    background-color: $hover-color;
+  }
+  .tree-wholerow-clicked {
+    background-color: $selected-color;
   }
 
-  .b-table-head {
-    th {
-      padding: 0;
-      overflow: hidden;
-      border: 0 !important;
-    }
-  }
-}
-
-.tbg {
-  display: flex;
-  flex-flow: column nowrap;
-  flex: 1 1 auto;
-  height: 100%;
-  user-select: none;
-
-  .tb-header {
-    @extend %flex;
-    border: 1px solid $line-color;
-    padding: 0.8rem 0.3rem 0.8rem 0.65rem;
-
-    .tb-header-left,
-    .tb-header-right {
-      cursor: pointer;
-      @extend %flex;
-    }
-
-    .tb-header-left {
-      width: 360px;
-    }
-
-    .tb-header-title {
-      font-weight: 600;
-      color: $header-font-color;
-    }
-
-    .tb-header-sort-arrows {
-      position: relative;
-      width: 1.5rem;
-
-      .tb-header-sort-desc,
-      .tb-header-sort-asc {
-        position: absolute;
-        margin: 0;
-        padding: 0;
-        opacity: 0.4;
-        top: 0;
-      }
-
-      .tb-header-sort-desc {
-        right: 8px;
-      }
-
-      .tb-header-sort-asc {
-        right: 0px;
-      }
-
-      .active {
-        opacity: 1;
-      }
-    }
-  }
-
-  .tb-body {
-    overflow: auto;
-    height: calc(100% - 70px);
-
-    .genres-tree {
-      //padding: .5rem 0;
-      li {
-        width: auto;
-      }
-      .tree-icon {
-        float: left;
-      }
-      .tree-anchor {
-        display: flex;
-        flex: 1 1 auto;
-        width: calc(100% - 45px);
-      }
-
-      .tree-item {
-        @extend %flex;
-        font-size: 1rem;
-        width: 100%;
-      }
-      
-      .tree-wholerow-hovered {
-        background-color: $hover-color;
-      }
-      .tree-wholerow-clicked {
-        background-color: $selected-color;
-      }
-       
-      .tree-disabled {
-        opacity: .5;
-      }
-
-      
-    }
+  .tree-disabled {
+    opacity: 0.5;
   }
 }
 </style>
@@ -221,7 +108,9 @@ export default {
   },
   methods: {
     itemClick(node) {
-      console.log(node.model.text + " " + node.model.type+ " " + node.model.id);
+      console.log(
+        node.model.text + " " + node.model.type + " " + node.model.id
+      );
       store.commit("setGenresID", node.model.id);
       store.commit("setGenresType", node.model.type);
       store.commit("setGenresTitle", node.model.text);

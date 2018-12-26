@@ -15,7 +15,7 @@
       </b-col>
     </b-row>
     <b-row class="fix-height">
-      <b-col class="sidebar sidebar-genres ml-3 p-0">
+      <b-col class="sidebar ml-3 p-0">
         <GenresTree :gItems="items"/>
       </b-col>
       <b-col class="content">
@@ -76,6 +76,8 @@ export default {
   methods: {
     getGenres() {
       const self = this;
+      let id = this.$store.getters.genresID;
+      let type = this.$store.getters.genresType;
       //Вызов функции из глобального миксина
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
@@ -92,6 +94,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "g_list",
+          id: id,
+          type: type,
           filter: self.gFilter,
           order: self.currentOC
         },
@@ -106,8 +110,4 @@ export default {
 </script>
 
 <style lang='scss'>
-  .sidebar-genres {
-    flex: 0 0 29rem !important;
-  }
-
 </style>

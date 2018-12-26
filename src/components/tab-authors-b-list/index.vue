@@ -412,7 +412,7 @@ $ip-width: 21rem;
     .item {
       position: relative;
       flex-flow: row nowrap;
-      width: 389px;
+      width: 333px;
       max-height: 236px;
       margin: $item-mr;
       padding: $item-pd;
