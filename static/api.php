@@ -489,10 +489,19 @@ if (isset($_POST["cmd"])) {
                         break;
                 }
                 $username = $_SESSION["user"];
+
                 $filter = $_POST["filter"];
+
                 if ($filter === "*") {
                     $filter = null;
                 }
+
+                if ($_POST["type"] === 'branch') {
+                    $branch_id = $_POST["id"];
+                } else {
+                    $leaf_id = $_POST["id"];
+                }
+
                 $stmt = $pdo->prepare('SELECT gg_id, gg_title, ge_id, ge_title,
                                             (SELECT COUNT(1)
                                             FROM books_genres, genres g2, books, users
@@ -521,6 +530,7 @@ if (isset($_POST["cmd"])) {
                 $g_group = '';
                 $gg_count = 0;
                 $gm_array = [];
+                $first = true;
                 foreach ($result as $value) {
                     if ($value[gg_title] != $g_group) {
                         if ($g_group != '') {
@@ -529,21 +539,35 @@ if (isset($_POST["cmd"])) {
                                     "id" => $g_id,
                                     "text" => $g_group,
                                     "type" => 'branch',
+                                    "selected" => $b_selected,
+                                    "opened" => $b_sopened,
                                     "children" => $gc_array,
                                     "count" => $gg_count,
                                     "disabled" => ($gg_count > 0) ? false : true,
                                 ));
+                                
+                            $l_selected = null;
+                            if ($b_sopened) {
+                                $b_sopened = false;
+                            }
                         }
                         $g_group = $value[gg_title];
                         $g_id = $value[gg_id];
+                        $b_selected = ($g_id === $branch_id) ? true : false;
                         $gg_count = $value[cnt1];
                         $gc_array = [];
+                    }
+                    $l_selected = ($value[ge_id] === $leaf_id) ? true : false;
+
+                    if ($l_selected) {
+                        $b_sopened = true;
                     }
                     array_push($gc_array,
                         array(
                             "id" => $value[ge_id],
                             "text" => str_replace(" (то, что не вошло в другие категории)", "", $value[ge_title]),
                             "type" => 'leaf',
+                            "selected" => $l_selected,
                             "count" => $value[cnt2],
                             "disabled" => ($value[cnt2] > 0) ? false : true,
                         ));
@@ -555,6 +579,8 @@ if (isset($_POST["cmd"])) {
                         "id" => $g_id,
                         "text" => $g_group,
                         "type" => 'branch',
+                        "selected" => $b_selected,
+                        "opened" => $b_sopened,
                         "children" => $gc_array,
                         "count" => $gg_count,
                         "disabled" => ($gg_count > 0) ? false : true,
