@@ -77,6 +77,7 @@
     <b-modal
       id="a-modal2"
       size="lg"
+      no-close-on-backdrop
       :title="modalHeaderText"
       @ok="modal3HandleOk"
       @show="modal2Show"
@@ -128,6 +129,7 @@
     <b-modal
       id="a-modal3"
       size="lg"
+      no-close-on-backdrop
       title="Объединение авторов"
       ref="scModalRef"
       @ok="scHandleOk"
@@ -157,6 +159,7 @@
     <b-modal
       id="a-modal4"
       size="lg"
+      no-close-on-backdrop
       title="Удаление автора"
       @ok="delHandleOk"
       @shown="hideMenu"

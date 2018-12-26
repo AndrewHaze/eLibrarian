@@ -56,6 +56,7 @@
     <b-modal
       id="s-modal1"
       size="lg"
+      no-close-on-backdrop
       title="Удаление автора"
       @ok="delHandleOk"
       @shown="hideMenu"

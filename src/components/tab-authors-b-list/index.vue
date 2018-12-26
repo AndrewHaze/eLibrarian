@@ -155,7 +155,7 @@
             </b-btn>
           </b-button-group>
           <b-button-group class="mx-1" size="sm">
-            <b-btn variant="danger" title="Удалить книгу" v-b-modal.b-modal3>
+            <b-btn variant="danger" title="Удалить книгу" v-b-modal="sid+'-modal3'">
               <font-awesome-icon icon="trash-alt"/>
             </b-btn>
           </b-button-group>
@@ -219,8 +219,9 @@
       </div>
     </transition>
     <b-modal
-      id="b-modal3"
+      :id="sid+'-modal3'"
       size="lg"
+      no-close-on-backdrop
       title="Удаление книги"
       @ok="delHandleOk"
       @shown="hideMenu"
@@ -769,7 +770,7 @@ export default {
         {
           cmd: "gs_list", //список серий в жанре
           id: val,
-          type: self.type
+          type: type
         },
         "",
         function(rd) {
@@ -782,7 +783,7 @@ export default {
         {
           cmd: "gb_list",
           id: val,
-          type: self.type
+          type: type
         },
         "",
         function(rd) {
