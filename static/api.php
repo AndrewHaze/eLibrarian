@@ -545,7 +545,7 @@ if (isset($_POST["cmd"])) {
                                     "count" => $gg_count,
                                     "disabled" => ($gg_count > 0) ? false : true,
                                 ));
-                                
+
                             $l_selected = null;
                             if ($b_sopened) {
                                 $b_sopened = false;
@@ -809,6 +809,20 @@ if (isset($_POST["cmd"])) {
                             foreach ($nodes as $node) {
                                 if ($node->getAttribute('id') == $cover_id) {
                                     $cover = base64_decode($node->nodeValue);
+                                    //Масштабируем изображение
+                                    $im = imagecreatefromstring($cover);
+                                    $source_width = imagesx($im);
+                                    $source_height = imagesy($im);
+                                    $ratio = $source_height / $source_width;
+                                    $new_width = 300; // новая ширина
+                                    $new_height = $ratio * 300;
+                                    $thumb = imagecreatetruecolor($new_width, $new_height);
+                                    $transparency = imagecolorallocatealpha($thumb, 255, 255, 255, 127);
+                                    imagefilledrectangle($thumb, 0, 0, $new_width, $new_height, $transparency);
+                                    imagecopyresampled($thumb, $im, 0, 0, 0, 0, $new_width, $new_height, $source_width, $source_height);
+                                    imagedestroy($im);
+                                    imagepng($thumb);
+                                    $cover = ob_get_contents();
                                     break;
                                 }
                             }
