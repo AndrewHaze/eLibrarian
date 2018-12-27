@@ -108,9 +108,6 @@ export default {
   },
   methods: {
     itemClick(node) {
-      console.log(
-        node.model.text + " " + node.model.type + " " + node.model.id
-      );
       store.commit("setGenresID", node.model.id);
       store.commit("setGenresType", node.model.type);
       store.commit("setGenresTitle", node.model.text);
@@ -148,13 +145,5 @@ export default {
       store.commit("setOrderCode", this.orderCode);
     }
   },
-  //Хук <UPDATED> вызывается после изменения данных в компоненте и перерисовки DOM
-  updated: function() {
-    // if (store.getters.seriesID === -1) {
-    //   this.sItems.forEach(function(entry) {
-    //     entry.isActive = false;
-    //   });
-    // }
-  }
 };
 </script>

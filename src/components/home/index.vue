@@ -271,8 +271,11 @@ export default {
   methods: {
     updateAll() {
       store.commit("setAuthorID", -1);
+      store.commit("setGenresID", -1);
+      store.commit("setSeriesID", -1);
       this.$refs.aTab.getAuthors();
-      this.$refs.sTab.getGenres();
+      this.$refs.gTab.getGenres();
+      this.$refs.sTab.getSeries();
     }
   },
   computed: {

@@ -1,7 +1,8 @@
 <template>
   <section>
-    <h6  v-if="(!this.curAuthor && !this.curSeries && !this.curGenres)">Нет данных для отображения</h6>
+    <h6 v-if="(!this.curAuthor && !this.curSeries && !this.curGenres)">Нет данных для отображения</h6>
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
+        <div v-if="isLoading" class="loading-screen">Загрузка...</div>
       <div class="cover-book-list" v-if="look === 'cover'" @scroll="onScroll">
         <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
           <div class="series-title" v-if="sItem.seriesTitle === 'яяяяяя'">
@@ -48,7 +49,6 @@
               </div>
             </div>
           </div>
-          
         </div>
       </div>
       <!--******************************************************************************************-->
@@ -241,6 +241,422 @@
   </section>
 </template>
 
+<script>
+import store from "../../store";
+
+export default {
+  name: "books-list",
+  props: ["curAI", "curSI", "curGI", "sid"],
+  data: function() {
+    return {
+      isLoading: true,
+      ////
+      curAuthor: null,
+      curSeries: null,
+      curGenres: null,
+      selectedSeries: "",
+      selectedSeriesNumber: 0,
+      //список серий
+      sListItems: [],
+      //список книг
+      bListItems: [],
+      bookID: "",
+      isRead: false,
+      isToPlan: false,
+      isFavorites: false,
+      howManyStars: 0,
+      selectedItem: null,
+      //*********
+      isPad: false,
+      bMenu: false,
+      bMenuX: 0,
+      bMenuY: 0
+    };
+  },
+  watch: {
+    curAI: function(val) {
+      if (val === -1) {
+        this.curAuthor = null;
+        this.selectedItem = null;
+        return;
+      }
+      this.isLoading = true;
+      const self = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "as_list", //список серий автора
+          dat: val
+        },
+        "",
+        function(rd) {
+          self.sListItems = rd; //возвр. данные (Responce)
+        }
+      );
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "ab_list", //список книг
+          dat: val
+        },
+        "",
+        function(rd) {
+          self.bListItems = rd; //возвр. данные (Responce)
+          self.selectedItem = null;
+        }
+      );
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "author", //выбраный автор
+          dat: val
+        },
+        "",
+        function(rd) {
+          self.curAuthor = rd; //возвр. данные (Responce)
+        }
+      );
+    },
+    //////////////////////////////////////////////////////
+    curSI: function(val) {
+      if (val === -1) {
+        this.curSeries = null;
+        this.selectedItem = null;
+        return;
+      }
+      this.isLoading = true;
+      const self = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "sb_list",
+          dat: val
+        },
+        "",
+        function(rd) {
+          self.bListItems = rd; //возвр. данные (Responce)
+          self.selectedItem = null;
+        }
+      );
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "ser", //выбраная серия
+          dat: val
+        },
+        "",
+        function(rd) {
+          self.sListItems = rd; //возвр. данные (Responce)
+          if (rd) {
+            self.curSeries = self.sListItems[0].seriesTitle;
+          }
+        }
+      );
+    },
+    //////////////////////////////////////////////////////
+    curGI: function(val) {
+      if (val === -1) {
+        this.curGenres = null;
+        this.selectedItem = null;
+        return;
+      }
+      this.isLoading = true;
+      const self = this;
+      this.curGenres = this.$store.getters.genresTitle;
+      let type = this.$store.getters.genresType;
+
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "gs_list", //список серий в жанре
+          id: val,
+          type: type
+        },
+        "",
+        function(rd) {
+          self.sListItems = rd; //возвр. данные (Responce)
+        }
+      );
+
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "gb_list",
+          id: val,
+          type: type
+        },
+        "",
+        function(rd) {
+          self.bListItems = rd; //возвр. данные (Responce)
+          self.selectedItem = null;
+        }
+      );
+    },
+    bookID: function(val) {
+      const self = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "series",
+          dat: val
+        },
+        "",
+        function(rd) {
+          self.selectedSeries = rd;
+        }
+      );
+    },
+    bListItems: function() {
+      this.setTableHeaderPad(); //проверяем и добавляем отступ в заголовок таблицы
+    },
+    bListItems: function() {
+      this.isLoading = false;
+    }
+  },
+  computed: {
+    //стиль отображения
+    look: function() {
+      this.setTableHeaderPad(); //проверяем и добавляем отступ в заголовок таблицы
+      return store.getters.blLook;
+    },
+    infoPanel: function() {
+      return store.getters.iPanel === "on" ? true : false;
+    }
+  },
+  methods: {
+    strAuthor: function(val) {
+      if (val.length > 200) {
+        return "Коллектив авторов";
+      } else return val;
+    },
+    strGenres: function(val) {
+      return val.replace(" (то, что не вошло в другие категории)", "");
+    },
+    delHandleOk() {
+      const self = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "del_book",
+          dat: this.bookID
+        },
+        "",
+        function(rd) {}
+      );
+    },
+    hideMenu() {
+      this.bMenu = false;
+    },
+    setTableHeaderPad() {
+      /*  добавляем отступ в заголовок таблицы <tbl-table> 
+          при появленни скрола у <table-body> 
+          Скролл может появится:
+              - при изменении массива bListItems (watch: bListItems);
+              - при маштабировании окна (хук: resize);
+              - при смене вида отображения (computed: look).
+      */
+      this.$nextTick(function() {
+        let el = document.getElementById(this.sid + "table-body");
+        if (el) {
+          let hSum = 0;
+          for (let i = 0; i < el.children.length; i++) {
+            hSum += el.children[i].clientHeight;
+          }
+          this.isPad = hSum > el.clientHeight;
+        }
+      });
+    },
+    handleResize() {
+      this.setTableHeaderPad();
+      this.bMenu = false;
+    },
+    scrollTo(element, to, duration) {
+      var start = element.scrollTop,
+        change = to - start,
+        currentTime = 0,
+        increment = 2;
+
+      Math.easeInOutQuad = function(t, b, c, d) {
+        t /= d / 2;
+        if (t < 1) return (c / 2) * t * t + b;
+        t--;
+        return (-c / 2) * (t * (t - 2) - 1) + b;
+      };
+
+      var animateScroll = function() {
+        currentTime += increment;
+        var val = Math.easeInOutQuad(currentTime, start, change, duration);
+        element.scrollTop = val;
+        if (currentTime < duration) {
+          setTimeout(animateScroll, increment);
+        }
+      };
+      animateScroll();
+    },
+    menuPos(id) {
+      if (this.bMenu) {
+        //размеры меню
+        let mW = 264,
+          mH = 32;
+        //координаты родителя
+        let p = document.getElementById(this.sid).getBoundingClientRect();
+        //координаты относительно родителя
+        let c = document.getElementById(id).getBoundingClientRect();
+        this.bMenuX = c.left + (c.width - mW) / 2 - p.left;
+        if (this.getViewportHeight() > c.bottom + p.top - mH * 2.5) {
+          this.bMenuY = c.bottom - p.top - 3;
+        } else {
+          this.bMenuY = c.top - p.top - mH + 3;
+        }
+      }
+    },
+    itemClickHandler(item) {
+      //сбросим атрибуты по всему массиву
+      this.bListItems.forEach(function(entry) {
+        entry.isActive = false;
+      });
+      let element = this.bListItems[
+        this.bListItems.map(el => el.id).indexOf(item.currentTarget.id)
+      ];
+      this.bookID = element.id.substr(2);
+      element.isActive = true;
+      this.selectedItem = element;
+      this.bMenu = true;
+      this.menuPos(item.currentTarget.id);
+      if (
+        document.getElementById(this.sid + "ip1") &&
+        document.getElementById(this.sid + "ip1").scrollTop > 0
+      ) {
+        this.scrollTo(document.getElementById(this.sid + "ip1"), 0, 100);
+      }
+    },
+    mouseOverBook(item) {
+      let element = this.bListItems[
+        this.bListItems.map(el => el.id).indexOf(item.currentTarget.id)
+      ];
+      this.isRead = element.isRead;
+      this.isToPlan = element.isToPlan;
+      this.isFavorites = element.isFavorites;
+      this.howManyStars = element.isFavorites;
+      this.bMenu = element.isActive || false;
+      this.menuPos(item.currentTarget.id);
+    },
+    mouseLeaveBook() {
+      this.bMenu = false;
+    },
+    mouseOverBookMenu() {
+      this.bMenu = true;
+    },
+    onScroll() {
+      this.bMenu = false;
+    },
+    readButtonClick(item) {
+      this.bMenu = false;
+      let element = this.bListItems[
+        this.bListItems.map(el => el.id).indexOf(this.selectedItem.id)
+      ];
+      element.isRead = !element.isRead;
+      const self = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "status_read",
+          id: this.bookID,
+          state: element.isRead
+        },
+        "",
+        function(rd) {
+          if (!rd) element.isRead = !element.isRead;
+        }
+      );
+    },
+    toPlanButtonClick(item) {
+      this.bMenu = false;
+      let element = this.bListItems[
+        this.bListItems.map(el => el.id).indexOf(this.selectedItem.id)
+      ];
+      element.isToPlan = !element.isToPlan;
+      const self = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "status_toplan",
+          id: this.bookID,
+          state: element.isToPlan
+        },
+        "",
+        function(rd) {
+          if (!rd) element.isToPlan = !element.isToPlan;
+        }
+      );
+    },
+    favoritesButtonClick(item) {
+      this.bMenu = false;
+      let element = this.bListItems[
+        this.bListItems.map(el => el.id).indexOf(this.selectedItem.id)
+      ];
+      element.isFavorites = !element.isFavorites;
+      const self = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "status_favorites",
+          id: this.bookID,
+          state: element.isFavorites
+        },
+        "",
+        function(rd) {
+          if (!rd) element.isFavorites = !element.isFavorites;
+        }
+      );
+    },
+    setStars(n) {
+      this.bMenu = false;
+      let element = this.bListItems[
+        this.bListItems.map(el => el.id).indexOf(this.selectedItem.id)
+      ];
+      element.howManyStars = n;
+      const self = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "set_stars",
+          id: this.bookID,
+          state: element.howManyStars
+        },
+        "",
+        function(rd) {}
+      );
+    },
+    starsButton0Click(item) {
+      this.setStars(0);
+    },
+    starsButton1Click(item) {
+      this.setStars(1);
+    },
+    starsButton2Click(item) {
+      this.setStars(2);
+    },
+    starsButton3Click(item) {
+      this.setStars(3);
+    },
+    starsButton4Click(item) {
+      this.setStars(4);
+    },
+    starsButton5Click(item) {
+      this.setStars(5);
+    }
+  },
+  mounted: function() {
+    window.addEventListener("resize", this.handleResize);
+  },
+  beforeDestroy: function() {
+    window.removeEventListener("resize", this.handleResize);
+  },
+  
+};
+</script>
+
 <style lang="scss">
 $line-color: #dee2e6;
 $header-font-color: #495057;
@@ -254,6 +670,21 @@ $ip-width: 21rem;
   position: relative;
   margin-left: -0.5rem;
   overflow: hidden;
+}
+
+.loading-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: #fff;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 30%;
+  font-size: 1.2rem;
 }
 
 #tad,
@@ -642,414 +1073,3 @@ $ip-width: 21rem;
   //opacity: 0;
 }
 </style>
-
-<script>
-import store from "../../store";
-
-export default {
-  name: "books-list",
-  props: ["curAI", "curSI", "curGI", "sid"],
-  data: function() {
-    return {
-      curAuthor: null,
-      curSeries: null,
-      curGenres: null,
-      selectedSeries: "",
-      selectedSeriesNumber: 0,
-      //список серий
-      sListItems: [],
-      //список книг
-      bListItems: [],
-      bookID: "",
-      isRead: false,
-      isToPlan: false,
-      isFavorites: false,
-      howManyStars: 0,
-      selectedItem: null,
-      //*********
-      isPad: false,
-      bMenu: false,
-      bMenuX: 0,
-      bMenuY: 0
-    };
-  },
-  watch: {
-    curAI: function(val) {
-      if (val === -1) {
-        this.curAuthor = null;
-        this.selectedItem = null;
-        return;
-      }
-
-      const self = this;
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "as_list", //список серий автора
-          dat: val
-        },
-        "",
-        function(rd) {
-          self.sListItems = rd; //возвр. данные (Responce)
-        }
-      );
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "ab_list", //список книг
-          dat: val
-        },
-        "",
-        function(rd) {
-          self.bListItems = rd; //возвр. данные (Responce)
-          self.selectedItem = null;
-        }
-      );
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "author", //выбраный автор
-          dat: val
-        },
-        "",
-        function(rd) {
-          self.curAuthor = rd; //возвр. данные (Responce)
-        }
-      );
-    },
-    //////////////////////////////////////////////////////
-    curSI: function(val) {
-      if (val === -1) {
-        this.curSeries = null;
-        this.selectedItem = null;
-        return;
-      }
-
-      const self = this;
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "sb_list",
-          dat: val
-        },
-        "",
-        function(rd) {
-          self.bListItems = rd; //возвр. данные (Responce)
-          self.selectedItem = null;
-        }
-      );
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "ser", //выбраная серия
-          dat: val
-        },
-        "",
-        function(rd) {
-          self.sListItems = rd; //возвр. данные (Responce)
-          if (rd) {
-            self.curSeries = self.sListItems[0].seriesTitle;
-          }
-        }
-      );
-    },
-    //////////////////////////////////////////////////////
-    curGI: function(val) {
-      if (val === -1) {
-        this.curGenres = null;
-        this.selectedItem = null;
-        return;
-      }
-
-      const self = this;
-      this.curGenres = this.$store.getters.genresTitle;
-      let type = this.$store.getters.genresType;
-
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "gs_list", //список серий в жанре
-          id: val,
-          type: type
-        },
-        "",
-        function(rd) {
-          self.sListItems = rd; //возвр. данные (Responce)
-        }
-      );
-
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "gb_list",
-          id: val,
-          type: type
-        },
-        "",
-        function(rd) {
-          self.bListItems = rd; //возвр. данные (Responce)
-          self.selectedItem = null;
-        }
-      );
-      
-    },
-    bookID: function(val) {
-      const self = this;
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "series",
-          dat: val
-        },
-        "",
-        function(rd) {
-          self.selectedSeries = rd;
-        }
-      );
-    },
-    bListItems: function() {
-      this.setTableHeaderPad(); //проверяем и добавляем отступ в заголовок таблицы
-    }
-  },
-  computed: {
-    //стиль отображения
-    look: function() {
-      this.setTableHeaderPad(); //проверяем и добавляем отступ в заголовок таблицы
-      return store.getters.blLook;
-    },
-    infoPanel: function() {
-      return store.getters.iPanel === "on" ? true : false;
-    }
-  },
-  methods: {
-    strAuthor: function(val) {
-      if (val.length > 200) {
-        return "Коллектив авторов";
-      } else return val;
-    },
-    strGenres: function(val) {
-      return val.replace(" (то, что не вошло в другие категории)", "");
-    },
-    delHandleOk() {
-      const self = this;
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "del_book",
-          dat: this.bookID
-        },
-        "",
-        function(rd) {}
-      );
-    },
-    hideMenu() {
-      this.bMenu = false;
-    },
-    setTableHeaderPad() {
-      /*  добавляем отступ в заголовок таблицы <tbl-table> 
-          при появленни скрола у <table-body> 
-          Скролл может появится:
-              - при изменении массива bListItems (watch: bListItems);
-              - при маштабировании окна (хук: resize);
-              - при смене вида отображения (computed: look).
-      */
-      this.$nextTick(function() {
-        let el = document.getElementById(this.sid + "table-body");
-        if (el) {
-          let hSum = 0;
-          for (let i = 0; i < el.children.length; i++) {
-            hSum += el.children[i].clientHeight;
-          }
-          this.isPad = hSum > el.clientHeight;
-        }
-      });
-    },
-    handleResize() {
-      this.setTableHeaderPad();
-      this.bMenu = false;
-    },
-    scrollTo(element, to, duration) {
-      var start = element.scrollTop,
-        change = to - start,
-        currentTime = 0,
-        increment = 2;
-
-      Math.easeInOutQuad = function(t, b, c, d) {
-        t /= d / 2;
-        if (t < 1) return (c / 2) * t * t + b;
-        t--;
-        return (-c / 2) * (t * (t - 2) - 1) + b;
-      };
-
-      var animateScroll = function() {
-        currentTime += increment;
-        var val = Math.easeInOutQuad(currentTime, start, change, duration);
-        element.scrollTop = val;
-        if (currentTime < duration) {
-          setTimeout(animateScroll, increment);
-        }
-      };
-      animateScroll();
-    },
-    menuPos(id) {
-      if (this.bMenu) {
-        //размеры меню
-        let mW = 264,
-          mH = 32;
-        //координаты родителя
-        let p = document.getElementById(this.sid).getBoundingClientRect();
-        //координаты относительно родителя
-        let c = document.getElementById(id).getBoundingClientRect();
-        this.bMenuX = c.left + (c.width - mW) / 2 - p.left;
-        if (this.getViewportHeight() > c.bottom + p.top - mH * 2.5) {
-          this.bMenuY = c.bottom - p.top - 3;
-        } else {
-          this.bMenuY = c.top - p.top - mH + 3;
-        }
-      }
-    },
-    itemClickHandler(item) {
-      //сбросим атрибуты по всему массиву
-      this.bListItems.forEach(function(entry) {
-        entry.isActive = false;
-      });
-      let element = this.bListItems[
-        this.bListItems.map(el => el.id).indexOf(item.currentTarget.id)
-      ];
-      this.bookID = element.id.substr(2);
-      element.isActive = true;
-      this.selectedItem = element;
-      this.bMenu = true;
-      this.menuPos(item.currentTarget.id);
-      if (
-        document.getElementById(this.sid + "ip1") &&
-        document.getElementById(this.sid + "ip1").scrollTop > 0
-      ) {
-        this.scrollTo(document.getElementById(this.sid + "ip1"), 0, 100);
-      }
-    },
-    mouseOverBook(item) {
-      let element = this.bListItems[
-        this.bListItems.map(el => el.id).indexOf(item.currentTarget.id)
-      ];
-      this.isRead = element.isRead;
-      this.isToPlan = element.isToPlan;
-      this.isFavorites = element.isFavorites;
-      this.howManyStars = element.isFavorites;
-      this.bMenu = element.isActive || false;
-      this.menuPos(item.currentTarget.id);
-    },
-    mouseLeaveBook() {
-      this.bMenu = false;
-    },
-    mouseOverBookMenu() {
-      this.bMenu = true;
-    },
-    onScroll() {
-      this.bMenu = false;
-    },
-    readButtonClick(item) {
-      this.bMenu = false;
-      let element = this.bListItems[
-        this.bListItems.map(el => el.id).indexOf(this.selectedItem.id)
-      ];
-      element.isRead = !element.isRead;
-      const self = this;
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "status_read",
-          id: this.bookID,
-          state: element.isRead
-        },
-        "",
-        function(rd) {
-          if (!rd) element.isRead = !element.isRead;
-        }
-      );
-    },
-    toPlanButtonClick(item) {
-      this.bMenu = false;
-      let element = this.bListItems[
-        this.bListItems.map(el => el.id).indexOf(this.selectedItem.id)
-      ];
-      element.isToPlan = !element.isToPlan;
-      const self = this;
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "status_toplan",
-          id: this.bookID,
-          state: element.isToPlan
-        },
-        "",
-        function(rd) {
-          if (!rd) element.isToPlan = !element.isToPlan;
-        }
-      );
-    },
-    favoritesButtonClick(item) {
-      this.bMenu = false;
-      let element = this.bListItems[
-        this.bListItems.map(el => el.id).indexOf(this.selectedItem.id)
-      ];
-      element.isFavorites = !element.isFavorites;
-      const self = this;
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "status_favorites",
-          id: this.bookID,
-          state: element.isFavorites
-        },
-        "",
-        function(rd) {
-          if (!rd) element.isFavorites = !element.isFavorites;
-        }
-      );
-    },
-    setStars(n) {
-      this.bMenu = false;
-      let element = this.bListItems[
-        this.bListItems.map(el => el.id).indexOf(this.selectedItem.id)
-      ];
-      element.howManyStars = n;
-      const self = this;
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "set_stars",
-          id: this.bookID,
-          state: element.howManyStars
-        },
-        "",
-        function(rd) {}
-      );
-    },
-    starsButton0Click(item) {
-      this.setStars(0);
-    },
-    starsButton1Click(item) {
-      this.setStars(1);
-    },
-    starsButton2Click(item) {
-      this.setStars(2);
-    },
-    starsButton3Click(item) {
-      this.setStars(3);
-    },
-    starsButton4Click(item) {
-      this.setStars(4);
-    },
-    starsButton5Click(item) {
-      this.setStars(5);
-    }
-  },
-  mounted: function() {
-    window.addEventListener("resize", this.handleResize);
-  },
-  beforeDestroy: function() {
-    window.removeEventListener("resize", this.handleResize);
-  }
-};
-</script>
