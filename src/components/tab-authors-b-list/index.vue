@@ -364,13 +364,15 @@ export default {
       const self = this;
       this.curGenres = this.$store.getters.genresTitle;
       let type = this.$store.getters.genresType;
+      let filter = this.$store.getters.genresTitle.substr(0,1);
 
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "gs_list", //список серий в жанре
           id: val,
-          type: type
+          type: type,
+          filter: filter
         },
         "",
         function(rd) {
@@ -383,7 +385,8 @@ export default {
         {
           cmd: "gb_list",
           id: val,
-          type: type
+          type: type,
+          filter: filter
         },
         "",
         function(rd) {
