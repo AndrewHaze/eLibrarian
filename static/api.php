@@ -372,6 +372,7 @@ if (isset($_POST["cmd"])) {
                   AND bk_ur_id = ur_id
                   AND bkse_bk_id = bk_id
                   AND se_id = bkse_se_id
+                  AND se_title != "яяяяяя"
                  GROUP BY se_id, se_title
                 ORDER BY se_title');
                 $stmt->bindValue(':login', $username, PDO::PARAM_STR);
@@ -510,19 +511,22 @@ if (isset($_POST["cmd"])) {
                                             AND ge_id = bkge_ge_id
                                             AND bk_id = bkge_bk_id
                                             AND ur_id = bk_ur_id
-                                            AND ur_login = :login1) cnt1,
+                                            AND ur_login = :login1
+                                            AND (gg_title LIKE :filter1_c1 OR g2.ge_title LIKE :filter2_c1)) cnt1,
                                             (SELECT COUNT(1)
                                             FROM books_genres, books, users
                                             WHERE bkge_ge_id = ge_id
                                             AND bk_id = bkge_bk_id
                                             AND ur_id = bk_ur_id
                                             AND ur_login = :login2) cnt2
-                                       FROM genres_groups,genres g1
+                                       FROM genres_groups, genres g1
                                        WHERE ge_gg_id = gg_id
                                        AND (gg_title LIKE :filter1 OR ge_title LIKE :filter2)' . $order_str);
 
                 $stmt->bindValue(':filter1', $filter . "%", PDO::PARAM_STR);
                 $stmt->bindValue(':filter2', $filter . "%", PDO::PARAM_STR);
+                $stmt->bindValue(':filter1_c1', $filter . "%", PDO::PARAM_STR);
+                $stmt->bindValue(':filter2_c1', $filter . "%", PDO::PARAM_STR);
                 $stmt->bindValue(':login1', $username, PDO::PARAM_STR);
                 $stmt->bindValue(':login2', $username, PDO::PARAM_STR);
                 $stmt->execute();
@@ -588,7 +592,7 @@ if (isset($_POST["cmd"])) {
                 $res["data"] = $gm_array;
             }
             break;
-        case "gs_list": //список серий в жанре
+            case "gs_list": //список серий в жанре
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $gi = $_POST["id"];
@@ -643,10 +647,14 @@ if (isset($_POST["cmd"])) {
                 }
             }
             break;
-        case "gb_list": //список книг серии
+        case "gb_list": //список книг в жанре
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $gi = $_POST["id"];
+                $filter = $_POST["filter"];
+                if ($filter === "*") {
+                    $filter = null;
+                }
                 if ($_POST["type"] === 'branch') {
                     $stmt = $pdo->prepare('SELECT DISTINCT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars,
                                               bkse_number,
