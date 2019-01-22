@@ -2,7 +2,7 @@
   <section>
     <h6 v-if="(!this.curAuthor && !this.curSeries && !this.curGenres)">Нет данных для отображения</h6>
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
-        <div v-if="isLoading" class="loading-screen">Загрузка...</div>
+      <div v-if="isLoading" class="loading-screen">Загрузка...</div>
       <div class="cover-book-list" v-if="look === 'cover'" @scroll="onScroll">
         <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
           <div class="series-title" v-if="sItem.seriesTitle === 'яяяяяя'">
@@ -364,7 +364,7 @@ export default {
       const self = this;
       this.curGenres = this.$store.getters.genresTitle;
       let type = this.$store.getters.genresType;
-      let filter = this.$store.getters.genresTitle.substr(0,1);
+      let filter = this.$store.getters.genresTitle.substr(0, 1);
 
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
@@ -655,8 +655,7 @@ export default {
   },
   beforeDestroy: function() {
     window.removeEventListener("resize", this.handleResize);
-  },
-  
+  }
 };
 </script>
 
@@ -853,10 +852,23 @@ $ip-width: 21rem;
       transition: background-color 0.2s;
       overflow: hidden;
       cursor: pointer;
+      &:after {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          height: 3rem;
+          background-image: linear-gradient(to bottom, transparent, #fff);
+          
+        }
 
       &:hover {
         background-color: rgba(221, 221, 221, 0.4);
         transition: background-color 0.2s;
+        &::after {
+          background-image: linear-gradient(to bottom, transparent, rgba(221, 221, 221, .8));
+        }
       }
 
       .cover {
@@ -866,7 +878,7 @@ $ip-width: 21rem;
         margin-right: 1rem;
         justify-content: center;
         overflow: hidden;
-
+        z-index: 1;
         > img {
           height: 100%;
         }
@@ -880,8 +892,10 @@ $ip-width: 21rem;
       }
 
       .info {
+        position: relative;
         flex-flow: column nowrap;
         line-height: 1.3;
+        
 
         .book-authors {
           color: #4c4c4c;
@@ -903,6 +917,7 @@ $ip-width: 21rem;
         display: flex;
         justify-content: space-between;
         font-size: 0.8rem;
+        z-index: 1;
 
         .mg-left {
           span + span {
@@ -1042,6 +1057,9 @@ $ip-width: 21rem;
   .active {
     background-color: $selected-color;
     transition: background-color 0.2s;
+    &:after {
+      background-image: linear-gradient(to bottom, transparent, $selected-color) !important;
+    }
 
     &:hover {
       background-color: $selected-color !important;
