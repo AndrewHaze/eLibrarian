@@ -14,7 +14,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 library.add(faTh, faStream, faTable, faCheck, faHeart, faBell, faTrashAlt, faBookReader, faEdit, faStar, faStarHalfAlt, faInfoCircle, faCalendarCheck, faTag, faAddressCard, faUserFriends, faUserMinus, faUserTimes, faTimes, faQuestionCircle )
 Vue.component('font-awesome-icon', FontAwesomeIcon)
-Vue.component('loading', Loading)
+Vue.component('loading', Loading),
+
 
 Vue.use(VJstree)
 Vue.use(BootstrapVue)
