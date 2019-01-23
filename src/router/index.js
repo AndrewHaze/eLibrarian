@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import Home from '../components/home';
 import Account from '../components/account';
 import Login from '../components/login';
+import Reader from '../components/reader';
 import Registration from '../components/registration';
 import store from '../store';
 
@@ -30,6 +31,12 @@ export default new Router({
       path: '/',
       name: 'Home',
       component: Home,
+    },
+    {
+      path: '/reader',
+      name: 'Reader',
+      component: Reader,
+      beforeEnter: ifAuthenticated,
     },
     {
       path: '/account',
