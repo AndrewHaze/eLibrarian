@@ -7,7 +7,8 @@
         <b-collapse is-nav id="nav_dropdown_collapse">
           <b-navbar-nav v-if="isProfileLoaded">
             <!-- Navbar dropdowns -->
-            <b-nav-item v-b-modal.bookScanner>Импорт книг</b-nav-item>
+            <b-nav-item v-if="!isReader" v-b-modal.bookScanner>Импорт книг</b-nav-item>
+            <b-nav-item v-if="isReader" @click="backClick">Назад</b-nav-item>
           </b-navbar-nav>
         </b-collapse>
         <b-navbar-brand href="#">{{this.$store.getters.appTitle}}</b-navbar-brand>
@@ -20,7 +21,7 @@
     </b-container>
     <footer class="footer">
       <b-container fluid>
-        <b-row v-if="isProfileLoaded">
+        <b-row v-if="isProfileLoaded && !isReader">
           <b-col class="text-right">
             <b-form-radio-group
               id="btnradios2"
@@ -81,14 +82,19 @@ export default {
   methods: {
     logout: function() {
       this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push("/login"));
-    }
+    },
+    backClick: function() {
+      store.commit("setReader", false);
+      this.$router.push("/");
+    },
   },
   computed: {
     ...mapGetters([
       "getProfile",
       "isAuthenticated",
       "isProfileLoaded",
-      "ownerName"
+      "ownerName",
+      "isReader"
     ]),
     ...mapState({
       authLoading: state => state.auth.status === "loading",
