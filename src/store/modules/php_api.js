@@ -11,6 +11,7 @@ const state = {
   oc: 0,
   bll: "cover",
   ip: "on",
+  reader: false,
 }
 
 const getters = {
@@ -32,6 +33,8 @@ const getters = {
   blLook: state => state.bll,
   //Инфо панель книги
   iPanel: state => state.ip,
+  //reader
+  isReader: state => state.reader,
 }
 
 const mutations = {
@@ -64,6 +67,9 @@ const mutations = {
   },
   setInfoPanel(state, value) {
     state.ip = value
+  },
+  setReader(state, value) {
+    state.reader = value
   },
 }
 
