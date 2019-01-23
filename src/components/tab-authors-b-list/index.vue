@@ -147,7 +147,7 @@
       >
         <b-button-toolbar key-nav aria-label="Toolbar with button groups">
           <b-button-group class="mx-1" size="sm">
-            <b-btn variant="primary" title="Открыть книгу для чтения">
+            <b-btn variant="primary" title="Открыть книгу для чтения" @click="openReaderClick">
               <font-awesome-icon icon="book-reader"/>
             </b-btn>
             <b-btn variant="primary" title="Править информацию о книге">
@@ -413,7 +413,7 @@ export default {
       this.setTableHeaderPad(); //проверяем и добавляем отступ в заголовок таблицы
     },
     bListItems: function() {
-      this.isLoading = false;
+        this.isLoading = false;
     }
   },
   computed: {
@@ -553,6 +553,10 @@ export default {
     onScroll() {
       this.bMenu = false;
     },
+    openReaderClick(item) {
+      store.commit("setReader", true);
+      this.$router.push("/reader");
+    },  
     readButtonClick(item) {
       this.bMenu = false;
       let element = this.bListItems[
@@ -652,6 +656,9 @@ export default {
   },
   mounted: function() {
     window.addEventListener("resize", this.handleResize);
+  },
+  beforeCreate: function() {
+    store.commit("setReader", false);
   },
   beforeDestroy: function() {
     window.removeEventListener("resize", this.handleResize);
@@ -853,21 +860,24 @@ $ip-width: 21rem;
       overflow: hidden;
       cursor: pointer;
       &:after {
-          content: "";
-          position: absolute;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          height: 3rem;
-          background-image: linear-gradient(to bottom, transparent, #fff);
-          
-        }
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3rem;
+        background-image: linear-gradient(to bottom, transparent, #fff);
+      }
 
       &:hover {
         background-color: rgba(221, 221, 221, 0.4);
         transition: background-color 0.2s;
         &::after {
-          background-image: linear-gradient(to bottom, transparent, rgba(221, 221, 221, .8));
+          background-image: linear-gradient(
+            to bottom,
+            transparent,
+            rgba(221, 221, 221, 0.8)
+          );
         }
       }
 
@@ -895,7 +905,6 @@ $ip-width: 21rem;
         position: relative;
         flex-flow: column nowrap;
         line-height: 1.3;
-        
 
         .book-authors {
           color: #4c4c4c;
@@ -1058,7 +1067,11 @@ $ip-width: 21rem;
     background-color: $selected-color;
     transition: background-color 0.2s;
     &:after {
-      background-image: linear-gradient(to bottom, transparent, $selected-color) !important;
+      background-image: linear-gradient(
+        to bottom,
+        transparent,
+        $selected-color
+      ) !important;
     }
 
     &:hover {
