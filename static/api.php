@@ -304,7 +304,7 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $ai = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars,
+                $stmt = $pdo->prepare('SELECT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars, bk_file,
                                               bkse_number,
                                               se_title,
                                               (SELECT GROUP_CONCAT(ar_last_name, " ", ar_first_name, " ", ar_middle_name
@@ -351,6 +351,7 @@ if (isset($_POST["cmd"])) {
                                 "isToPlan" => $value[bk_to_plan],
                                 "isFavorites" => $value[bk_favorites],
                                 "howManyStars" => $value[bk_stars],
+                                "fileName" => $value[bk_file], 
                                 "isActive" => false,
                             ));
                     }
@@ -397,7 +398,7 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $si = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT DISTINCT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars,
+                $stmt = $pdo->prepare('SELECT DISTINCT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars, bk_file,
                                               bkse_number,
                                               se_title,
                                               (SELECT GROUP_CONCAT(ar_last_name, " ", ar_first_name, " ", ar_middle_name
@@ -444,6 +445,7 @@ if (isset($_POST["cmd"])) {
                                 "isToPlan" => $value[bk_to_plan],
                                 "isFavorites" => $value[bk_favorites],
                                 "howManyStars" => $value[bk_stars],
+                                "fileName" => $value[bk_file], 
                                 "isActive" => false,
                             ));
                     }
@@ -656,7 +658,7 @@ if (isset($_POST["cmd"])) {
                     $filter = null;
                 }
                 if ($_POST["type"] === 'branch') {
-                    $stmt = $pdo->prepare('SELECT DISTINCT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars,
+                    $stmt = $pdo->prepare('SELECT DISTINCT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars, bk_file,
                                               bkse_number,
                                               se_title,
                                               (SELECT GROUP_CONCAT(ar_last_name, " ", ar_first_name, " ", ar_middle_name
@@ -686,7 +688,7 @@ if (isset($_POST["cmd"])) {
                                          ORDER BY se_title, bkse_number, bk_title');
 
                 } else {
-                    $stmt = $pdo->prepare('SELECT DISTINCT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars,
+                    $stmt = $pdo->prepare('SELECT DISTINCT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars, bk_file,
                                               bkse_number,
                                               se_title,
                                               (SELECT GROUP_CONCAT(ar_last_name, " ", ar_first_name, " ", ar_middle_name
@@ -734,6 +736,7 @@ if (isset($_POST["cmd"])) {
                                 "isToPlan" => $value[bk_to_plan],
                                 "isFavorites" => $value[bk_favorites],
                                 "howManyStars" => $value[bk_stars],
+                                "fileName" => $value[bk_file], 
                                 "isActive" => false,
                             ));
                     }
