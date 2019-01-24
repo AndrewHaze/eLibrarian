@@ -1,6 +1,6 @@
 <template>
 <div>
-  reader
+  {{ $route.params.fileName }}
 </div>  
 </template>
 
@@ -23,7 +23,7 @@ import store from "../../store";
 
 export default {
   name: "reader",
-  
+  props: ['fileName'],
   data: function() {
     return {
       
