@@ -36,6 +36,7 @@ export default new Router({
       path: '/reader',
       name: 'Reader',
       component: Reader,
+      props: { file: false },
       beforeEnter: ifAuthenticated,
     },
     {
