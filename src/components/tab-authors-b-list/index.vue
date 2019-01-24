@@ -3,7 +3,12 @@
     <h6 v-if="(!this.curAuthor && !this.curSeries && !this.curGenres)">Нет данных для отображения</h6>
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
       <div v-if="isLoading" class="loading-screen">Загрузка...</div>
-      <div class="cover-book-list" v-if="look === 'cover'" @scroll="onScroll">
+      <div
+        :id="sid+'_cover-book-list'"
+        class="cover-book-list"
+        v-if="look === 'cover'"
+        @scroll="onScroll"
+      >
         <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
           <div class="series-title" v-if="sItem.seriesTitle === 'яяяяяя'">
             <span>Без серии</span>
@@ -265,6 +270,7 @@ export default {
       isToPlan: false,
       isFavorites: false,
       howManyStars: 0,
+      fileName: "",
       selectedItem: null,
       //*********
       isPad: false,
@@ -411,9 +417,9 @@ export default {
     },
     bListItems: function() {
       this.setTableHeaderPad(); //проверяем и добавляем отступ в заголовок таблицы
-    },
-    bListItems: function() {
-        this.isLoading = false;
+      this.isLoading = false;
+      let el = document.getElementById(this.sid + "_cover-book-list");
+      if (el.scrollTop != 0) el.scrollTop = 0;
     }
   },
   computed: {
@@ -522,6 +528,7 @@ export default {
         this.bListItems.map(el => el.id).indexOf(item.currentTarget.id)
       ];
       this.bookID = element.id.substr(2);
+      this.fileName = element.fileName;
       element.isActive = true;
       this.selectedItem = element;
       this.bMenu = true;
@@ -555,8 +562,13 @@ export default {
     },
     openReaderClick(item) {
       store.commit("setReader", true);
-      this.$router.push("/reader");
-    },  
+      //сброс автора, а то он не выделен но активен
+      store.commit("setAuthorID", -1);
+      this.$router.push({
+        name: "Reader",
+        params: { fileName: this.fileName }
+      });
+    },
     readButtonClick(item) {
       this.bMenu = false;
       let element = this.bListItems[
