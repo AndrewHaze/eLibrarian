@@ -24,7 +24,7 @@
                 class="btn-circle"
               >
                 <font-awesome-icon icon="chevron-up" v-if="showCollapse1"/>
-                <font-awesome-icon icon="chevron-down" v-if="!showCollapse1"/>
+                <font-awesome-icon icon="chevron-down" v-else/>
               </b-btn>
             </div>
             <b-collapse id="collapse1" class="mt-2" v-model="showCollapse1">
