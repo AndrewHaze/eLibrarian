@@ -16,7 +16,7 @@
     </b-row>
     <b-row class="fix-height">
       <b-col class="sidebar ml-3 p-0">
-        <AuthorsList :aItems="items" :aFilter="aFilter"/>
+        <authors-list :aItems="items" :aFilter="aFilter"></authors-list>
       </b-col>
       <b-col class="content">
         <books-list :sid="sid" :curAI="currentAI"></books-list>

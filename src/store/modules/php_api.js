@@ -6,6 +6,7 @@ const state = {
   ai: -1,
   si: -1,
   gi: -1,
+  bi: -1,
   gt: '',
   gty: '',
   oc: 0,
@@ -25,6 +26,7 @@ const getters = {
   authorID: state => state.ai,
   seriesID: state => state.si,
   genresID: state => state.gi,
+  bkID: state => state.bi,
   //для жанров
   genresType: state => state.gty,
   genresTitle: state => state.gt,
@@ -58,6 +60,9 @@ const mutations = {
   },
   setGenresTitle(state, value) {
     state.gt = value
+  },
+  setBookID(state, value) {
+    state.bi = value
   },
   setOrderCode(state, value) {
     state.oc = value

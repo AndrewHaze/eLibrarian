@@ -16,7 +16,7 @@
     </b-row>
     <b-row class="fix-height">
       <b-col class="sidebar ml-3 p-0">
-        <GenresTree :gItems="items"/>
+        <genres-tree :gItems="items"></genres-tree>
       </b-col>
       <b-col class="content">
         <books-list :sid="sid" :curGI="currentGI"></books-list>

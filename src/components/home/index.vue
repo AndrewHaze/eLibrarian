@@ -12,18 +12,19 @@
           </b-col>
         </b-row>
       </b-modal>
-      <ModalBooksScanner/>
+      <modal-books-scanner></modal-books-scanner>
+      <modal-book-editor></modal-book-editor>
       <b-row class="z100">
         <b-col>
           <b-tabs>
             <b-tab title="Авторы" active>
-              <AuthorsTab ref="aTab"/>
+              <authors-tab ref="aTab"></authors-tab>
             </b-tab>
             <b-tab title="Жанры">
-              <GenresTab ref="gTab"/>
+              <genres-tab ref="gTab"></genres-tab>
             </b-tab>
             <b-tab title="Серии">
-              <SeriesTab ref="sTab"/>
+              <series-tab ref="sTab"></series-tab>
             </b-tab>
           </b-tabs>
         </b-col>
@@ -46,7 +47,6 @@ $hover-color: rgba(221, 221, 221, 0.4);
   flex: row, nowrap;
   justify-content: space-between;
 }
-
 
 .fix-height {
   height: calc(100vh - 240px);
@@ -148,7 +148,9 @@ $hover-color: rgba(221, 221, 221, 0.4);
   }
 }
 
-.tba, .tbs, .tbg {
+.tba,
+.tbs,
+.tbg {
   display: flex;
   flex-flow: column nowrap;
   flex: 1 1 auto;
@@ -245,6 +247,7 @@ import { mapGetters } from "vuex";
 import store from "../../store";
 import Login from "../login";
 import ModalBooksScanner from "../modal-bs";
+import ModalBookEditor from "../modal-be";
 import AuthorsTab from "../tab-authors";
 import GenresTab from "../tab-genres";
 import SeriesTab from "../tab-series";
@@ -254,6 +257,7 @@ export default {
   components: {
     Login,
     ModalBooksScanner,
+    ModalBookEditor,
     AuthorsTab,
     GenresTab,
     SeriesTab

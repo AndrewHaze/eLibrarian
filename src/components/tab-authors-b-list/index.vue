@@ -19,8 +19,8 @@
           <div
             class="item"
             v-for="bItem in bListItems"
-            :id="bItem.id"
-            :key="bItem.id"
+            :id="sid+'_'+bItem.id"
+            :key="sid+'_'+bItem.id"
             v-if="bItem.seriesTitle == sItem.seriesTitle"
             :class="{active: bItem.isActive}"
             @click="itemClickHandler"
@@ -83,8 +83,8 @@
             <div
               class="tbl-table-row"
               v-for="bItem in bListItems"
-              :key="bItem.id"
-              :id="bItem.id"
+              :key="sid+'_'+bItem.id"
+              :id="sid+'_'+bItem.id"
               :class="{active: bItem.isActive}"
               @click="itemClickHandler"
               @mouseover="mouseOverBook"
@@ -155,7 +155,7 @@
             <b-btn variant="primary" title="Открыть книгу для чтения" @click="openReaderClick">
               <font-awesome-icon icon="book-reader"/>
             </b-btn>
-            <b-btn variant="primary" title="Править информацию о книге">
+            <b-btn variant="primary" title="Править информацию о книге" v-b-modal.bookEditor>
               <font-awesome-icon icon="edit"/>
             </b-btn>
           </b-button-group>
@@ -419,7 +419,9 @@ export default {
       this.setTableHeaderPad(); //проверяем и добавляем отступ в заголовок таблицы
       this.isLoading = false;
       let el = document.getElementById(this.sid + "_cover-book-list");
-      if (el.scrollTop != 0) el.scrollTop = 0;
+      if (el) {
+        if (el.scrollTop != 0) el.scrollTop = 0;
+      }
     }
   },
   computed: {
@@ -525,13 +527,15 @@ export default {
         entry.isActive = false;
       });
       let element = this.bListItems[
-        this.bListItems.map(el => el.id).indexOf(item.currentTarget.id)
+        this.bListItems.map(el => el.id).indexOf(item.currentTarget.id.substr(4))
       ];
       this.bookID = element.id.substr(2);
+      store.commit("setBookID", this.bookID);
       this.fileName = element.fileName;
       element.isActive = true;
       this.selectedItem = element;
       this.bMenu = true;
+      
       this.menuPos(item.currentTarget.id);
       if (
         document.getElementById(this.sid + "ip1") &&
@@ -542,7 +546,7 @@ export default {
     },
     mouseOverBook(item) {
       let element = this.bListItems[
-        this.bListItems.map(el => el.id).indexOf(item.currentTarget.id)
+        this.bListItems.map(el => el.id).indexOf(item.currentTarget.id.substr(4))
       ];
       this.isRead = element.isRead;
       this.isToPlan = element.isToPlan;
@@ -566,7 +570,8 @@ export default {
       store.commit("setAuthorID", -1);
       this.$router.push({
         name: "Reader",
-        params: { fileName: this.fileName }
+        params: { fileName: '/static/storage/z.fb2' },
+        //params: { fileName: '../uploads/'+this.fileName }
       });
     },
     readButtonClick(item) {
