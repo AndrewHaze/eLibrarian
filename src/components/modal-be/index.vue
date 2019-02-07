@@ -69,32 +69,28 @@
               <b-form-group
                 id="collapse1InputGroup3"
                 label="Авторы:"
-                label-for="collapse1Input3"
+                label-for="collapse1Select1"
                 label-size="sm"
               >
-                <b-form-input
-                  id="collapse1Input3"
-                  type="text"
+                <v-select
+                  id="collapse1Select1"
+                  multiple
                   v-model="form.bk_authors"
-                  required
-                  placeholder="Введите авторов"
-                  size="sm"
-                ></b-form-input>
+                  :options="s2OptionsAuthors"
+                >
+                  <span slot="no-options">Совпадений нет</span>
+                </v-select>
               </b-form-group>
               <!-- Разделитель -->
               <b-form-group
                 id="collapse1InputGroup4"
                 label="Жанры:"
-                label-for="collapse1Input4"
+                label-for="collapse1Select2"
                 label-size="sm"
               >
-                <b-form-input
-                  id="collapse1Input4"
-                  type="text"
-                  v-model="form.bk_genres"
-                  placeholder="Введите жанры"
-                  size="sm"
-                ></b-form-input>
+                <v-select id="collapse1Select2" multiple v-model="form.bk_genres" :options="s2OptionsGenres">
+                  <span slot="no-options">Совпадений нет</span>
+                </v-select>
               </b-form-group>
             </b-collapse>
             <!-- ###################################### colappse 2 ###################################-->
@@ -118,17 +114,12 @@
                   <b-form-group
                     id="collapse2InputGroup1"
                     label="Серия:"
-                    label-for="collapse2Input1"
+                    label-for="collapse2Select1"
                     label-size="sm"
                   >
-                    <b-form-input
-                      id="collapse2Input1"
-                      type="text"
-                      v-model="form.bk_seriesTitle"
-                      required
-                      placeholder="Введите серию"
-                      size="sm"
-                    ></b-form-input>
+                    <v-select id="collapse2Select1" v-model="form.bk_seriesTitle" :options="s2OptionsSeries">
+                      <span slot="no-options">Совпадений нет</span>
+                    </v-select>
                   </b-form-group>
                 </b-col>
                 <!-- Разделитель -->
@@ -148,7 +139,7 @@
                     ></b-form-input>
                   </b-form-group>
                 </b-col>
-                <b-col sm="1" class="d-flex flex-column justify-content-end">
+                <b-col class="col-fix-2btn">
                   <b-button-group class="ad-btn-group">
                     <b-button variant="danger">
                       <font-awesome-icon icon="minus"/>
@@ -403,7 +394,12 @@
                     label-for="collapse6Input1"
                     label-size="sm"
                   >
-                    <b-form-input id="collapse6Input1" type="text" v-model="form.bk_doc_id" size="sm"></b-form-input>
+                    <b-form-input
+                      id="collapse6Input1"
+                      type="text"
+                      v-model="form.bk_doc_id"
+                      size="sm"
+                    ></b-form-input>
                   </b-form-group>
                 </b-col>
                 <!-- Разделитель -->
@@ -455,7 +451,7 @@
                   type="text"
                   v-model="form.bk_doc_authors"
                   required
-                  placeholder=""
+                  placeholder
                   size="sm"
                 ></b-form-input>
               </b-form-group>
@@ -471,7 +467,7 @@
                   type="text"
                   v-model="form.bk_programms"
                   required
-                  placeholder=""
+                  placeholder
                   size="sm"
                 ></b-form-input>
               </b-form-group>
@@ -487,7 +483,7 @@
                   type="text"
                   v-model="form.bk_url"
                   required
-                  placeholder=""
+                  placeholder
                   size="sm"
                 ></b-form-input>
               </b-form-group>
@@ -503,7 +499,7 @@
                   type="text"
                   v-model="form.bk_ocr_authors"
                   required
-                  placeholder=""
+                  placeholder
                   size="sm"
                 ></b-form-input>
               </b-form-group>
@@ -545,7 +541,13 @@
                     label-for="collapse7Input1"
                     label-size="sm"
                   >
-                    <b-form-input id="collapse7Input1" type="date" v-model="form.bk_file_date" size="sm" readonly></b-form-input>
+                    <b-form-input
+                      id="collapse7Input1"
+                      type="date"
+                      v-model="form.bk_file_date"
+                      size="sm"
+                      readonly
+                    ></b-form-input>
                   </b-form-group>
                 </b-col>
                 <!-- Разделитель -->
@@ -597,7 +599,6 @@
                   size="sm"
                 ></b-form-input>
               </b-form-group>
-              
             </b-collapse>
           </b-container>
         </b-col>
@@ -666,29 +667,62 @@ input[type="file"] {
 }
 .collapseWrap {
   padding: 0.5rem 1rem 0;
-  .ad-btn-group {
-    max-height: 32px;
-    margin-bottom: 15px;
-    .btn {
-      padding: 0.2rem 0.5rem !important;
-      font-size: 0.9rem;
-      &:focus {
-        box-shadow: none;
+  .col-fix-2btn {
+    display: flex;
+    flex-flow: column;
+    justify-content: end;
+    max-width: 5.65rem;
+    padding-bottom: .1rem;
+    .ad-btn-group {
+      max-height: 32px;
+      margin-bottom: 15px;
+      .btn {
+        padding: 0.2rem 0.5rem !important;
+        font-size: 0.9rem;
+        &:focus {
+          box-shadow: none;
+        }
       }
     }
   }
+}
+
+.v-select {
+  font-size: 0.875rem;
+  .form-control {
+    height: auto;
+  }
+  .dropdown-toggle::after {
+    border-top: 0.3em solid transparent;
+    border-right: none;
+    margin-left: 0;
+  }
+  .dropdown-menu li a {
+    padding: 0.1rem 0.5rem !important;
+    font-size: 0.875rem;
+  }
+}
+
+.open .dropdown-toggle {
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 </style>
 
 <script>
 import axios from "axios";
 import store from "../../store";
+import vSelect from 'vue-select';
 
 const shiftL = 225;
 const shiftR = 6;
 
 export default {
   name: "modal-be",
+  components: {
+    vSelect
+  },
   data() {
     return {
       mHeight: 100,
@@ -704,9 +738,9 @@ export default {
       form: {
         bk_title: "",
         bk_original_title: "",
-        bk_authors: "",
-        bk_genres: "",
-        bk_seriesTitle: "",
+        bk_authors: null,
+        bk_genres: null,
+        bk_seriesTitle: null,
         bk_seriesNumber: "",
         bk_date: "",
         bk_language: "",
@@ -729,8 +763,11 @@ export default {
         bk_file_date: "",
         bk_file_size: "",
         bk_format: "",
-        bk_file_name: "",
-      }
+        bk_file_name: ""
+      },
+      s2OptionsAuthors: ["op1", "op2", "op3"],
+      s2OptionsGenres: ["op1", "op2", "op3"],
+      s2OptionsSeries: ["op1", "op2", "op3"]
     };
   },
   mounted: function() {
