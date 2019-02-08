@@ -14,7 +14,11 @@
       <b-form-row>
         <b-col sm="3" class="cover-wrap">
           <b-img thumbnail fluid :src="fileName" alt="Обложка"/>
-          <b-button variant="success" block size="sm" @click="openFiles" class="mt-2">Загрузить</b-button>
+          <div>
+            <b-button variant="success" block size="sm" @click="openFiles" class="mt-2">Загрузить</b-button>
+            <b-button variant="primary" block size="sm" @click class="mt-2">Скачать</b-button>
+            <b-button variant="danger" block size="sm" @click class="mt-2">Очистить</b-button>
+          </div>
           <input id="cover-loader" type="file" @change="handleFileChange" accept=".jpg, .png">
         </b-col>
         <b-col sm="9" :style="{ maxHeight: mHeight + 'px', minHeight: mHeight + 'px' }">
@@ -88,7 +92,12 @@
                 label-for="collapse1Select2"
                 label-size="sm"
               >
-                <v-select id="collapse1Select2" multiple v-model="form.bk_genres" :options="s2OptionsGenres">
+                <v-select
+                  id="collapse1Select2"
+                  multiple
+                  v-model="form.bk_genres"
+                  :options="s2OptionsGenres"
+                >
                   <span slot="no-options">Совпадений нет</span>
                 </v-select>
               </b-form-group>
@@ -117,7 +126,11 @@
                     label-for="collapse2Select1"
                     label-size="sm"
                   >
-                    <v-select id="collapse2Select1" v-model="form.bk_seriesTitle" :options="s2OptionsSeries">
+                    <v-select
+                      id="collapse2Select1"
+                      v-model="form.bk_seriesTitle"
+                      :options="s2OptionsSeries"
+                    >
                       <span slot="no-options">Совпадений нет</span>
                     </v-select>
                   </b-form-group>
@@ -183,17 +196,16 @@
                   <b-form-group
                     id="collapse3InputGroup2"
                     label="Язык:"
-                    label-for="collapse3Input2"
+                    label-for="collapse3Select1"
                     label-size="sm"
                   >
-                    <b-form-input
-                      id="collapse3Input2"
-                      type="text"
+                    <v-select
+                      id="collapse3Select1"
                       v-model="form.bk_language"
-                      required
-                      placeholder="Введите язык"
-                      size="sm"
-                    ></b-form-input>
+                      :options="s2OptionsLang"
+                    >
+                      <span slot="no-options">Совпадений нет</span>
+                    </v-select>
                   </b-form-group>
                 </b-col>
                 <!-- Разделитель -->
@@ -204,14 +216,13 @@
                     label-for="collapse3Input3"
                     label-size="sm"
                   >
-                    <b-form-input
-                      id="collapse3Input3"
-                      type="text"
+                    <v-select
+                      id="collapse3Select2"
                       v-model="form.bk_orig_language"
-                      required
-                      placeholder="Введите язык оригинала"
-                      size="sm"
-                    ></b-form-input>
+                      :options="s2OptionsOrigLang"
+                    >
+                      <span slot="no-options">Совпадений нет</span>
+                    </v-select>
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -670,9 +681,9 @@ input[type="file"] {
   .col-fix-2btn {
     display: flex;
     flex-flow: column;
-    justify-content: end;
+    justify-content: flex-end;
     max-width: 5.65rem;
-    padding-bottom: .1rem;
+    padding-bottom: 0.1rem;
     .ad-btn-group {
       max-height: 32px;
       margin-bottom: 15px;
@@ -713,7 +724,7 @@ input[type="file"] {
 <script>
 import axios from "axios";
 import store from "../../store";
-import vSelect from 'vue-select';
+import vSelect from "vue-select";
 
 const shiftL = 225;
 const shiftR = 6;
@@ -767,7 +778,9 @@ export default {
       },
       s2OptionsAuthors: ["op1", "op2", "op3"],
       s2OptionsGenres: ["op1", "op2", "op3"],
-      s2OptionsSeries: ["op1", "op2", "op3"]
+      s2OptionsSeries: ["op1", "op2", "op3"],
+      s2OptionsLang: ["op1", "op2", "op3"],
+      s2OptionsOrigLang: ["op1", "op2", "op3"]
     };
   },
   mounted: function() {
