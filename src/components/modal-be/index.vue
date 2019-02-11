@@ -80,6 +80,7 @@
                   id="collapse1Select1"
                   multiple
                   v-model="form.bk_authors"
+                  label="author"
                   :options="s2OptionsAuthors"
                 >
                   <span slot="no-options">Совпадений нет</span>
@@ -101,33 +102,17 @@
                   <span slot="no-options">Совпадений нет</span>
                 </v-select>
               </b-form-group>
-            </b-collapse>
-            <!-- ###################################### colappse 2 ###################################-->
-            <div class="colappse-header">
-              <span>Серии</span>
-              <b-btn
-                @click="showCollapse2 = !showCollapse2"
-                :class="showCollapse2 ? 'collapsed' : null"
-                aria-controls="collapse2"
-                :aria-expanded="showCollapse2 ? 'true' : 'false'"
-                variant="outline-secondary"
-                class="btn-circle"
-              >
-                <font-awesome-icon icon="chevron-up" v-if="showCollapse2"/>
-                <font-awesome-icon icon="chevron-down" v-else/>
-              </b-btn>
-            </div>
-            <b-collapse id="collapse2" class="collapseWrap" v-model="showCollapse2">
+
               <b-row>
                 <b-col>
                   <b-form-group
-                    id="collapse2InputGroup1"
+                    id="collapse1InputGroup5"
                     label="Серия:"
-                    label-for="collapse2Select1"
+                    label-for="collapse1Select3"
                     label-size="sm"
                   >
                     <v-select
-                      id="collapse2Select1"
+                      id="collapse1Select3"
                       v-model="form.bk_seriesTitle"
                       :options="s2OptionsSeries"
                     >
@@ -152,16 +137,7 @@
                     ></b-form-input>
                   </b-form-group>
                 </b-col>
-                <b-col class="col-fix-2btn">
-                  <b-button-group class="ad-btn-group">
-                    <b-button variant="danger">
-                      <font-awesome-icon icon="minus"/>
-                    </b-button>
-                    <b-button variant="success">
-                      <font-awesome-icon icon="plus"/>
-                    </b-button>
-                  </b-button-group>
-                </b-col>
+
               </b-row>
             </b-collapse>
             <!-- ###################################### colappse 3 ###################################-->
@@ -739,7 +715,6 @@ export default {
       mHeight: 100,
       pHeight: 100,
       showCollapse1: true,
-      showCollapse2: true,
       showCollapse3: true,
       showCollapse4: true,
       showCollapse5: true,
@@ -776,7 +751,7 @@ export default {
         bk_format: "",
         bk_file_name: ""
       },
-      s2OptionsAuthors: ["op1", "op2", "op3"],
+      s2OptionsAuthors: [],
       s2OptionsGenres: ["op1", "op2", "op3"],
       s2OptionsSeries: ["op1", "op2", "op3"],
       s2OptionsLang: ["op1", "op2", "op3"],
@@ -789,6 +764,18 @@ export default {
     if (this.mHeight > 1200) {
       this.mHeight = 1200;
     }
+    const self = this;
+    this.callApi(
+      this.$store.getters.prefix + "/static/api.php",
+      {
+        cmd: "a_list",
+        dat: ""
+      },
+      "",
+      function(rd) {
+        self.s2OptionsAuthors = rd; //возвр. данные (Responce)
+      }
+    );
   },
   beforeDestroy: function() {
     window.removeEventListener("resize", this.handleResize);

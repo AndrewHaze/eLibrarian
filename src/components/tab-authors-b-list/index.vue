@@ -741,6 +741,7 @@ $ip-width: 21rem;
   line-height: 1.3rem;
   border-left: 1px solid $line-color;
   background-color: #fff;
+  z-index: 1000;
 
   .book-author {
     font-size: 1.5rem;
