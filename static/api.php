@@ -297,6 +297,64 @@ if (isset($_POST["cmd"])) {
                 }
             }
             break;
+        case "book": //книга
+            if ($pdo and $_SESSION["user"]) {
+                $bi = $_POST["dat"];
+                $stmt = $pdo->prepare('SELECT bk_title, bk_cover, bk_annotation,  bk_file,
+                                              bk_number,
+                                              se_title
+
+                                        FROM books, series
+                                       WHERE bk_id = :bi
+                                         AND se_id = bk_se_id');
+
+                $stmt->bindValue(':bi', $bi, PDO::PARAM_INT);
+                if ($stmt->execute()) {
+                    $result = $stmt->fetchAll();
+                    foreach ($result as $value) {
+                        array_push($res["data"],
+                            array(
+                                "bk_title" => $value[bk_title],
+                                "bk_cover" => base64_encode($value[bk_cover]),
+                                "bk_annotation" => $value[bk_annotation],
+                                "bk_seriesTitle" => $value[se_title],
+                                "bk_seriesNumber" => $value[bk_number],
+                                "bk_file_name" => $value[bk_file],
+
+                            ));
+                    }
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "dbe";
+                }
+            }
+            break;
+        case "b_authors": //авторы книги
+            if ($pdo and $_SESSION["user"]) {
+                $bi = $_POST["dat"];
+                $stmt = $pdo->prepare('SELECT ar_id, ar_last_name, ar_middle_name, ar_first_name
+                FROM authors, books_authors, books
+                WHERE bk_id = :bi
+                  AND bkar_bk_id = bk_id
+                  AND ar_id = bkar_ar_id
+             ORDER BY ar_last_name, ar_middle_name, ar_first_name');
+                $stmt->bindValue(':bi', $bi, PDO::PARAM_INT);
+                if ($stmt->execute()) {
+                    $result = $stmt->fetchAll();
+                    foreach ($result as $value) {
+                        array_push($res["data"],
+                            array(
+                                "id" => "ai" . $value[ar_id],
+                                //Склеиваем и удаляем лишнии пробелы + все заглавные
+                                "author" => preg_replace('/^ +| +$|( ) +/m', '$1', ucwords($value[ar_last_name] . ' ' . $value[ar_first_name] . ' ' . $value[ar_middle_name])),
+                            ));
+                    }
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "dbe";
+                }
+            }
+            break;
         case "ab_list": //список книг автора
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
@@ -347,7 +405,7 @@ if (isset($_POST["cmd"])) {
                                 "isToPlan" => $value[bk_to_plan],
                                 "isFavorites" => $value[bk_favorites],
                                 "howManyStars" => $value[bk_stars],
-                                "fileName" => $value[bk_file], 
+                                "fileName" => $value[bk_file],
                                 "isActive" => false,
                             ));
                     }
@@ -438,7 +496,7 @@ if (isset($_POST["cmd"])) {
                                 "isToPlan" => $value[bk_to_plan],
                                 "isFavorites" => $value[bk_favorites],
                                 "howManyStars" => $value[bk_stars],
-                                "fileName" => $value[bk_file], 
+                                "fileName" => $value[bk_file],
                                 "isActive" => false,
                             ));
                     }
@@ -587,7 +645,7 @@ if (isset($_POST["cmd"])) {
                 $res["data"] = $gm_array;
             }
             break;
-            case "gs_list": //список серий в жанре
+        case "gs_list": //список серий в жанре
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $gi = $_POST["id"];
@@ -723,8 +781,28 @@ if (isset($_POST["cmd"])) {
                                 "isToPlan" => $value[bk_to_plan],
                                 "isFavorites" => $value[bk_favorites],
                                 "howManyStars" => $value[bk_stars],
-                                "fileName" => $value[bk_file], 
+                                "fileName" => $value[bk_file],
                                 "isActive" => false,
+                            ));
+                    }
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "dbe";
+                }
+            }
+            break;
+        case "lg_list":
+            if ($pdo and $_SESSION["user"]) {
+                $stmt = $pdo->prepare('SELECT DISTINCT lg_id, lg_name
+                FROM languages
+                ORDER BY lg_name');
+                if ($stmt->execute()) {
+                    $result = $stmt->fetchAll();
+                    foreach ($result as $value) {
+                        array_push($res["data"],
+                            array(
+                                "id" => "lg" . $value[lg_id],
+                                "language" => $value[lg_name],
                             ));
                     }
                 } else {
@@ -960,8 +1038,6 @@ if (isset($_POST["cmd"])) {
                                 //имя файла с книгой
                                 "hash_name" => $filename,
                             );
-
-                            
 
                         } else {
                             //Ошибка обновления БД
