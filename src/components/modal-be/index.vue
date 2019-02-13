@@ -2,8 +2,8 @@
   <b-modal
     id="bookEditor"
     ref="modal-e"
-    @shown
-    @hidden
+    @shown="showBookEditor"
+    @hidden="closeBookEditor"
     no-close-on-backdrop
     size="max"
     title="Книга"
@@ -13,11 +13,11 @@
     <b-container fluid class="be-modal-content">
       <b-form-row>
         <b-col sm="3" class="cover-wrap">
-          <b-img thumbnail fluid :src="fileName" alt="Обложка"/>
+            <b-img thumbnail fluid :src="coverImage"/>
           <div>
             <b-button variant="success" block size="sm" @click="openFiles" class="mt-2">Загрузить</b-button>
-            <b-button variant="primary" block size="sm" @click class="mt-2">Скачать</b-button>
-            <b-button variant="danger" block size="sm" @click class="mt-2">Очистить</b-button>
+            <b-button variant="primary" :disabled="!isCover" block size="sm" @click class="mt-2">Скачать</b-button>
+            <b-button variant="danger" :disabled="!isCover" block size="sm" @click class="mt-2">Очистить</b-button>
           </div>
           <input id="cover-loader" type="file" @change="handleFileChange" accept=".jpg, .png">
         </b-col>
@@ -79,8 +79,8 @@
                 <v-select
                   id="collapse1Select1"
                   multiple
-                  v-model="form.bk_authors"
                   label="author"
+                  v-model="form.bk_authors"
                   :options="s2OptionsAuthors"
                 >
                   <span slot="no-options">Совпадений нет</span>
@@ -97,6 +97,7 @@
                   id="collapse1Select2"
                   multiple
                   v-model="form.bk_genres"
+                  label="genre"
                   :options="s2OptionsGenres"
                 >
                   <span slot="no-options">Совпадений нет</span>
@@ -115,6 +116,7 @@
                       id="collapse1Select3"
                       v-model="form.bk_seriesTitle"
                       :options="s2OptionsSeries"
+                      label="seriesTitle"
                     >
                       <span slot="no-options">Совпадений нет</span>
                     </v-select>
@@ -137,7 +139,6 @@
                     ></b-form-input>
                   </b-form-group>
                 </b-col>
-
               </b-row>
             </b-collapse>
             <!-- ###################################### colappse 3 ###################################-->
@@ -179,6 +180,7 @@
                       id="collapse3Select1"
                       v-model="form.bk_language"
                       :options="s2OptionsLang"
+                      label="language"
                     >
                       <span slot="no-options">Совпадений нет</span>
                     </v-select>
@@ -196,6 +198,7 @@
                       id="collapse3Select2"
                       v-model="form.bk_orig_language"
                       :options="s2OptionsOrigLang"
+                      label="language"
                     >
                       <span slot="no-options">Совпадений нет</span>
                     </v-select>
@@ -257,7 +260,12 @@
                     label-for="collapse4Input1"
                     label-size="sm"
                   >
-                    <b-form-textarea id="collapse4Textarea1" v-model="form.bk_annotation"></b-form-textarea>
+                    <b-form-textarea
+                      id="collapse4Textarea1"
+                      v-model="form.bk_annotation"
+                      size="sm"
+                      :rows="3"
+                    ></b-form-textarea>
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -615,6 +623,7 @@ input[type="file"] {
   padding-right: 1.5rem !important;
   .img-thumbnail {
     width: 100%;
+    min-width: 100%;
   }
 }
 
@@ -720,11 +729,13 @@ export default {
       showCollapse5: true,
       showCollapse6: true,
       showCollapse7: true,
-      fileName: "https://picsum.photos/250/250/?image=59",
+      coverImage: "",
+      isCover: false,
       form: {
         bk_title: "",
         bk_original_title: "",
         bk_authors: null,
+        bk_cover: null,
         bk_genres: null,
         bk_seriesTitle: null,
         bk_seriesNumber: "",
@@ -752,10 +763,10 @@ export default {
         bk_file_name: ""
       },
       s2OptionsAuthors: [],
-      s2OptionsGenres: ["op1", "op2", "op3"],
-      s2OptionsSeries: ["op1", "op2", "op3"],
-      s2OptionsLang: ["op1", "op2", "op3"],
-      s2OptionsOrigLang: ["op1", "op2", "op3"]
+      s2OptionsGenres: [],
+      s2OptionsSeries: [],
+      s2OptionsLang: [],
+      s2OptionsOrigLang: []
     };
   },
   mounted: function() {
@@ -764,16 +775,41 @@ export default {
     if (this.mHeight > 1200) {
       this.mHeight = 1200;
     }
+    console.log(this.$store.getters.bkID)
+    //загрузка данных не привязанных к конкретнлой книге
     const self = this;
     this.callApi(
       this.$store.getters.prefix + "/static/api.php",
       {
         cmd: "a_list",
-        dat: ""
+        dat: "simple"
       },
       "",
       function(rd) {
         self.s2OptionsAuthors = rd; //возвр. данные (Responce)
+      }
+    );
+    this.callApi(
+      this.$store.getters.prefix + "/static/api.php",
+      {
+        cmd: "sa_list",
+        dat: ""
+      },
+      "",
+      function(rd) {
+        self.s2OptionsSeries = rd;
+      }
+    );
+    this.callApi(
+      this.$store.getters.prefix + "/static/api.php",
+      {
+        cmd: "lg_list",
+        dat: ""
+      },
+      "",
+      function(rd) {
+        self.s2OptionsLang = rd;
+        self.s2OptionsOrigLang = rd;
       }
     );
   },
@@ -781,6 +817,46 @@ export default {
     window.removeEventListener("resize", this.handleResize);
   },
   methods: {
+    closeBookEditor() {
+      this.coverImage = null;
+    },
+    showBookEditor() {
+      const self = this;
+      const bookID = this.$store.getters.bkID;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "b_authors",
+          dat: bookID
+        },
+        "",
+        function(rd) {
+          self.form.bk_authors = rd; //возвр. данные (Responce)
+        }
+      );
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "book",
+          dat: bookID
+        },
+        "",
+        function(rd) {
+          if (rd[0].bk_cover) {
+            self.isCover = true;
+            self.coverImage = "data:image/jpg;base64," + rd[0].bk_cover;
+          } else {
+            self.isCover = false;
+            self.coverImage = "/static/assets/nocover.jpg";
+          }
+          self.form.bk_title = rd[0].bk_title;
+          self.form.bk_original_title = rd[0].bk_original_title;
+          self.form.bk_seriesTitle = rd[0].bk_seriesTitle;
+          self.form.bk_seriesNumber = rd[0].bk_seriesNumber;
+          self.form.bk_annotation = rd[0].bk_annotation;
+        }
+      );
+    },
     handleResize() {
       this.mHeight = window.innerHeight - shiftL;
       if (this.mHeight > 1200) {
