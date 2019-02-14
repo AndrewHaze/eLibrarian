@@ -2,7 +2,8 @@
   <b-modal
     id="bookEditor"
     ref="modal-e"
-    @shown="showBookEditor"
+    @show="showBookEditor"
+    @shown="shownBookEditor"
     @hidden="closeBookEditor"
     no-close-on-backdrop
     size="max"
@@ -10,18 +11,34 @@
     ok-title="Сохранить"
     cancel-title="Отмена"
   >
-    <b-container fluid class="be-modal-content">
-      <b-form-row>
+    <b-container :id="'book'+bkID" fluid class="be-modal-content"  :style="{ maxHeight: mHeight + 'px', minHeight: mHeight + 'px' }">
+      <b-form-row >
         <b-col sm="3" class="cover-wrap">
+          <div class="cover-wrap-sticky">
             <b-img thumbnail fluid :src="coverImage"/>
-          <div>
-            <b-button variant="success" block size="sm" @click="openFiles" class="mt-2">Загрузить</b-button>
-            <b-button variant="primary" :disabled="!isCover" block size="sm" @click class="mt-2">Скачать</b-button>
-            <b-button variant="danger" :disabled="!isCover" block size="sm" @click class="mt-2">Очистить</b-button>
+            <div>
+              <b-button variant="success" block size="sm" @click="openFiles" class="mt-2">Загрузить</b-button>
+              <b-button
+                variant="primary"
+                :disabled="!isCover"
+                block
+                size="sm"
+                @click
+                class="mt-2"
+              >Скачать</b-button>
+              <b-button
+                variant="danger"
+                :disabled="!isCover"
+                block
+                size="sm"
+                @click="deleteCover"
+                class="mt-2"
+              >Очистить</b-button>
+            </div>
+            <input id="cover-loader" type="file" @change="handleFileChange" accept=".jpg, .png">
           </div>
-          <input id="cover-loader" type="file" @change="handleFileChange" accept=".jpg, .png">
         </b-col>
-        <b-col sm="9" :style="{ maxHeight: mHeight + 'px', minHeight: mHeight + 'px' }">
+        <b-col sm="9">
           <b-container fluid class="px-0">
             <!-- ###################################### colappse 1 ###################################-->
             <div class="colappse-header">
@@ -621,9 +638,14 @@ input[type="file"] {
 .cover-wrap {
   text-align: center;
   padding-right: 1.5rem !important;
+  position: relative;
+  min-height: 100%;
+  .cover-wrap-sticky {
+    position: sticky;
+    top: 0;
+  }
   .img-thumbnail {
     width: 100%;
-    min-width: 100%;
   }
 }
 
@@ -721,6 +743,7 @@ export default {
   },
   data() {
     return {
+      bkID: null,
       mHeight: 100,
       pHeight: 100,
       showCollapse1: true,
@@ -730,6 +753,7 @@ export default {
       showCollapse6: true,
       showCollapse7: true,
       coverImage: "",
+      coverRatio: 1,
       isCover: false,
       form: {
         bk_title: "",
@@ -775,7 +799,6 @@ export default {
     if (this.mHeight > 1200) {
       this.mHeight = 1200;
     }
-    console.log(this.$store.getters.bkID)
     //загрузка данных не привязанных к конкретнлой книге
     const self = this;
     this.callApi(
@@ -818,16 +841,18 @@ export default {
   },
   methods: {
     closeBookEditor() {
-      this.coverImage = null;
+    },
+    shownBookEditor() {
+      document.getElementById("book"+this.bkID).scrollTop = 0;
     },
     showBookEditor() {
+      this.bkID = this.$store.getters.bkID;
       const self = this;
-      const bookID = this.$store.getters.bkID;
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "b_authors",
-          dat: bookID
+          dat: self.bkID
         },
         "",
         function(rd) {
@@ -838,7 +863,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "book",
-          dat: bookID
+          dat: self.bkID
         },
         "",
         function(rd) {
@@ -851,7 +876,9 @@ export default {
           }
           self.form.bk_title = rd[0].bk_title;
           self.form.bk_original_title = rd[0].bk_original_title;
-          self.form.bk_seriesTitle = rd[0].bk_seriesTitle;
+          if (rd[0].bk_seriesTitle != 'яяяяяя') {
+            self.form.bk_seriesTitle = rd[0].bk_seriesTitle;
+          }
           self.form.bk_seriesNumber = rd[0].bk_seriesNumber;
           self.form.bk_annotation = rd[0].bk_annotation;
         }
@@ -885,6 +912,10 @@ export default {
         // Read in the image file as a data URL.
         reader.readAsDataURL(filesList[i]);
       }
+    },
+    deleteCover() {
+      this.isCover = false;
+      this.coverImage = "/static/assets/nocover.jpg";
     }
   }
 };
