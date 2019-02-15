@@ -110,7 +110,7 @@ const mutations = {
   setInfoPanel(state, value) {
     state.ip = value
     if (storageAvailable('localStorage')) {
-      localStorage.setItem('InfoPanel', 1);
+      localStorage.setItem('InfoPanel', value);
     }
   },
   setReader(state, value) {
