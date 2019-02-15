@@ -764,7 +764,7 @@ export default {
         bk_seriesTitle: null,
         bk_seriesNumber: "",
         bk_date: "",
-        bk_language: "",
+        bk_language: [{id: 6, language: "Акан"}],
         bk_orig_language: "",
         bk_keywords: "",
         bk_translator: "",
@@ -793,6 +793,11 @@ export default {
       s2OptionsOrigLang: []
     };
   },
+  watch: {
+    'form.bk_language': function(val) {
+        console.log(val.language);
+    }
+    },
   mounted: function() {
     window.addEventListener("resize", this.handleResize);
     this.mHeight = window.innerHeight - shiftL;
@@ -801,6 +806,7 @@ export default {
     }
     //загрузка данных не привязанных к конкретнлой книге
     const self = this;
+    //список всех авторов
     this.callApi(
       this.$store.getters.prefix + "/static/api.php",
       {
@@ -812,6 +818,7 @@ export default {
         self.s2OptionsAuthors = rd; //возвр. данные (Responce)
       }
     );
+    //список всех серий
     this.callApi(
       this.$store.getters.prefix + "/static/api.php",
       {
@@ -823,6 +830,7 @@ export default {
         self.s2OptionsSeries = rd;
       }
     );
+    //список языков
     this.callApi(
       this.$store.getters.prefix + "/static/api.php",
       {
@@ -846,8 +854,10 @@ export default {
       document.getElementById("book"+this.bkID).scrollTop = 0;
     },
     showBookEditor() {
+      //id текущей книги
       this.bkID = this.$store.getters.bkID;
       const self = this;
+      // аторы книги
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {
@@ -859,6 +869,7 @@ export default {
           self.form.bk_authors = rd; //возвр. данные (Responce)
         }
       );
+      //информация по книге
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {

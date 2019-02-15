@@ -16,8 +16,8 @@
       <modal-book-editor></modal-book-editor>
       <b-row class="z100">
         <b-col>
-          <b-tabs>
-            <b-tab title="Авторы" active>
+          <b-tabs v-model="tabIndex">
+            <b-tab title="Авторы">
               <authors-tab ref="aTab"></authors-tab>
             </b-tab>
             <b-tab title="Жанры">
@@ -264,13 +264,19 @@ export default {
   },
   data() {
     return {
-      congShow: false
+      //флаг приветствия при регистрации
+      congShow: false,
+      tabIndex: 0
     };
   },
   created: function() {
     if (this.congratulation) {
       this.congShow = true;
     }
+    if (this.storageAvailable("localStorage") && localStorage.currentTab) {
+      store.commit("setCurrentTab", localStorage.currentTab);
+      this.tabIndex = localStorage.currentTab;
+    } else this.tabIndex = 0;
   },
   methods: {
     updateAll() {
@@ -291,6 +297,11 @@ export default {
     ]),
     loading: function() {
       return this.authStatus === "loading" && !this.isAuthenticated;
+    }
+  },
+  watch: {
+    tabIndex: function(val) {
+      store.commit("setCurrentTab", val);
     }
   }
 };
