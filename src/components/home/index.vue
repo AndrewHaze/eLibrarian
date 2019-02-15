@@ -277,6 +277,7 @@ export default {
       store.commit("setCurrentTab", localStorage.currentTab);
       this.tabIndex = localStorage.currentTab;
     } else this.tabIndex = 0;
+    this.updateAll();
   },
   methods: {
     updateAll() {
