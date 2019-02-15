@@ -70,7 +70,7 @@ import store from "./store";
 export default {
   data: function() {
     return {
-      picked: "cover",
+      picked: "",
       selectedCheckbox: ['on']
     };
   },
@@ -78,6 +78,14 @@ export default {
     if (this.$store.getters.isAuthenticated) {
       this.$store.dispatch(USER_REQUEST);
     }
+    if ((this.storageAvailable('localStorage')) && localStorage.lookOfBookList) {
+      store.commit("setblLook", localStorage.lookOfBookList);
+      this.picked = localStorage.lookOfBookList;
+    } else this.picked = "cover";
+    if ((this.storageAvailable('localStorage')) && localStorage.InfoPanel) {
+      store.commit("setblLook", ['on']);
+      this.selectedCheckbox = ['on'];
+    } else this.selectedCheckbox = null;
   },
   methods: {
     logout: function() {
@@ -87,6 +95,7 @@ export default {
       store.commit("setReader", false);
       this.$router.push("/");
     },
+    
   },
   computed: {
     ...mapGetters([
@@ -103,8 +112,8 @@ export default {
     })
   },
   watch: {
-    picked: function() {
-      store.commit("setblLook", this.picked);
+    picked: function(val) {
+      store.commit("setblLook", val);
     },
     selectedCheckbox: function() {
       store.commit("setInfoPanel", this.selectedCheckbox[0]);

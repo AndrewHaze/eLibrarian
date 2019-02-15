@@ -12,33 +12,32 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faTh, faStream, faTable, faCheck, faHeart, faBell, faTrashAlt, faBookReader, faEdit, faStar, faStarHalfAlt, faInfoCircle, faCalendarCheck, faTag, faAddressCard, faUserFriends, faUserMinus, faUserTimes, faTimes, faQuestionCircle, faChevronUp, faChevronDown, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faTh, faStream, faTable, faCheck, faHeart, faBell, faTrashAlt, faBookReader, faEdit, faStar, faStarHalfAlt, faInfoCircle, faCalendarCheck, faTag, faAddressCard, faUserFriends, faUserMinus, faUserTimes, faTimes, faQuestionCircle, faChevronUp, faChevronDown, faPlus, faMinus )
+library.add(faTh, faStream, faTable, faCheck, faHeart, faBell, faTrashAlt, faBookReader, faEdit, faStar, faStarHalfAlt, faInfoCircle, faCalendarCheck, faTag, faAddressCard, faUserFriends, faUserMinus, faUserTimes, faTimes, faQuestionCircle, faChevronUp, faChevronDown, faPlus, faMinus)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('loading', Loading),
 
 
 Vue.use(VJstree)
 Vue.use(BootstrapVue)
-
 Vue.config.productionTip = false
 
 Vue.mixin({
   methods: {
     setServerError(m, d) {
       console.log("******* db_api call *******");
-      console.log('Message: ',m);
-      console.log('Data: ',d);
+      console.log('Message: ', m);
+      console.log('Data: ', d);
       console.log("***************************");
       return;
     },
     callApi(url, prms, hct, callback) {
       axios({
-          method: "post",
-          url: url,
-          data: prms,
-          withCredentials: true, //передаем куки
-          headers: { 'content-type': hct || 'application/x-www-form-urlencoded' },
-        })
+        method: "post",
+        url: url,
+        data: prms,
+        withCredentials: true, //передаем куки
+        headers: { 'content-type': hct || 'application/x-www-form-urlencoded' },
+      })
         .then(response => {
           // в response.data получаем JSON,
           // сервер формирует обязательные поля data,success,error
@@ -61,6 +60,29 @@ Vue.mixin({
       var elem =
         doc.compatMode == "CSS1Compat" ? doc.documentElement : doc.body;
       return elem.clientHeight;
+    },
+    storageAvailable: function (type) {
+      try {
+        var storage = window[type],
+          x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+      }
+      catch (e) {
+        return e instanceof DOMException && (
+          // everything except Firefox
+          e.code === 22 ||
+          // Firefox
+          e.code === 1014 ||
+          // test name field too, because code might not be present
+          // everything except Firefox
+          e.name === 'QuotaExceededError' ||
+          // Firefox
+          e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+          // acknowledge QuotaExceededError only if there's something already stored
+          storage.length !== 0;
+      }
     },
   }
 })
