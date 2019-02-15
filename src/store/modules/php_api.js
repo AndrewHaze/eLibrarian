@@ -10,8 +10,9 @@ const state = {
   gt: '',
   gty: '',
   oc: 0,
+  tab: 0,
   bll: "cover",
-  ip: "on",
+  ip: ['on'],
   reader: false,
 }
 
@@ -31,12 +32,39 @@ const getters = {
   genresType: state => state.gty,
   genresTitle: state => state.gt,
   orderCode: state => state.oc,
-  //вид списка книг
-  blLook: state => state.bll,
-  //Инфо панель книги
-  iPanel: state => state.ip,
+
+  /******************* Интерфейс *******************/
+  currentTab: state => state.tab, //текущая вкладка
+  blLook: state => state.bll, //вид списка книг
+  iPanel: state => state.ip, //Инфо панель книги
+  /*************************************************/
+
   //reader
   isReader: state => state.reader,
+}
+
+function storageAvailable(type) {
+  try {
+      var storage = window[type],
+          x = '__storage_test__';
+      storage.setItem(x, x);
+      storage.removeItem(x);
+      return true;
+  }
+  catch(e) {
+      return e instanceof DOMException && (
+          // everything except Firefox
+          e.code === 22 ||
+          // Firefox
+          e.code === 1014 ||
+          // test name field too, because code might not be present
+          // everything except Firefox
+          e.name === 'QuotaExceededError' ||
+          // Firefox
+          e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+          // acknowledge QuotaExceededError only if there's something already stored
+          storage.length !== 0;
+  }
 }
 
 const mutations = {
@@ -67,11 +95,23 @@ const mutations = {
   setOrderCode(state, value) {
     state.oc = value
   },
+  setCurrentTab(state, value) {
+    state.tab = value
+    if (storageAvailable('localStorage')) {
+      localStorage.setItem('currentTab', value);
+    }
+  },
   setblLook(state, value) {
     state.bll = value
+    if (storageAvailable('localStorage')) {
+      localStorage.setItem('lookOfBookList', value);
+    }
   },
   setInfoPanel(state, value) {
     state.ip = value
+    if (storageAvailable('localStorage')) {
+      localStorage.setItem('InfoPanel', 1);
+    }
   },
   setReader(state, value) {
     state.reader = value
