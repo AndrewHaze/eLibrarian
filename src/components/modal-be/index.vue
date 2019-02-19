@@ -101,12 +101,16 @@
                 <multiselect
                   id="collapse1Select1"
                   :multiple="true"
+                  placeholder="Выберите автора"
+                  selectLabel="Нажмите Enter, чтобы выбрать"
+                  selectedLabel="Выбран"
+                  deselectLabel="Нажмите Enter, чтобы отменить выбор"
                   label="author"
-                  track-by="author"
+                  track-by="id"
                   v-model="form.bk_authors"
                   :options="s2OptionsAuthors"
                 >
-                  <span slot></span>
+                  <span slot="noResult">Совпадений нет. Попробуйте изменить поисковый запрос</span>
                 </multiselect>
               </b-form-group>
               <!-- Разделитель -->
@@ -120,9 +124,16 @@
                   id="collapse1Select2"
                   :multiple="true"
                   v-model="form.bk_genres"
+                  placeholder="Выберите жанр"
+                  selectLabel="Нажмите Enter, чтобы выбрать"
+                  selectedLabel="Выбран"
+                  deselectLabel="Нажмите Enter, чтобы отменить выбор"
                   label="genre"
+                  track-by="id"
                   :options="s2OptionsGenres"
-                ></multiselect>
+                >
+                <span slot="noResult">Совпадений нет. Попробуйте изменить поисковый запрос</span>
+                </multiselect>
               </b-form-group>
 
               <b-row>
@@ -135,10 +146,17 @@
                   >
                     <multiselect
                       id="collapse1Select3"
-                      v-model="form.bk_seriesTitle"
+                      v-model="form.bk_series"
                       :options="s2OptionsSeries"
+                      placeholder="Выберите серию"
+                      selectLabel="Нажмите Enter, чтобы выбрать"
+                      selectedLabel="Выбран"
+                      deselectLabel="Нажмите Enter, чтобы отменить выбор"
                       label="seriesTitle"
-                    ></multiselect>
+                      track-by="id"
+                    >
+                    <span slot="noResult">Совпадений нет. Попробуйте изменить поисковый запрос</span>
+                    </multiselect>
                   </b-form-group>
                 </b-col>
                 <!-- Разделитель -->
@@ -199,8 +217,15 @@
                       id="collapse3Select1"
                       v-model="form.bk_language"
                       :options="s2OptionsLang"
-                      label="language"
-                    ></multiselect>
+                      placeholder="Выберите язык"
+                      selectLabel="Нажмите Enter, чтобы выбрать"
+                      selectedLabel="Выбран"
+                      deselectLabel="Нажмите Enter, чтобы отменить выбор"
+                      label="lg_name"
+                      track-by="id"
+                    >
+                    <span slot="noResult">Совпадений нет. Попробуйте изменить поисковый запрос</span>
+                    </multiselect>
                   </b-form-group>
                 </b-col>
                 <!-- Разделитель -->
@@ -215,8 +240,15 @@
                       id="collapse3Select2"
                       v-model="form.bk_orig_language"
                       :options="s2OptionsOrigLang"
-                      label="language"
-                    ></multiselect>
+                      placeholder="Выберите язык оригинала"
+                      selectLabel="Нажмите Enter, чтобы выбрать"
+                      selectedLabel="Выбран"
+                      deselectLabel="Нажмите Enter, чтобы отменить выбор"
+                      label="lg_name"
+                      track-by="id"
+                    >
+                    <span slot="noResult">Совпадений нет. Попробуйте изменить поисковый запрос</span>
+                    </multiselect>
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -714,13 +746,12 @@ input[type="file"] {
   }
 }
 
+//Bootstrap form-control-sm скин для multiselect
 .multiselect {
   * {
     font-size: 0.875rem;
   }
-
   min-height: 0;
-
   .multiselect__tags {
     display: flex;
     align-items: center;
@@ -728,12 +759,15 @@ input[type="file"] {
     padding: 0 30px 0 8px;
     border-color: #ced4da;
     border-radius: 0.2rem;
+    overflow: hidden;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     .multiselect__placeholder {
       margin: 0;
       line-height: 1;
       padding-top: 3px;
       min-height: 20px;
+      white-space: nowrap;
+      overflow: hidden;
     }
     .multiselect__tags-wrap {
       display: flex;
@@ -768,11 +802,15 @@ input[type="file"] {
     border-color: #ced4da;
     .multiselect__option {
       min-height: 0;
-      padding: 8px 12px;
+      padding: 6px 12px;
     }
+    .multiselect__option--selected {
+      font-weight: 600;
+    }
+
     span:after {
-      line-height: 10px;
-      padding: 10px;
+      line-height: 11px;
+      padding: 8px;
     }
   }
 }
@@ -815,10 +853,10 @@ export default {
         bk_authors: null,
         bk_cover: null,
         bk_genres: null,
-        bk_seriesTitle: null,
+        bk_series: null,
         bk_seriesNumber: "",
         bk_date: "",
-        bk_language: "",
+        bk_language: null,
         bk_orig_language: "",
         bk_keywords: "",
         bk_translator: "",
@@ -847,11 +885,7 @@ export default {
       s2OptionsOrigLang: []
     };
   },
-  watch: {
-    "form.bk_language": function(val) {
-      console.log(val.language);
-    }
-  },
+  watch: {},
   mounted: function() {
     window.addEventListener("resize", this.handleResize);
     this.mHeight = window.innerHeight - shiftL;
@@ -877,7 +911,7 @@ export default {
       this.$store.getters.prefix + "/static/api.php",
       {
         cmd: "sa_list",
-        dat: ""
+        dat: "simple"
       },
       "",
       function(rd) {
@@ -922,6 +956,17 @@ export default {
           self.form.bk_authors = rd; //возвр. данные (Responce)
         }
       );
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "b_ser",
+          dat: self.bkID
+        },
+        "",
+        function(rd) {
+          self.form.bk_series = rd; //возвр. данные (Responce)
+        }
+      );
       // жанры книги
       // this.callApi(
       //   this.$store.getters.prefix + "/static/api.php",
@@ -952,16 +997,14 @@ export default {
           }
           self.form.bk_title = rd[0].bk_title;
           self.form.bk_original_title = rd[0].bk_original_title;
-          if (rd[0].bk_seriesTitle != "яяяяяя") {
-            self.form.bk_seriesTitle = rd[0].bk_seriesTitle;
-          } else self.form.bk_seriesTitle = null;
+
           self.form.bk_seriesNumber = rd[0].bk_seriesNumber;
           self.form.bk_date = rd[0].bk_data;
           self.form.bk_annotation = rd[0].bk_annotation;
           self.form.bk_doc_id = rd[0].bk_doc_id;
           self.form.bk_doc_id = rd[0].bk_doc_id;
-          self.bk_language = { id: "ru", language: "Русский" };
-          self.bk_orig_language = rd[0].lg_src_name;
+          self.form.bk_language = [0][{ lg_id: "ru", lang_name: "Русский" }];
+          self.form.bk_orig_language = rd[0].lg_src_name;
         }
       );
     },
