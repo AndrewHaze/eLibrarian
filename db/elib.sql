@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost
--- Время создания: Фев 08 2019 г., 12:11
+-- Время создания: Фев 18 2019 г., 15:25
 -- Версия сервера: 5.7.20
 -- Версия PHP: 7.2.0
 
@@ -45,10 +45,14 @@ CREATE TABLE `authors` (
 CREATE TABLE `books` (
   `bk_id` int(11) NOT NULL,
   `bk_ur_id` int(11) NOT NULL,
-  `bk_book_id` varchar(255) NOT NULL,
+  `bk_se_id` int(11) NOT NULL,
+  `bk_number` int(11) NOT NULL,
+  `bk_doc_id` varchar(255) NOT NULL,
   `bk_title` varchar(255) NOT NULL,
   `bk_annotation` mediumtext NOT NULL,
-  `bk_file_date` date NOT NULL,
+  `bk_date` date NOT NULL,
+  `bk_lang` varchar(2) NOT NULL,
+  `bk_src_lang` varchar(3) NOT NULL,
   `bk_file` varchar(255) NOT NULL,
   `bk_cover` longblob NOT NULL,
   `bk_read` tinyint(1) NOT NULL DEFAULT '0',
@@ -79,19 +83,6 @@ CREATE TABLE `books_genres` (
   `bkge_id` int(11) NOT NULL,
   `bkge_bk_id` int(11) NOT NULL,
   `bkge_ge_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Структура таблицы `books_series`
---
-
-CREATE TABLE `books_series` (
-  `bkse_id` int(11) NOT NULL,
-  `bkse_bk_id` int(11) NOT NULL,
-  `bkse_se_id` int(11) NOT NULL,
-  `bkse_number` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -261,9 +252,8 @@ INSERT INTO `genres_groups` (`gg_id`, `gg_title`) VALUES
 --
 
 CREATE TABLE `languages` (
-  `lg_id` int(3) NOT NULL,
+  `lg_id` varchar(2) NOT NULL,
   `lg_name` varchar(36) DEFAULT NULL,
-  `lg_cd2` varchar(2) DEFAULT NULL,
   `lg_cd3` varchar(3) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -271,191 +261,191 @@ CREATE TABLE `languages` (
 -- Дамп данных таблицы `languages`
 --
 
-INSERT INTO `languages` (`lg_id`, `lg_name`, `lg_cd2`, `lg_cd3`) VALUES
-(1, 'Абхазский', 'ab', 'abk'),
-(2, 'Аварский', 'av', 'ava'),
-(3, 'Авестийский', 'ae', 'ave'),
-(4, 'Азербайджанский', 'az', 'aze'),
-(5, 'Аймара', 'ay', 'aym'),
-(6, 'Акан', 'ak', 'aka'),
-(7, 'Албанский', 'sq', 'sqi'),
-(8, 'Амхарский', 'am', 'amh'),
-(9, 'Английский', 'en', 'eng'),
-(10, 'Арабский', 'ar', 'ara'),
-(11, 'Арагонский', 'an', 'arg'),
-(12, 'Армянский', 'hy', 'hye'),
-(13, 'Ассамский', 'as', 'asm'),
-(14, 'Афарский', 'aa', 'aar'),
-(15, 'Африкаанс', 'af', 'afr'),
-(16, 'Бамбара', 'bm', 'bam'),
-(17, 'Баскский', 'eu', 'eus'),
-(18, 'Башкирский', 'ba', 'bak'),
-(19, 'Белорусский', 'be', 'bel'),
-(20, 'Бенгальский', 'bn', 'ben'),
-(21, 'Бирманский', 'my', 'mya'),
-(22, 'Бислама', 'bi', 'bis'),
-(23, 'Бихарский', 'bh', 'bih'),
-(24, 'Болгарский', 'bg', 'bul'),
-(25, 'Боснийский', 'bs', 'bos'),
-(26, 'Бретонский', 'br', 'bre'),
-(27, 'Валлийский', 'cy', 'cym'),
-(28, 'Валлонский', 'wa', 'wln'),
-(29, 'Венгерский', 'hu', 'hun'),
-(30, 'Венда', 've', 'ven'),
-(31, 'Волапюк', 'vo', 'vol'),
-(32, 'Волоф', 'wo', 'wol'),
-(33, 'Вьетнамский', 'vi', 'vie'),
-(34, 'Гаитянский креольский', 'ht', 'hat'),
-(35, 'Галисийский', 'gl', 'glg'),
-(36, 'Гальский', 'gd', 'gla'),
-(37, 'Ганда', 'lg', 'lug'),
-(38, 'Гереро', 'hz', 'her'),
-(39, 'Голландский', 'nl', 'nld'),
-(40, 'Гренландский', 'kl', 'kal'),
-(41, 'Греческий (новогреческий)', 'el', 'ell'),
-(42, 'Грузинский', 'ka', 'kat'),
-(43, 'Гуарани', 'gn', 'grn'),
-(44, 'Гуджарати', 'gu', 'guj'),
-(45, 'Датский', 'da', 'dan'),
-(46, 'Дзонг-кэ', 'dz', 'dzo'),
-(47, 'Дивехи (Мальдивский)', 'dv', 'div'),
-(48, 'Зулу', 'zu', 'zul'),
-(49, 'Иврит (современный)', 'he', 'heb'),
-(50, 'Игбо', 'ig', 'ibo'),
-(51, 'Идиш', 'yi', 'yid'),
-(52, 'Идо', 'io', 'ido'),
-(53, 'Индонезийский', 'id', 'ind'),
-(54, 'Интерлингва', 'ia', 'ina'),
-(55, 'Интерлингве', 'ie', 'ile'),
-(56, 'Инуктитут', 'iu', 'iku'),
-(57, 'Инупиак', 'ik', 'ipk'),
-(58, 'Ирландский', 'ga', 'gle'),
-(59, 'Исландский', 'is', 'isl'),
-(60, 'Испанский', 'es', 'spa'),
-(61, 'Итальянский', 'it', 'ita'),
-(62, 'Йоруба', 'yo', 'yor'),
-(63, 'Казахский', 'kk', 'kaz'),
-(64, 'Каннада', 'kn', 'kan'),
-(65, 'Канури', 'kr', 'kau'),
-(66, 'Каталонский', 'ca', 'cat'),
-(67, 'Кашмири', 'ks', 'kas'),
-(68, 'Кечуа', 'qu', 'que'),
-(69, 'Кикуйю', 'ki', 'kik'),
-(70, 'Киньяма', 'kj', 'kua'),
-(71, 'Киргизский', 'ky', 'kir'),
-(72, 'Китайский', 'zh', 'zho'),
-(73, 'Коми', 'kv', 'kom'),
-(74, 'Конго', 'kg', 'kon'),
-(75, 'Корейский', 'ko', 'kor'),
-(76, 'Корнский', 'kw', 'cor'),
-(77, 'Корсиканский', 'co', 'cos'),
-(78, 'Коса', 'xh', 'xho'),
-(79, 'Кри', 'cr', 'cre'),
-(80, 'Курдский', 'ku', 'kur'),
-(81, 'Кхмерский', 'km', 'khm'),
-(82, 'Лаосский', 'lo', 'lao'),
-(83, 'Латвийский', 'lv', 'lav'),
-(84, 'Латинский', 'la', 'lat'),
-(85, 'Лимбургский', 'li', 'lim'),
-(86, 'Лингала', 'ln', 'lin'),
-(87, 'Литовский', 'lt', 'lit'),
-(88, 'Луба-катанга', 'lu', 'lub'),
-(89, 'Люксембургский', 'lb', 'ltz'),
-(90, 'Македонский', 'mk', 'mkd'),
-(91, 'Малагасийский', 'mg', 'mlg'),
-(92, 'Малайский', 'ms', 'msa'),
-(93, 'Малаялам', 'ml', 'mal'),
-(94, 'Мальтийский', 'mt', 'mlt'),
-(95, 'Маори', 'mi', 'mri'),
-(96, 'Маратхи', 'mr', 'mar'),
-(97, 'Маршалльский', 'mh', 'mah'),
-(98, 'Монгольский', 'mn', 'mon'),
-(99, 'Мэнский', 'gv', 'glv'),
-(100, 'Навахо', 'nv', 'nav'),
-(101, 'Науру', 'na', 'nau'),
-(102, 'Ндебеле северный', 'nd', 'nde'),
-(103, 'Ндебеле южный', 'nr', 'nbl'),
-(104, 'Ндунга', 'ng', 'ndo'),
-(105, 'Немецкий', 'de', 'deu'),
-(106, 'Непальский', 'ne', 'nep'),
-(107, 'Норвежский', 'no', 'nor'),
-(108, 'Норвежский (букмол)', 'nb', 'nob'),
-(109, 'Норвежский (нюнорск)', 'nn', 'nno'),
-(110, 'Носу', 'ii', 'iii'),
-(111, 'Ньянджа', 'ny', 'nya'),
-(112, 'Оджибве', 'oj', 'oji'),
-(113, 'Окситанский', 'oc', 'oci'),
-(114, 'Ория', 'or', 'ori'),
-(115, 'Оромо', 'om', 'orm'),
-(116, 'Осетинский', 'os', 'oss'),
-(117, 'Пали', 'pi', 'pli'),
-(118, 'Пенджабский', 'pa', 'pan'),
-(119, 'Персидский', 'fa', 'fas'),
-(120, 'Польский', 'pl', 'pol'),
-(121, 'Португальский', 'pt', 'por'),
-(122, 'Пушту', 'ps', 'pus'),
-(123, 'Ретороманский', 'rm', 'roh'),
-(124, 'Руанда', 'rw', 'kin'),
-(125, 'Румынский', 'ro', 'ron'),
-(126, 'Рунди', 'rn', 'run'),
-(127, 'Русский', 'ru', 'rus'),
-(128, 'Самоанский', 'sm', 'smo'),
-(129, 'Санго', 'sg', 'sag'),
-(130, 'Санскрит', 'sa', 'san'),
-(131, 'Сардинский', 'sc', 'srd'),
-(132, 'Свати', 'ss', 'ssw'),
-(133, 'Северносаамский', 'se', 'sme'),
-(134, 'Сербский', 'sr', 'srp'),
-(135, 'Сингальский', 'si', 'sin'),
-(136, 'Синдхи', 'sd', 'snd'),
-(137, 'Словацкий', 'sk', 'slk'),
-(138, 'Словенский', 'sl', 'slv'),
-(139, 'Сомали', 'so', 'som'),
-(140, 'Сото южный', 'st', 'sot'),
-(141, 'Суахили', 'sw', 'swa'),
-(142, 'Сунданский', 'su', 'sun'),
-(143, 'Тагальский', 'tl', 'tgl'),
-(144, 'Таджикский', 'tg', 'tgk'),
-(145, 'Таитянский', 'ty', 'tah'),
-(146, 'Тайский', 'th', 'tha'),
-(147, 'Тамильский', 'ta', 'tam'),
-(148, 'Татарский', 'tt', 'tat'),
-(149, 'Тви', 'tw', 'twi'),
-(150, 'Телугу', 'te', 'tel'),
-(151, 'Тибетский', 'bo', 'bod'),
-(152, 'Тигринья', 'ti', 'tir'),
-(153, 'Тонганский', 'to', 'ton'),
-(154, 'Тсвана', 'tn', 'tsn'),
-(155, 'Тсонга', 'ts', 'tso'),
-(156, 'Турецкий', 'tr', 'tur'),
-(157, 'Туркменский', 'tk', 'tuk'),
-(158, 'Узбекский', 'uz', 'uzb'),
-(159, 'Уйгурский', 'ug', 'uig'),
-(160, 'Украинский', 'uk', 'ukr'),
-(161, 'Урду', 'ur', 'urd'),
-(162, 'Фарерский', 'fo', 'fao'),
-(163, 'Фиджи', 'fj', 'fij'),
-(164, 'Финский', 'fi', 'fin'),
-(165, 'Французский', 'fr', 'fra'),
-(166, 'Фризский', 'fy', 'fry'),
-(167, 'Фулах', 'ff', 'ful'),
-(168, 'Хауса', 'ha', 'hau'),
-(169, 'Хинди', 'hi', 'hin'),
-(170, 'Хиримоту', 'ho', 'hmo'),
-(171, 'Хорватский', 'hr', 'hrv'),
-(172, 'Церковнославянский (старославянский)', 'cu', 'chu'),
-(173, 'Чаморро', 'ch', 'cha'),
-(174, 'Чеченский', 'ce', 'che'),
-(175, 'Чешский', 'cs', 'ces'),
-(176, 'Чжуанский', 'za', 'zha'),
-(177, 'Чувашский', 'cv', 'chv'),
-(178, 'Шведский', 'sv', 'swe'),
-(179, 'Шона', 'sn', 'sna'),
-(180, 'Эве', 'ee', 'ewe'),
-(181, 'Эсперанто', 'eo', 'epo'),
-(182, 'Эстонский', 'et', 'est'),
-(183, 'Яванский', 'jv', 'jav'),
-(184, 'Японский', 'ja', 'jpn');
+INSERT INTO `languages` (`lg_id`, `lg_name`, `lg_cd3`) VALUES
+('aa', 'Афарский', 'aar'),
+('ab', 'Абхазский', 'abk'),
+('ae', 'Авестийский', 'ave'),
+('af', 'Африкаанс', 'afr'),
+('ak', 'Акан', 'aka'),
+('am', 'Амхарский', 'amh'),
+('an', 'Арагонский', 'arg'),
+('ar', 'Арабский', 'ara'),
+('as', 'Ассамский', 'asm'),
+('av', 'Аварский', 'ava'),
+('ay', 'Аймара', 'aym'),
+('az', 'Азербайджанский', 'aze'),
+('ba', 'Башкирский', 'bak'),
+('be', 'Белорусский', 'bel'),
+('bg', 'Болгарский', 'bul'),
+('bh', 'Бихарский', 'bih'),
+('bi', 'Бислама', 'bis'),
+('bm', 'Бамбара', 'bam'),
+('bn', 'Бенгальский', 'ben'),
+('bo', 'Тибетский', 'bod'),
+('br', 'Бретонский', 'bre'),
+('bs', 'Боснийский', 'bos'),
+('ca', 'Каталонский', 'cat'),
+('ce', 'Чеченский', 'che'),
+('ch', 'Чаморро', 'cha'),
+('co', 'Корсиканский', 'cos'),
+('cr', 'Кри', 'cre'),
+('cs', 'Чешский', 'ces'),
+('cu', 'Церковнославянский (старославянский)', 'chu'),
+('cv', 'Чувашский', 'chv'),
+('cy', 'Валлийский', 'cym'),
+('da', 'Датский', 'dan'),
+('de', 'Немецкий', 'deu'),
+('dv', 'Дивехи (Мальдивский)', 'div'),
+('dz', 'Дзонг-кэ', 'dzo'),
+('ee', 'Эве', 'ewe'),
+('el', 'Греческий (новогреческий)', 'ell'),
+('en', 'Английский', 'eng'),
+('eo', 'Эсперанто', 'epo'),
+('es', 'Испанский', 'spa'),
+('et', 'Эстонский', 'est'),
+('eu', 'Баскский', 'eus'),
+('fa', 'Персидский', 'fas'),
+('ff', 'Фулах', 'ful'),
+('fi', 'Финский', 'fin'),
+('fj', 'Фиджи', 'fij'),
+('fo', 'Фарерский', 'fao'),
+('fr', 'Французский', 'fra'),
+('fy', 'Фризский', 'fry'),
+('ga', 'Ирландский', 'gle'),
+('gd', 'Гальский', 'gla'),
+('gl', 'Галисийский', 'glg'),
+('gn', 'Гуарани', 'grn'),
+('gu', 'Гуджарати', 'guj'),
+('gv', 'Мэнский', 'glv'),
+('ha', 'Хауса', 'hau'),
+('he', 'Иврит (современный)', 'heb'),
+('hi', 'Хинди', 'hin'),
+('ho', 'Хиримоту', 'hmo'),
+('hr', 'Хорватский', 'hrv'),
+('ht', 'Гаитянский креольский', 'hat'),
+('hu', 'Венгерский', 'hun'),
+('hy', 'Армянский', 'hye'),
+('hz', 'Гереро', 'her'),
+('ia', 'Интерлингва', 'ina'),
+('id', 'Индонезийский', 'ind'),
+('ie', 'Интерлингве', 'ile'),
+('ig', 'Игбо', 'ibo'),
+('ii', 'Носу', 'iii'),
+('ik', 'Инупиак', 'ipk'),
+('io', 'Идо', 'ido'),
+('is', 'Исландский', 'isl'),
+('it', 'Итальянский', 'ita'),
+('iu', 'Инуктитут', 'iku'),
+('ja', 'Японский', 'jpn'),
+('jv', 'Яванский', 'jav'),
+('ka', 'Грузинский', 'kat'),
+('kg', 'Конго', 'kon'),
+('ki', 'Кикуйю', 'kik'),
+('kj', 'Киньяма', 'kua'),
+('kk', 'Казахский', 'kaz'),
+('kl', 'Гренландский', 'kal'),
+('km', 'Кхмерский', 'khm'),
+('kn', 'Каннада', 'kan'),
+('ko', 'Корейский', 'kor'),
+('kr', 'Канури', 'kau'),
+('ks', 'Кашмири', 'kas'),
+('ku', 'Курдский', 'kur'),
+('kv', 'Коми', 'kom'),
+('kw', 'Корнский', 'cor'),
+('ky', 'Киргизский', 'kir'),
+('la', 'Латинский', 'lat'),
+('lb', 'Люксембургский', 'ltz'),
+('lg', 'Ганда', 'lug'),
+('li', 'Лимбургский', 'lim'),
+('ln', 'Лингала', 'lin'),
+('lo', 'Лаосский', 'lao'),
+('lt', 'Литовский', 'lit'),
+('lu', 'Луба-катанга', 'lub'),
+('lv', 'Латвийский', 'lav'),
+('mg', 'Малагасийский', 'mlg'),
+('mh', 'Маршалльский', 'mah'),
+('mi', 'Маори', 'mri'),
+('mk', 'Македонский', 'mkd'),
+('ml', 'Малаялам', 'mal'),
+('mn', 'Монгольский', 'mon'),
+('mr', 'Маратхи', 'mar'),
+('ms', 'Малайский', 'msa'),
+('mt', 'Мальтийский', 'mlt'),
+('my', 'Бирманский', 'mya'),
+('na', 'Науру', 'nau'),
+('nb', 'Норвежский (букмол)', 'nob'),
+('nd', 'Ндебеле северный', 'nde'),
+('ne', 'Непальский', 'nep'),
+('ng', 'Ндунга', 'ndo'),
+('nl', 'Голландский', 'nld'),
+('nn', 'Норвежский (нюнорск)', 'nno'),
+('no', 'Норвежский', 'nor'),
+('nr', 'Ндебеле южный', 'nbl'),
+('nv', 'Навахо', 'nav'),
+('ny', 'Ньянджа', 'nya'),
+('oc', 'Окситанский', 'oci'),
+('oj', 'Оджибве', 'oji'),
+('om', 'Оромо', 'orm'),
+('or', 'Ория', 'ori'),
+('os', 'Осетинский', 'oss'),
+('pa', 'Пенджабский', 'pan'),
+('pi', 'Пали', 'pli'),
+('pl', 'Польский', 'pol'),
+('ps', 'Пушту', 'pus'),
+('pt', 'Португальский', 'por'),
+('qu', 'Кечуа', 'que'),
+('rm', 'Ретороманский', 'roh'),
+('rn', 'Рунди', 'run'),
+('ro', 'Румынский', 'ron'),
+('ru', 'Русский', 'rus'),
+('rw', 'Руанда', 'kin'),
+('sa', 'Санскрит', 'san'),
+('sc', 'Сардинский', 'srd'),
+('sd', 'Синдхи', 'snd'),
+('se', 'Северносаамский', 'sme'),
+('sg', 'Санго', 'sag'),
+('si', 'Сингальский', 'sin'),
+('sk', 'Словацкий', 'slk'),
+('sl', 'Словенский', 'slv'),
+('sm', 'Самоанский', 'smo'),
+('sn', 'Шона', 'sna'),
+('so', 'Сомали', 'som'),
+('sq', 'Албанский', 'sqi'),
+('sr', 'Сербский', 'srp'),
+('ss', 'Свати', 'ssw'),
+('st', 'Сото южный', 'sot'),
+('su', 'Сунданский', 'sun'),
+('sv', 'Шведский', 'swe'),
+('sw', 'Суахили', 'swa'),
+('ta', 'Тамильский', 'tam'),
+('te', 'Телугу', 'tel'),
+('tg', 'Таджикский', 'tgk'),
+('th', 'Тайский', 'tha'),
+('ti', 'Тигринья', 'tir'),
+('tk', 'Туркменский', 'tuk'),
+('tl', 'Тагальский', 'tgl'),
+('tn', 'Тсвана', 'tsn'),
+('to', 'Тонганский', 'ton'),
+('tr', 'Турецкий', 'tur'),
+('ts', 'Тсонга', 'tso'),
+('tt', 'Татарский', 'tat'),
+('tw', 'Тви', 'twi'),
+('ty', 'Таитянский', 'tah'),
+('ug', 'Уйгурский', 'uig'),
+('uk', 'Украинский', 'ukr'),
+('ur', 'Урду', 'urd'),
+('uz', 'Узбекский', 'uzb'),
+('ve', 'Венда', 'ven'),
+('vi', 'Вьетнамский', 'vie'),
+('vo', 'Волапюк', 'vol'),
+('wa', 'Валлонский', 'wln'),
+('wo', 'Волоф', 'wol'),
+('xh', 'Коса', 'xho'),
+('yi', 'Идиш', 'yid'),
+('yo', 'Йоруба', 'yor'),
+('za', 'Чжуанский', 'zha'),
+('zh', 'Китайский', 'zho'),
+('zu', 'Зулу', 'zul');
 
 -- --------------------------------------------------------
 
@@ -503,7 +493,8 @@ ALTER TABLE `authors`
 -- Индексы таблицы `books`
 --
 ALTER TABLE `books`
-  ADD PRIMARY KEY (`bk_id`);
+  ADD PRIMARY KEY (`bk_id`),
+  ADD KEY `bk_se_fk` (`bk_se_id`);
 
 --
 -- Индексы таблицы `books_authors`
@@ -520,14 +511,6 @@ ALTER TABLE `books_genres`
   ADD PRIMARY KEY (`bkge_id`),
   ADD KEY `bkge_bk_fk` (`bkge_bk_id`),
   ADD KEY `bkge_ge_fk` (`bkge_ge_id`);
-
---
--- Индексы таблицы `books_series`
---
-ALTER TABLE `books_series`
-  ADD PRIMARY KEY (`bkse_id`),
-  ADD KEY `bkse_bk_fk` (`bkse_bk_id`),
-  ADD KEY `bkse_se_fk` (`bkse_se_id`);
 
 --
 -- Индексы таблицы `genres`
@@ -570,31 +553,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `authors`
 --
 ALTER TABLE `authors`
-  MODIFY `ar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=901;
+  MODIFY `ar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123;
 
 --
 -- AUTO_INCREMENT для таблицы `books`
 --
 ALTER TABLE `books`
-  MODIFY `bk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1145;
+  MODIFY `bk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=175;
 
 --
 -- AUTO_INCREMENT для таблицы `books_authors`
 --
 ALTER TABLE `books_authors`
-  MODIFY `bkar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1545;
+  MODIFY `bkar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=227;
 
 --
 -- AUTO_INCREMENT для таблицы `books_genres`
 --
 ALTER TABLE `books_genres`
-  MODIFY `bkge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2078;
-
---
--- AUTO_INCREMENT для таблицы `books_series`
---
-ALTER TABLE `books_series`
-  MODIFY `bkse_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1133;
+  MODIFY `bkge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=331;
 
 --
 -- AUTO_INCREMENT для таблицы `genres`
@@ -609,16 +586,10 @@ ALTER TABLE `genres_groups`
   MODIFY `gg_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
--- AUTO_INCREMENT для таблицы `languages`
---
-ALTER TABLE `languages`
-  MODIFY `lg_id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=185;
-
---
 -- AUTO_INCREMENT для таблицы `series`
 --
 ALTER TABLE `series`
-  MODIFY `se_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=515;
+  MODIFY `se_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
@@ -629,6 +600,12 @@ ALTER TABLE `users`
 --
 -- Ограничения внешнего ключа сохраненных таблиц
 --
+
+--
+-- Ограничения внешнего ключа таблицы `books`
+--
+ALTER TABLE `books`
+  ADD CONSTRAINT `bk_se_fk` FOREIGN KEY (`bk_se_id`) REFERENCES `series` (`se_id`);
 
 --
 -- Ограничения внешнего ключа таблицы `books_authors`
@@ -643,13 +620,6 @@ ALTER TABLE `books_authors`
 ALTER TABLE `books_genres`
   ADD CONSTRAINT `bkge_bk_fk` FOREIGN KEY (`bkge_bk_id`) REFERENCES `books` (`bk_id`),
   ADD CONSTRAINT `bkge_ge_fk` FOREIGN KEY (`bkge_ge_id`) REFERENCES `genres` (`ge_id`);
-
---
--- Ограничения внешнего ключа таблицы `books_series`
---
-ALTER TABLE `books_series`
-  ADD CONSTRAINT `bkse_bk_fk` FOREIGN KEY (`bkse_bk_id`) REFERENCES `books` (`bk_id`),
-  ADD CONSTRAINT `bkse_se_fk` FOREIGN KEY (`bkse_se_id`) REFERENCES `series` (`se_id`);
 
 --
 -- Ограничения внешнего ключа таблицы `genres`
