@@ -300,14 +300,15 @@ if (isset($_POST["cmd"])) {
         case "book": //книга
             if ($pdo and $_SESSION["user"]) {
                 $bi = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT bk_title, bk_cover, bk_annotation,  bk_file,
-                                              bk_number,
-                                              se_title
-
-                                        FROM books, series
+                $stmt = $pdo->prepare('SELECT books.*,
+                                              se_title,
+                                              lang.lg_name,
+                                              src_lang.lg_name AS src_lg_name 
+                                       FROM books, series, languages AS lang, languages AS src_lang
                                        WHERE bk_id = :bi
-                                         AND se_id = bk_se_id');
-
+                                       AND se_id = bk_se_id
+                                       AND lang.lg_id = bk_lang
+                                       AND src_lang.lg_id = bk_src_lang');
                 $stmt->bindValue(':bi', $bi, PDO::PARAM_INT);
                 if ($stmt->execute()) {
                     $result = $stmt->fetchAll();
@@ -320,7 +321,11 @@ if (isset($_POST["cmd"])) {
                                 "bk_seriesTitle" => $value[se_title],
                                 "bk_seriesNumber" => $value[bk_number],
                                 "bk_file_name" => $value[bk_file],
-
+                                "bk_data" => $value[bk_date],    
+                                "bk_lang" => $value[bk_lang],
+                                "lg_name" => $value[lg_name],
+                                "bk_src_lang" => $value[bk_src_lang],
+                                "lg_src_name" => $value[lg_src_name],
                             ));
                     }
                 } else {
@@ -915,6 +920,17 @@ if (isset($_POST["cmd"])) {
                         $time = strtotime($book_date);
                         //fwrite($handle, "Дата написания".$book_date."\n\n");
 
+                        //Язык
+                        $book_language = $title_info->getElementsByTagName('lang')->item(0)->nodeValue;
+
+                        //Язык оригинала
+                        if (empty($title_info->getElementsByTagName('src-lang')->item(0))) {
+                             $book_orig_language = $book_language;
+                        } else {
+                             $book_orig_language = $title_info->getElementsByTagName('src-lang')->item(0)->nodeValue;
+                        }
+
+
                         //Подгружаем секцию 'document-info'
                         $document_info = $description->getElementsByTagName('document-info')->item(0);
 
@@ -958,8 +974,8 @@ if (isset($_POST["cmd"])) {
 
                         /********************************** QUERIES ***********************************************/
 
-                        $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id, bk_se_id, bk_number, bk_book_id, bk_title, bk_annotation, bk_file_date, bk_file, bk_cover)
-                                                   VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), :id_sequence, :book_number, :book_id, :book_title, :book_annotation, :book_date, :book_file, :book_cover);');
+                        $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id, bk_se_id, bk_number, bk_doc_id, bk_title, bk_annotation, bk_date, bk_lang, bk_src_lang, bk_file, bk_cover)
+                                                   VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), :id_sequence, :book_number, :book_id, :book_title, :book_annotation, :book_date, :book_lang, :book_src_lang, :book_file, :book_cover);');
                         $stmt->bindValue(':login', $username, PDO::PARAM_STR);
                         $stmt->bindValue(':id_sequence', $id_sequence, PDO::PARAM_INT);
                         $stmt->bindValue(':book_number', $sequence_number, PDO::PARAM_INT);
@@ -967,6 +983,8 @@ if (isset($_POST["cmd"])) {
                         $stmt->bindValue(':book_title', $book_title, PDO::PARAM_STR);
                         $stmt->bindValue(':book_annotation', $book_annotation, PDO::PARAM_STR);
                         $stmt->bindValue(':book_date', date('Y-m-d', $time));
+                        $stmt->bindValue(':book_lang', $book_language, PDO::PARAM_STR);
+                        $stmt->bindValue(':book_src_lang', $book_orig_language, PDO::PARAM_STR);
                         $stmt->bindValue(':book_file', $filename, PDO::PARAM_STR);
                         $stmt->bindValue(':book_cover', $cover, PDO::PARAM_LOB);
 

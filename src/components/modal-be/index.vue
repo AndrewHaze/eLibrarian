@@ -11,8 +11,13 @@
     ok-title="Сохранить"
     cancel-title="Отмена"
   >
-    <b-container :id="'book'+bkID" fluid class="be-modal-content"  :style="{ maxHeight: mHeight + 'px', minHeight: mHeight + 'px' }">
-      <b-form-row >
+    <b-container
+      :id="'book'+bkID"
+      fluid
+      class="be-modal-content"
+      :style="{ maxHeight: mHeight + 'px', minHeight: mHeight + 'px' }"
+    >
+      <b-form-row>
         <b-col sm="3" class="cover-wrap">
           <div class="cover-wrap-sticky">
             <b-img thumbnail fluid :src="coverImage"/>
@@ -93,15 +98,16 @@
                 label-for="collapse1Select1"
                 label-size="sm"
               >
-                <v-select
+                <multiselect
                   id="collapse1Select1"
-                  multiple
+                  :multiple="true"
                   label="author"
+                  track-by="author"
                   v-model="form.bk_authors"
                   :options="s2OptionsAuthors"
                 >
-                  <span slot="no-options">Совпадений нет</span>
-                </v-select>
+                  <span slot></span>
+                </multiselect>
               </b-form-group>
               <!-- Разделитель -->
               <b-form-group
@@ -110,15 +116,13 @@
                 label-for="collapse1Select2"
                 label-size="sm"
               >
-                <v-select
+                <multiselect
                   id="collapse1Select2"
-                  multiple
+                  :multiple="true"
                   v-model="form.bk_genres"
                   label="genre"
                   :options="s2OptionsGenres"
-                >
-                  <span slot="no-options">Совпадений нет</span>
-                </v-select>
+                ></multiselect>
               </b-form-group>
 
               <b-row>
@@ -129,14 +133,12 @@
                     label-for="collapse1Select3"
                     label-size="sm"
                   >
-                    <v-select
+                    <multiselect
                       id="collapse1Select3"
                       v-model="form.bk_seriesTitle"
                       :options="s2OptionsSeries"
                       label="seriesTitle"
-                    >
-                      <span slot="no-options">Совпадений нет</span>
-                    </v-select>
+                    ></multiselect>
                   </b-form-group>
                 </b-col>
                 <!-- Разделитель -->
@@ -193,14 +195,12 @@
                     label-for="collapse3Select1"
                     label-size="sm"
                   >
-                    <v-select
+                    <multiselect
                       id="collapse3Select1"
                       v-model="form.bk_language"
                       :options="s2OptionsLang"
                       label="language"
-                    >
-                      <span slot="no-options">Совпадений нет</span>
-                    </v-select>
+                    ></multiselect>
                   </b-form-group>
                 </b-col>
                 <!-- Разделитель -->
@@ -211,14 +211,12 @@
                     label-for="collapse3Input3"
                     label-size="sm"
                   >
-                    <v-select
+                    <multiselect
                       id="collapse3Select2"
                       v-model="form.bk_orig_language"
                       :options="s2OptionsOrigLang"
                       label="language"
-                    >
-                      <span slot="no-options">Совпадений нет</span>
-                    </v-select>
+                    ></multiselect>
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -619,6 +617,7 @@
   </b-modal>
 </template>
 
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style lang="scss">
 $line-color: #dee2e6;
 $header-font-color: #495057;
@@ -650,25 +649,32 @@ input[type="file"] {
 }
 
 .colappse-header {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-  position: relative;
   font-weight: 600;
+  overflow: hidden;
+  &::after,
   &::before {
-    position: absolute;
+    display: inline-block;
     content: "";
-    border-bottom: 1px solid #737b83;
-    left: 0;
-    right: 1.6rem;
-    top: 0.95rem;
+    vertical-align: middle;
+    box-sizing: border-box;
+    width: 100%;
+    height: 1px;
+    background: #737b83;
+    border: solid #fff;
+    border-width: 0 2px;
+  }
+  &::after {
+    margin-right: -100%;
+  }
+  &::before {
+    margin-left: -100%;
   }
   span {
     padding-right: 0.3rem;
-    background-color: #fff;
-    z-index: 1;
   }
   .btn-circle {
+    position: absolute;
+    right: 0;
     width: 20px;
     height: 20px;
     text-align: center;
@@ -676,10 +682,13 @@ input[type="file"] {
     font-size: 12px;
     line-height: 0;
     border-radius: 10px;
-    //border-color: #212529;
+    background-color: #fff;
     margin-top: 5px;
     &:focus {
       box-shadow: none;
+    }
+    &:hover {
+      background-color: #737b83;
     }
   }
 }
@@ -705,25 +714,70 @@ input[type="file"] {
   }
 }
 
-.v-select {
-  font-size: 0.875rem;
-  .form-control {
-    height: auto;
-  }
-  .dropdown-toggle::after {
-    border-top: 0.3em solid transparent;
-    border-right: none;
-    margin-left: 0;
-  }
-  .dropdown-menu li a {
-    padding: 0.1rem 0.5rem !important;
+.multiselect {
+  * {
     font-size: 0.875rem;
   }
-}
 
-.open .dropdown-toggle {
+  min-height: 0;
+
+  .multiselect__tags {
+    display: flex;
+    align-items: center;
+    min-height: 31px;
+    padding: 0 30px 0 8px;
+    border-color: #ced4da;
+    border-radius: 0.2rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    .multiselect__placeholder {
+      margin: 0;
+      line-height: 1;
+      padding-top: 3px;
+      min-height: 20px;
+    }
+    .multiselect__tags-wrap {
+      display: flex;
+      flex-flow: row wrap;
+      align-items: center;
+      height: 100%;
+      padding-top: 4px;
+      .multiselect__tag {
+        padding: 3px 26px 4px 10px;
+        margin: 0 4px 4px 0;
+        .multiselect__tag-icon {
+          line-height: 19px;
+        }
+      }
+    }
+    .multiselect__input,
+    .multiselect__single {
+      margin: 0;
+      line-height: 18px;
+      padding-left: 0;
+    }
+    input {
+      margin: 0;
+    }
+  }
+  .multiselect__select {
+    height: 100%;
+    width: 30px;
+  }
+  .multiselect__content-wrapper {
+    z-index: 9999 !important;
+    border-color: #ced4da;
+    .multiselect__option {
+      min-height: 0;
+      padding: 8px 12px;
+    }
+    span:after {
+      line-height: 10px;
+      padding: 10px;
+    }
+  }
+}
+.multiselect--active .multiselect__tags {
   border-color: #80bdff;
-  outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 </style>
@@ -731,7 +785,7 @@ input[type="file"] {
 <script>
 import axios from "axios";
 import store from "../../store";
-import vSelect from "vue-select";
+import Multiselect from "vue-multiselect";
 
 const shiftL = 225;
 const shiftR = 6;
@@ -739,7 +793,7 @@ const shiftR = 6;
 export default {
   name: "modal-be",
   components: {
-    vSelect
+    Multiselect
   },
   data() {
     return {
@@ -764,7 +818,7 @@ export default {
         bk_seriesTitle: null,
         bk_seriesNumber: "",
         bk_date: "",
-        bk_language: [{id: 6, language: "Акан"}],
+        bk_language: "",
         bk_orig_language: "",
         bk_keywords: "",
         bk_translator: "",
@@ -794,10 +848,10 @@ export default {
     };
   },
   watch: {
-    'form.bk_language': function(val) {
-        console.log(val.language);
+    "form.bk_language": function(val) {
+      console.log(val.language);
     }
-    },
+  },
   mounted: function() {
     window.addEventListener("resize", this.handleResize);
     this.mHeight = window.innerHeight - shiftL;
@@ -848,16 +902,15 @@ export default {
     window.removeEventListener("resize", this.handleResize);
   },
   methods: {
-    closeBookEditor() {
-    },
+    closeBookEditor() {},
     shownBookEditor() {
-      document.getElementById("book"+this.bkID).scrollTop = 0;
+      document.getElementById("book" + this.bkID).scrollTop = 0;
     },
     showBookEditor() {
       //id текущей книги
       this.bkID = this.$store.getters.bkID;
       const self = this;
-      // аторы книги
+      // авторы книги
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {
@@ -869,6 +922,18 @@ export default {
           self.form.bk_authors = rd; //возвр. данные (Responce)
         }
       );
+      // жанры книги
+      // this.callApi(
+      //   this.$store.getters.prefix + "/static/api.php",
+      //   {
+      //     cmd: "b_genres",
+      //     dat: self.bkID
+      //   },
+      //   "",
+      //   function(rd) {
+      //     self.form.bk_genres = rd; //возвр. данные (Responce)
+      //   }
+      // );
       //информация по книге
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
@@ -887,11 +952,16 @@ export default {
           }
           self.form.bk_title = rd[0].bk_title;
           self.form.bk_original_title = rd[0].bk_original_title;
-          if (rd[0].bk_seriesTitle != 'яяяяяя') {
+          if (rd[0].bk_seriesTitle != "яяяяяя") {
             self.form.bk_seriesTitle = rd[0].bk_seriesTitle;
-          }
+          } else self.form.bk_seriesTitle = null;
           self.form.bk_seriesNumber = rd[0].bk_seriesNumber;
+          self.form.bk_date = rd[0].bk_data;
           self.form.bk_annotation = rd[0].bk_annotation;
+          self.form.bk_doc_id = rd[0].bk_doc_id;
+          self.form.bk_doc_id = rd[0].bk_doc_id;
+          self.bk_language = { id: "ru", language: "Русский" };
+          self.bk_orig_language = rd[0].lg_src_name;
         }
       );
     },

@@ -275,7 +275,7 @@ export default {
     }
     if (this.storageAvailable("localStorage") && localStorage.currentTab) {
       store.commit("setCurrentTab", localStorage.currentTab);
-      this.tabIndex = localStorage.currentTab;
+      this.tabIndex = parseInt(localStorage.currentTab, 10);
     } else this.tabIndex = 0;
     this.updateAll();
   },
@@ -284,9 +284,11 @@ export default {
       store.commit("setAuthorID", -1);
       store.commit("setGenresID", -1);
       store.commit("setSeriesID", -1);
-      this.$refs.aTab.getAuthors();
-      this.$refs.gTab.getGenres();
-      this.$refs.sTab.getSeries();
+      if (this.$refs.aTab) {
+        this.$refs.aTab.getAuthors();
+        this.$refs.gTab.getGenres();
+        this.$refs.sTab.getSeries();
+      }
     }
   },
   computed: {
