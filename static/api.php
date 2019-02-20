@@ -301,7 +301,6 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $bi = $_POST["dat"];
                 $stmt = $pdo->prepare('SELECT books.*,
-                                              se_title,
                                               lang.lg_name,
                                               src_lang.lg_name AS src_lg_name 
                                        FROM books, series, languages AS lang, languages AS src_lang
@@ -318,7 +317,6 @@ if (isset($_POST["cmd"])) {
                                 "bk_title" => $value[bk_title],
                                 "bk_cover" => base64_encode($value[bk_cover]),
                                 "bk_annotation" => $value[bk_annotation],
-                                "bk_seriesTitle" => $value[se_title],
                                 "bk_seriesNumber" => $value[bk_number],
                                 "bk_file_name" => $value[bk_file],
                                 "bk_data" => $value[bk_date],    
@@ -423,6 +421,7 @@ if (isset($_POST["cmd"])) {
         case "sa_list": //список всех серий
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
+                $flag = $_POST["dat"];
                 $stmt = $pdo->prepare('SELECT se_id, se_title, COUNT(*) cnt
                 FROM books,
                      series,
@@ -437,13 +436,21 @@ if (isset($_POST["cmd"])) {
                 if ($stmt->execute()) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
+                        if ($flag == 'simple') {
                         array_push($res["data"],
+                            array(
+                                "id" => "se" . $value[se_id],
+                                "seriesTitle" => $value[se_title],
+                            ));
+                        } else {
+                            array_push($res["data"],
                             array(
                                 "id" => "se" . $value[se_id],
                                 "seriesTitle" => $value[se_title],
                                 "books" => $value[cnt],
                                 "isActive" => false,
-                            ));
+                            ));   
+                        }    
                     }
                 } else {
                     $res["success"] = false;
@@ -531,6 +538,27 @@ if (isset($_POST["cmd"])) {
 
             }
             break;
+        case "b_ser": //серия книги для BookEditor
+            if ($pdo and $_SESSION["user"]) {
+                $bi = $_POST["dat"];
+                $stmt = $pdo->prepare('SELECT se_id, se_title
+                                       FROM books, series
+                                       WHERE bk_id = :bi
+                                       AND se_id = bk_se_id
+                                       AND se_title != "яяяяяя"');
+                $stmt->bindValue(':bi', $bi, PDO::PARAM_INT);
+                $stmt->execute();
+                $result = $stmt->fetchAll();
+                foreach ($result as $value) {
+                    array_push($res["data"],
+                        array(
+                            "id" => "se" . $value[se_id],
+                            "seriesTitle" => $value[se_title],
+                        ));
+                }
+
+            }
+            break;    
         case "g_list": //список жанров
             if ($pdo and $_SESSION["user"]) {
                 switch ($_POST["order"]) {
@@ -806,8 +834,8 @@ if (isset($_POST["cmd"])) {
                     foreach ($result as $value) {
                         array_push($res["data"],
                             array(
-                                "id" => "lg" . $value[lg_id],
-                                "language" => $value[lg_name],
+                                "lg_id" => "lg" . $value[lg_id],
+                                "lg_name" => $value[lg_name],
                             ));
                     }
                 } else {
