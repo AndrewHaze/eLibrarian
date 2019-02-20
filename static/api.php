@@ -300,14 +300,9 @@ if (isset($_POST["cmd"])) {
         case "book": //книга
             if ($pdo and $_SESSION["user"]) {
                 $bi = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT books.*,
-                                              lang.lg_name,
-                                              src_lang.lg_name AS src_lg_name 
-                                       FROM books, series, languages AS lang, languages AS src_lang
-                                       WHERE bk_id = :bi
-                                       AND se_id = bk_se_id
-                                       AND lang.lg_id = bk_lang
-                                       AND src_lang.lg_id = bk_src_lang');
+                $stmt = $pdo->prepare('SELECT *
+                                       FROM books 
+                                       WHERE bk_id = :bi');
                 $stmt->bindValue(':bi', $bi, PDO::PARAM_INT);
                 if ($stmt->execute()) {
                     $result = $stmt->fetchAll();
@@ -315,15 +310,12 @@ if (isset($_POST["cmd"])) {
                         array_push($res["data"],
                             array(
                                 "bk_title" => $value[bk_title],
+                                "bk_src_title" => $value[bk_src_title],
                                 "bk_cover" => base64_encode($value[bk_cover]),
                                 "bk_annotation" => $value[bk_annotation],
                                 "bk_seriesNumber" => $value[bk_number],
                                 "bk_file_name" => $value[bk_file],
-                                "bk_data" => $value[bk_date],    
-                                "bk_lang" => $value[bk_lang],
-                                "lg_name" => $value[lg_name],
-                                "bk_src_lang" => $value[bk_src_lang],
-                                "lg_src_name" => $value[lg_src_name],
+                                "bk_data" => $value[bk_date]    
                             ));
                     }
                 } else {
@@ -824,7 +816,7 @@ if (isset($_POST["cmd"])) {
                 }
             }
             break;
-        case "lg_list":
+        case "lg_list": //все языки
             if ($pdo and $_SESSION["user"]) {
                 $stmt = $pdo->prepare('SELECT DISTINCT lg_id, lg_name
                 FROM languages
@@ -844,6 +836,52 @@ if (isset($_POST["cmd"])) {
                 }
             }
             break;
+        case "b_lang": //язык книги
+            if ($pdo and $_SESSION["user"]) {
+                $bi = $_POST["dat"];
+                $stmt = $pdo->prepare('SELECT DISTINCT lg_id, lg_name
+                FROM books, languages
+                WHERE bk_id = :bi
+                AND lg_id = bk_lang');
+                $stmt->bindValue(':bi', $bi, PDO::PARAM_INT);
+                if ($stmt->execute()) {
+                    $result = $stmt->fetchAll();
+                    foreach ($result as $value) {
+                        array_push($res["data"],
+                            array(
+                                "id" => $value[lg_id],
+                                "lg_name" => $value[lg_name],
+                            ));
+                    }
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "dbe";
+                }
+            }
+            break;    
+        case "b_lang_src": //язык оригинала книги
+            if ($pdo and $_SESSION["user"]) {
+                $bi = $_POST["dat"];
+                $stmt = $pdo->prepare('SELECT DISTINCT lg_id, lg_name
+                FROM books, languages
+                WHERE bk_id = :bi
+                AND lg_id = bk_src_lang ');
+                $stmt->bindValue(':bi', $bi, PDO::PARAM_INT);
+                if ($stmt->execute()) {
+                    $result = $stmt->fetchAll();
+                    foreach ($result as $value) {
+                        array_push($res["data"],
+                            array(
+                                "id" => $value[lg_id],
+                                "lg_name" => $value[lg_name],
+                            ));
+                    }
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "dbe";
+                }
+            }
+            break;      
         case "clear_upload": //очистка папки uploads, для текщей сессии
             $res["data"] = clear_dir('uploads');
             if (!$res["data"]) {
@@ -893,6 +931,12 @@ if (isset($_POST["cmd"])) {
 
                         //Название книги
                         $book_title = $title_info->getElementsByTagName('book-title')->item(0)->nodeValue;
+                        if ($src_title_info)  {
+                            $src_book_title = $src_title_info->getElementsByTagName('book-title')->item(0)->nodeValue;
+                            if (! $src_title_info) $src_book_title = ""; //проверить как работает
+                        } else {    
+                            $src_book_title = "";
+                        }    
                         //fwrite($handle, "Название книги: ".$book_title."\n\n");
 
                         //Аннотация
@@ -1002,13 +1046,14 @@ if (isset($_POST["cmd"])) {
 
                         /********************************** QUERIES ***********************************************/
 
-                        $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id, bk_se_id, bk_number, bk_doc_id, bk_title, bk_annotation, bk_date, bk_lang, bk_src_lang, bk_file, bk_cover)
-                                                   VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), :id_sequence, :book_number, :book_id, :book_title, :book_annotation, :book_date, :book_lang, :book_src_lang, :book_file, :book_cover);');
+                        $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id, bk_se_id, bk_number, bk_doc_id, bk_title, bk_src_title, bk_annotation, bk_date, bk_lang, bk_src_lang, bk_file, bk_cover)
+                                                   VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), :id_sequence, :book_number, :book_id, :book_title, :src_book_title, :book_annotation, :book_date, :book_lang, :book_src_lang, :book_file, :book_cover);');
                         $stmt->bindValue(':login', $username, PDO::PARAM_STR);
                         $stmt->bindValue(':id_sequence', $id_sequence, PDO::PARAM_INT);
                         $stmt->bindValue(':book_number', $sequence_number, PDO::PARAM_INT);
                         $stmt->bindValue(':book_id', $book_id, PDO::PARAM_STR);
                         $stmt->bindValue(':book_title', $book_title, PDO::PARAM_STR);
+                        $stmt->bindValue(':src_book_title', $src_book_title, PDO::PARAM_STR);
                         $stmt->bindValue(':book_annotation', $book_annotation, PDO::PARAM_STR);
                         $stmt->bindValue(':book_date', date('Y-m-d', $time));
                         $stmt->bindValue(':book_lang', $book_language, PDO::PARAM_STR);
