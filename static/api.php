@@ -301,7 +301,7 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $bi = $_POST["dat"];
                 $stmt = $pdo->prepare('SELECT *
-                                       FROM books 
+                                       FROM books
                                        WHERE bk_id = :bi');
                 $stmt->bindValue(':bi', $bi, PDO::PARAM_INT);
                 if ($stmt->execute()) {
@@ -315,7 +315,7 @@ if (isset($_POST["cmd"])) {
                                 "bk_annotation" => $value[bk_annotation],
                                 "bk_seriesNumber" => $value[bk_number],
                                 "bk_file_name" => $value[bk_file],
-                                "bk_data" => $value[bk_date]    
+                                "bk_data" => $value[bk_date],
                             ));
                     }
                 } else {
@@ -429,20 +429,20 @@ if (isset($_POST["cmd"])) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
                         if ($flag == 'simple') {
-                        array_push($res["data"],
-                            array(
-                                "id" => "se" . $value[se_id],
-                                "seriesTitle" => $value[se_title],
-                            ));
+                            array_push($res["data"],
+                                array(
+                                    "id" => "se" . $value[se_id],
+                                    "seriesTitle" => $value[se_title],
+                                ));
                         } else {
                             array_push($res["data"],
-                            array(
-                                "id" => "se" . $value[se_id],
-                                "seriesTitle" => $value[se_title],
-                                "books" => $value[cnt],
-                                "isActive" => false,
-                            ));   
-                        }    
+                                array(
+                                    "id" => "se" . $value[se_id],
+                                    "seriesTitle" => $value[se_title],
+                                    "books" => $value[cnt],
+                                    "isActive" => false,
+                                ));
+                        }
                     }
                 } else {
                     $res["success"] = false;
@@ -550,7 +550,7 @@ if (isset($_POST["cmd"])) {
                 }
 
             }
-            break;    
+            break;
         case "g_list": //список жанров
             if ($pdo and $_SESSION["user"]) {
                 switch ($_POST["order"]) {
@@ -858,7 +858,7 @@ if (isset($_POST["cmd"])) {
                     $res["error"] = "dbe";
                 }
             }
-            break;    
+            break;
         case "b_lang_src": //язык оригинала книги
             if ($pdo and $_SESSION["user"]) {
                 $bi = $_POST["dat"];
@@ -881,7 +881,7 @@ if (isset($_POST["cmd"])) {
                     $res["error"] = "dbe";
                 }
             }
-            break;      
+            break;
         case "clear_upload": //очистка папки uploads, для текщей сессии
             $res["data"] = clear_dir('uploads');
             if (!$res["data"]) {
@@ -931,12 +931,15 @@ if (isset($_POST["cmd"])) {
 
                         //Название книги
                         $book_title = $title_info->getElementsByTagName('book-title')->item(0)->nodeValue;
-                        if ($src_title_info)  {
+                        if ($src_title_info) {
                             $src_book_title = $src_title_info->getElementsByTagName('book-title')->item(0)->nodeValue;
-                            if (! $src_title_info) $src_book_title = ""; //проверить как работает
-                        } else {    
+                            if (!$src_title_info) {
+                                $src_book_title = "";
+                            }
+                            //проверить как работает
+                        } else {
                             $src_book_title = "";
-                        }    
+                        }
                         //fwrite($handle, "Название книги: ".$book_title."\n\n");
 
                         //Аннотация
@@ -985,9 +988,13 @@ if (isset($_POST["cmd"])) {
                         }
 
                         //Дата
-                        $book_date = $title_info->getElementsByTagName('date')->item(0)->nodeValue;
-                        if (!$book_date || $book_date == '') {
+                        if (empty($title_info->getElementsByTagName('date')->item(0))) {
                             $book_date = '2099-01-01';
+                        } else {
+                            $book_date = $title_info->getElementsByTagName('date')->item(0)->GetAttribute('value');
+                            if (!$book_date || $book_date == '') {
+                                $book_date = '2099-01-01';
+                            }
                         }
                         $time = strtotime($book_date);
                         //fwrite($handle, "Дата написания".$book_date."\n\n");
@@ -997,11 +1004,10 @@ if (isset($_POST["cmd"])) {
 
                         //Язык оригинала
                         if (empty($title_info->getElementsByTagName('src-lang')->item(0))) {
-                             $book_orig_language = $book_language;
+                            $book_orig_language = $book_language;
                         } else {
-                             $book_orig_language = $title_info->getElementsByTagName('src-lang')->item(0)->nodeValue;
+                            $book_orig_language = $title_info->getElementsByTagName('src-lang')->item(0)->nodeValue;
                         }
-
 
                         //Подгружаем секцию 'document-info'
                         $document_info = $description->getElementsByTagName('document-info')->item(0);
