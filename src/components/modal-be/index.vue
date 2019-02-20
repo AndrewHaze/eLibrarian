@@ -132,7 +132,7 @@
                   track-by="id"
                   :options="s2OptionsGenres"
                 >
-                <span slot="noResult">Совпадений нет. Попробуйте изменить поисковый запрос</span>
+                  <span slot="noResult">Совпадений нет. Попробуйте изменить поисковый запрос</span>
                 </multiselect>
               </b-form-group>
 
@@ -150,12 +150,12 @@
                       :options="s2OptionsSeries"
                       placeholder="Выберите серию"
                       selectLabel="Нажмите Enter, чтобы выбрать"
-                      selectedLabel="Выбран"
+                      selectedLabel="Выбрана"
                       deselectLabel="Нажмите Enter, чтобы отменить выбор"
                       label="seriesTitle"
                       track-by="id"
                     >
-                    <span slot="noResult">Совпадений нет. Попробуйте изменить поисковый запрос</span>
+                      <span slot="noResult">Совпадений нет. Попробуйте изменить поисковый запрос</span>
                     </multiselect>
                   </b-form-group>
                 </b-col>
@@ -222,9 +222,10 @@
                       selectedLabel="Выбран"
                       deselectLabel="Нажмите Enter, чтобы отменить выбор"
                       label="lg_name"
-                      track-by="id"
+                      track-by="lg_name"
                     >
-                    <span slot="noResult">Совпадений нет. Попробуйте изменить поисковый запрос</span>
+                      <!-- track-by с id глючит. ???? -->
+                      <span slot="noResult">Совпадений нет. Попробуйте изменить поисковый запрос</span>
                     </multiselect>
                   </b-form-group>
                 </b-col>
@@ -245,9 +246,10 @@
                       selectedLabel="Выбран"
                       deselectLabel="Нажмите Enter, чтобы отменить выбор"
                       label="lg_name"
-                      track-by="id"
+                      track-by="lg_name" 
                     >
-                    <span slot="noResult">Совпадений нет. Попробуйте изменить поисковый запрос</span>
+                      <!-- track-by с id глючит. ???? -->
+                      <span slot="noResult">Совпадений нет. Попробуйте изменить поисковый запрос</span>
                     </multiselect>
                   </b-form-group>
                 </b-col>
@@ -892,45 +894,20 @@ export default {
     if (this.mHeight > 1200) {
       this.mHeight = 1200;
     }
-    //загрузка данных не привязанных к конкретнлой книге
     const self = this;
-    //список всех авторов
-    this.callApi(
-      this.$store.getters.prefix + "/static/api.php",
-      {
-        cmd: "a_list",
-        dat: "simple"
-      },
-      "",
-      function(rd) {
-        self.s2OptionsAuthors = rd; //возвр. данные (Responce)
-      }
-    );
-    //список всех серий
-    this.callApi(
-      this.$store.getters.prefix + "/static/api.php",
-      {
-        cmd: "sa_list",
-        dat: "simple"
-      },
-      "",
-      function(rd) {
-        self.s2OptionsSeries = rd;
-      }
-    );
     //список языков
-    this.callApi(
-      this.$store.getters.prefix + "/static/api.php",
-      {
-        cmd: "lg_list",
-        dat: ""
-      },
-      "",
-      function(rd) {
-        self.s2OptionsLang = rd;
-        self.s2OptionsOrigLang = rd;
-      }
-    );
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "lg_list",
+          dat: ""
+        },
+        "",
+        function(rd) {
+          self.s2OptionsLang = rd;
+          self.s2OptionsOrigLang = rd;
+        }
+      );
   },
   beforeDestroy: function() {
     window.removeEventListener("resize", this.handleResize);
@@ -956,29 +933,6 @@ export default {
           self.form.bk_authors = rd; //возвр. данные (Responce)
         }
       );
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "b_ser",
-          dat: self.bkID
-        },
-        "",
-        function(rd) {
-          self.form.bk_series = rd; //возвр. данные (Responce)
-        }
-      );
-      // жанры книги
-      // this.callApi(
-      //   this.$store.getters.prefix + "/static/api.php",
-      //   {
-      //     cmd: "b_genres",
-      //     dat: self.bkID
-      //   },
-      //   "",
-      //   function(rd) {
-      //     self.form.bk_genres = rd; //возвр. данные (Responce)
-      //   }
-      // );
       //информация по книге
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
@@ -996,17 +950,87 @@ export default {
             self.coverImage = "/static/assets/nocover.jpg";
           }
           self.form.bk_title = rd[0].bk_title;
-          self.form.bk_original_title = rd[0].bk_original_title;
-
+          self.form.bk_original_title = rd[0].bk_src_title;
           self.form.bk_seriesNumber = rd[0].bk_seriesNumber;
           self.form.bk_date = rd[0].bk_data;
           self.form.bk_annotation = rd[0].bk_annotation;
           self.form.bk_doc_id = rd[0].bk_doc_id;
           self.form.bk_doc_id = rd[0].bk_doc_id;
-          self.form.bk_language = [0][{ lg_id: "ru", lang_name: "Русский" }];
-          self.form.bk_orig_language = rd[0].lg_src_name;
         }
       );
+      //список всех авторов
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "a_list",
+          dat: "simple"
+        },
+        "",
+        function(rd) {
+          self.s2OptionsAuthors = rd; //возвр. данные (Responce)
+        }
+      );
+      //список всех серий
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "sa_list",
+          dat: "simple"
+        },
+        "",
+        function(rd) {
+          self.s2OptionsSeries = rd;
+        }
+      );
+      //Серия
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "b_ser",
+          dat: self.bkID
+        },
+        "",
+        function(rd) {
+          self.form.bk_series = rd; //возвр. данные (Responce)
+        }
+      );
+      //Язык
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "b_lang",
+          dat: self.bkID
+        },
+        "",
+        function(rd) {
+          self.form.bk_language = rd; //возвр. данные (Responce)
+        }
+      );
+      //Язык оригинала
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "b_lang_src",
+          dat: self.bkID
+        },
+        "",
+        function(rd) {
+          self.form.bk_orig_language = rd; //возвр. данные (Responce)
+        }
+      );
+      // жанры книги
+      // this.callApi(
+      //   this.$store.getters.prefix + "/static/api.php",
+      //   {
+      //     cmd: "b_genres",
+      //     dat: self.bkID
+      //   },
+      //   "",
+      //   function(rd) {
+      //     self.form.bk_genres = rd; //возвр. данные (Responce)
+      //   }
+      // );
+      
     },
     handleResize() {
       this.mHeight = window.innerHeight - shiftL;
