@@ -613,7 +613,6 @@ if (isset($_POST["cmd"])) {
                 $g_group = '';
                 $gg_count = 0;
                 $gm_array = [];
-                $first = true;
                 foreach ($result as $value) {
                     if ($value[gg_title] != $g_group) {
                         if ($g_group != '') {
@@ -654,7 +653,6 @@ if (isset($_POST["cmd"])) {
                             "count" => $value[cnt2],
                             "disabled" => ($value[cnt2] > 0) ? false : true,
                         ));
-
                 }
                 //Последняя группа вне цикла
                 array_push($gm_array,
@@ -684,7 +682,6 @@ if (isset($_POST["cmd"])) {
                 $result = $stmt->fetchAll();
                 $g_group = '';
                 $gm_array = [];
-                $first = true;
                 foreach ($result as $value) {
                     if ($value[gg_title] != $g_group) {
                         if ($g_group != '') {
@@ -695,7 +692,6 @@ if (isset($_POST["cmd"])) {
                                 ));
                         }
                         $g_group = $value[gg_title];
-
                         $gc_array = [];
                     }
                     array_push($gc_array,
@@ -704,7 +700,6 @@ if (isset($_POST["cmd"])) {
                             "code" => $value[ge_code],
                             "title" => str_replace(" (то, что не вошло в другие категории)", "", $value[ge_title]),
                         ));
-
                 }
                 //Последняя группа вне цикла
                 array_push($gm_array,
