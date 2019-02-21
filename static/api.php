@@ -316,6 +316,7 @@ if (isset($_POST["cmd"])) {
                                 "bk_seriesNumber" => $value[bk_number],
                                 "bk_file_name" => $value[bk_file],
                                 "bk_data" => $value[bk_date],
+                                "bk_translators" => $value[bk_translators],
                             ));
                     }
                 } else {
@@ -1119,10 +1120,49 @@ if (isset($_POST["cmd"])) {
                             $id_sequence = $stmt->fetchColumn();
                         }
 
-                        /********************************** QUERIES ***********************************************/
+                        $translators_list = $title_info->getElementsByTagName('translator');
+                        $translators = '';
+                        if (count($translators_list) > 0) {
+                            $element = '';
+                            foreach ($translators_list as $element) {
+                                $translator = array($element->getElementsByTagName('first-name')->item(0)->nodeValue,
+                                    $element->getElementsByTagName('last-name')->item(0)->nodeValue,
+                                    $element->getElementsByTagName('middle-name')->item(0)->nodeValue);
+                                $first_name = trim($translator[0]) ?: "";
+                                $last_name = trim($translator[1]) ?: "";
+                                $middle_name = trim($translator[2]) ?: "";
+                                $translators = $last_name.' '.$first_name.' '.$middle_name.', ';
+                            }
+                            $translators = substr($translators, 0, -2);
+                        }
 
-                        $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id, bk_se_id, bk_number, bk_doc_id, bk_title, bk_src_title, bk_annotation, bk_date, bk_lang, bk_src_lang, bk_file, bk_cover)
-                                                   VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), :id_sequence, :book_number, :book_id, :book_title, :src_book_title, :book_annotation, :book_date, :book_lang, :book_src_lang, :book_file, :book_cover);');
+                        /********************************** MAIN QUERIES ***********************************************/
+
+                        $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id, 
+                                                                 bk_se_id, 
+                                                                 bk_number, 
+                                                                 bk_doc_id, 
+                                                                 bk_title, 
+                                                                 bk_src_title, 
+                                                                 bk_annotation, 
+                                                                 bk_date, bk_lang, 
+                                                                 bk_src_lang, 
+                                                                 bk_file, 
+                                                                 bk_cover, 
+                                                                 bk_translators)
+                                                          VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), 
+                                                                 :id_sequence, 
+                                                                 :book_number, 
+                                                                 :book_id, 
+                                                                 :book_title, 
+                                                                 :src_book_title, 
+                                                                 :book_annotation, 
+                                                                 :book_date, 
+                                                                 :book_lang, 
+                                                                 :book_src_lang, 
+                                                                 :book_file, 
+                                                                 :book_cover, 
+                                                                 :bk_translators);');
                         $stmt->bindValue(':login', $username, PDO::PARAM_STR);
                         $stmt->bindValue(':id_sequence', $id_sequence, PDO::PARAM_INT);
                         $stmt->bindValue(':book_number', $sequence_number, PDO::PARAM_INT);
@@ -1135,7 +1175,9 @@ if (isset($_POST["cmd"])) {
                         $stmt->bindValue(':book_src_lang', $book_orig_language, PDO::PARAM_STR);
                         $stmt->bindValue(':book_file', $filename, PDO::PARAM_STR);
                         $stmt->bindValue(':book_cover', $cover, PDO::PARAM_LOB);
+                        $stmt->bindValue(':bk_translators', $translators, PDO::PARAM_STR);
 
+                        //Связанные таблицы
                         if ($stmt->execute()) {
                             $id_book = $pdo->lastInsertId();
 
