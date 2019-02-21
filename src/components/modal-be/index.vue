@@ -128,8 +128,10 @@
                   selectLabel="Нажмите Enter, чтобы выбрать"
                   selectedLabel="Выбран"
                   deselectLabel="Нажмите Enter, чтобы отменить выбор"
-                  label="genre"
-                  track-by="id"
+                  group-values="genres"
+                  group-label="group"
+                  label="title"
+                  track-by="code"
                   :options="s2OptionsGenres"
                 >
                   <span slot="noResult">Совпадений нет. Попробуйте изменить поисковый запрос</span>
@@ -246,7 +248,7 @@
                       selectedLabel="Выбран"
                       deselectLabel="Нажмите Enter, чтобы отменить выбор"
                       label="lg_name"
-                      track-by="lg_name" 
+                      track-by="lg_name"
                     >
                       <!-- track-by с id глючит. ???? -->
                       <span slot="noResult">Совпадений нет. Попробуйте изменить поисковый запрос</span>
@@ -800,7 +802,6 @@ input[type="file"] {
     width: 30px;
   }
   .multiselect__content-wrapper {
-    z-index: 9999 !important;
     border-color: #ced4da;
     .multiselect__option {
       min-height: 0;
@@ -809,10 +810,13 @@ input[type="file"] {
     .multiselect__option--selected {
       font-weight: 600;
     }
-
     span:after {
       line-height: 11px;
       padding: 8px;
+    }
+    .multiselect__option--disabled {
+      text-align: center;
+      font-weight: 600;
     }
   }
 }
@@ -896,18 +900,32 @@ export default {
     }
     const self = this;
     //список языков
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "lg_list",
-          dat: ""
-        },
-        "",
-        function(rd) {
-          self.s2OptionsLang = rd;
-          self.s2OptionsOrigLang = rd;
-        }
-      );
+    this.callApi(
+      this.$store.getters.prefix + "/static/api.php",
+      {
+        cmd: "lg_list",
+        dat: ""
+      },
+      "",
+      function(rd) {
+        self.s2OptionsLang = rd;
+        self.s2OptionsOrigLang = rd;
+      }
+    );
+    //Список жанров
+    this.callApi(
+      this.$store.getters.prefix + "/static/api.php",
+      {
+        cmd: "bg_list",
+        dat: ""
+      },
+      "",
+      function(rd) {
+        self.s2OptionsGenres = rd;
+      }
+    );
+    self.form.bk_authors = null;
+    self.form.bk_genres = null;
   },
   beforeDestroy: function() {
     window.removeEventListener("resize", this.handleResize);
@@ -952,7 +970,8 @@ export default {
           self.form.bk_title = rd[0].bk_title;
           self.form.bk_original_title = rd[0].bk_src_title;
           self.form.bk_seriesNumber = rd[0].bk_seriesNumber;
-          self.form.bk_date = (rd[0].bk_data === '2099-01-01') ? null : rd[0].bk_data;
+          self.form.bk_date =
+            rd[0].bk_data === "2099-01-01" ? null : rd[0].bk_data;
           self.form.bk_annotation = rd[0].bk_annotation;
           self.form.bk_doc_id = rd[0].bk_doc_id;
           self.form.bk_doc_id = rd[0].bk_doc_id;
@@ -1018,19 +1037,19 @@ export default {
           self.form.bk_orig_language = rd; //возвр. данные (Responce)
         }
       );
-      // жанры книги
-      // this.callApi(
-      //   this.$store.getters.prefix + "/static/api.php",
-      //   {
-      //     cmd: "b_genres",
-      //     dat: self.bkID
-      //   },
-      //   "",
-      //   function(rd) {
-      //     self.form.bk_genres = rd; //возвр. данные (Responce)
-      //   }
-      // );
-      
+
+      //жанры книги
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "b_genres",
+          dat: self.bkID
+        },
+        "",
+        function(rd) {
+          self.form.bk_genres = rd; //возвр. данные (Responce)
+        }
+      );
     },
     handleResize() {
       this.mHeight = window.innerHeight - shiftL;
@@ -1045,7 +1064,6 @@ export default {
     handleFileChange(e) {
       let filesList = e.target.files;
       if (!filesList.length) return;
-      console.log(filesList.length);
       // let formData = new FormData();
       // formData.append("file", filesList[0]);
       for (let i = 0; i < filesList.length; i++) {
