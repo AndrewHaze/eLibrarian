@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost
--- Время создания: Фев 20 2019 г., 12:09
+-- Время создания: Фев 21 2019 г., 16:02
 -- Версия сервера: 5.7.20
 -- Версия PHP: 7.2.0
 
@@ -50,12 +50,30 @@ CREATE TABLE `books` (
   `bk_doc_id` varchar(255) NOT NULL,
   `bk_title` varchar(255) NOT NULL,
   `bk_src_title` varchar(255) NOT NULL,
-  `bk_annotation` mediumtext NOT NULL,
+  `bk_annotation` text NOT NULL,
   `bk_date` date NOT NULL,
   `bk_lang` varchar(2) NOT NULL,
   `bk_src_lang` varchar(3) NOT NULL,
   `bk_file` varchar(255) NOT NULL,
   `bk_cover` longblob NOT NULL,
+  `bk_keywords` text NOT NULL COMMENT 'ключевые слова',
+  `bk_translators` text NOT NULL COMMENT 'переводчики',
+  `bk_pub_title` varchar(255) NOT NULL,
+  `bk_pub_publisher` varchar(255) NOT NULL,
+  `bk_pub_city` varchar(255) NOT NULL,
+  `bk_pub_year` date DEFAULT NULL,
+  `bk_pub_isbn` varchar(25) NOT NULL,
+  `bk_doc_history` text NOT NULL,
+  `bk_doc_date` date DEFAULT NULL,
+  `bk_doc_ver` varchar(25) NOT NULL,
+  `bk_doc_authors` text NOT NULL,
+  `bk_doc_programms` varchar(255) NOT NULL,
+  `bk_doc_url` varchar(255) NOT NULL,
+  `bk_doc_ocr_authors` varchar(255) NOT NULL,
+  `bk_doc_file_name` varchar(255) NOT NULL,
+  `bk_doc_file_date` date DEFAULT NULL,
+  `bk_doc_file_size` int(11) NOT NULL,
+  `bk_doc_format` varchar(25) NOT NULL,
   `bk_read` tinyint(1) NOT NULL DEFAULT '0',
   `bk_to_plan` tinyint(1) NOT NULL DEFAULT '0',
   `bk_favorites` tinyint(1) NOT NULL DEFAULT '0',
@@ -554,25 +572,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `authors`
 --
 ALTER TABLE `authors`
-  MODIFY `ar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=210;
+  MODIFY `ar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=327;
 
 --
 -- AUTO_INCREMENT для таблицы `books`
 --
 ALTER TABLE `books`
-  MODIFY `bk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=320;
+  MODIFY `bk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=475;
 
 --
 -- AUTO_INCREMENT для таблицы `books_authors`
 --
 ALTER TABLE `books_authors`
-  MODIFY `bkar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=400;
+  MODIFY `bkar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=607;
 
 --
 -- AUTO_INCREMENT для таблицы `books_genres`
 --
 ALTER TABLE `books_genres`
-  MODIFY `bkge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=568;
+  MODIFY `bkge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=852;
 
 --
 -- AUTO_INCREMENT для таблицы `genres`
@@ -590,7 +608,7 @@ ALTER TABLE `genres_groups`
 -- AUTO_INCREMENT для таблицы `series`
 --
 ALTER TABLE `series`
-  MODIFY `se_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=225;
+  MODIFY `se_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=295;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
