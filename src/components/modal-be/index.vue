@@ -814,7 +814,7 @@ input[type="file"] {
       line-height: 11px;
       padding: 8px;
     }
-    .multiselect__option--disabled {
+    .multiselect__option--group {
       text-align: center;
       font-weight: 600;
     }
@@ -854,35 +854,40 @@ export default {
       coverRatio: 1,
       isCover: false,
       form: {
-        bk_title: "",
-        bk_original_title: "",
         bk_authors: null,
-        bk_cover: null,
         bk_genres: null,
         bk_series: null,
+        ///////////////
         bk_seriesNumber: "",
+        bk_title: "",
+        bk_original_title: "",
+        bk_annotation: "",
         bk_date: "",
         bk_language: null,
         bk_orig_language: "",
+        bk_file_name: "",
+        bk_cover: null,
         bk_keywords: "",
-        bk_translator: "",
-        bk_annotation: "",
+        bk_translators: "",
+        
         bk_pub_title: "",
-        bk_publisher: "",
-        bk_city: "",
+        bk_pub_publisher: "",
+        bk_pub_city: "",
         bk_pub_year: "",
-        bk_isbn: "",
+        bk_pub_isbn: "",
         bk_doc_id: "",
         bk_doc_date: "",
         bk_doc_ver: "",
+        bk_doc_history: "",
         bk_doc_authors: "",
-        bk_programms: "",
-        bk_url: "",
-        bk_ocr_authors: "",
-        bk_file_date: "",
-        bk_file_size: "",
-        bk_format: "",
-        bk_file_name: ""
+        bk_doc_programms: "",
+        bk_doc_url: "",
+        bk_doc_ocr_authors: "",
+        bk_doc_file_name: "",
+        bk_doc_file_date: "",
+        bk_doc_file_size: "",
+        bk_doc_format: "",
+        
       },
       s2OptionsAuthors: [],
       s2OptionsGenres: [],
