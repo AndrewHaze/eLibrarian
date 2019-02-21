@@ -274,14 +274,14 @@
               <!-- Разделитель -->
               <b-form-group
                 id="collapse3InputGroup5"
-                label="Переводчик:"
+                label="Переводчик(и):"
                 label-for="collapse3Input5"
                 label-size="sm"
               >
                 <b-form-input
                   id="collapse3Input5"
                   type="text"
-                  v-model="form.bk_translator"
+                  v-model="form.bk_translators"
                   placeholder="Введите переводчика"
                   size="sm"
                 ></b-form-input>
@@ -979,7 +979,7 @@ export default {
             rd[0].bk_data === "2099-01-01" ? null : rd[0].bk_data;
           self.form.bk_annotation = rd[0].bk_annotation;
           self.form.bk_doc_id = rd[0].bk_doc_id;
-          self.form.bk_doc_id = rd[0].bk_doc_id;
+          self.form.bk_translators = rd[0].bk_translators;
         }
       );
       //список всех авторов
