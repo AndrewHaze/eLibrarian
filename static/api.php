@@ -670,6 +670,75 @@ if (isset($_POST["cmd"])) {
                 $res["data"] = $gm_array;
             }
             break;
+        ////////////////////////////////////////////////////////////////////
+        case "bg_list": //список жанров для BookEditor
+            if ($pdo and $_SESSION["user"]) {
+                $username = $_SESSION["user"];
+                $stmt = $pdo->prepare('SELECT DISTINCT gg_title, ge_id, ge_code, ge_title
+                                         FROM  genres, genres_groups
+                                        WHERE gg_id = ge_gg_id
+                                     ORDER BY 1, 4');
+                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
+                $stmt->execute();
+                $result = $stmt->fetchAll();
+                $g_group = '';
+                $gm_array = [];
+                $first = true;
+                foreach ($result as $value) {
+                    if ($value[gg_title] != $g_group) {
+                        if ($g_group != '') {
+                            array_push($gm_array,
+                                array(
+                                    "group" => $g_group,
+                                    "genres" => $gc_array,
+                                ));
+                        }
+                        $g_group = $value[gg_title];
+
+                        $gc_array = [];
+                    }
+                    array_push($gc_array,
+                        array(
+                            "id" => $value[ge_id],
+                            "code" => $value[ge_code],
+                            "title" => str_replace(" (то, что не вошло в другие категории)", "", $value[ge_title]),
+                        ));
+
+                }
+                //Последняя группа вне цикла
+                array_push($gm_array,
+                    array(
+                        "group" => $g_group,
+                        "genres" => $gc_array,
+                    ));
+                $res["data"] = $gm_array;
+            }
+            break;
+        case "b_genres": //список серий в жанре
+            if ($pdo and $_SESSION["user"]) {
+                $bi = $_POST["dat"];
+                $stmt = $pdo->prepare('SELECT ge_id, ge_code, ge_title
+                                         FROM books_genres, genres
+                                        WHERE bkge_bk_id = :bi
+                                          AND ge_id = bkge_ge_id
+                                     ORDER BY ge_title');
+                $stmt->bindValue(':bi', $bi, PDO::PARAM_INT);
+                if ($stmt->execute()) {
+                    $result = $stmt->fetchAll();
+                    foreach ($result as $value) {
+                        array_push($res["data"],
+                            array(
+                                "id" => $value[ge_id],
+                                "code" => $value[ge_code],
+                                "title" => str_replace(" (то, что не вошло в другие категории)", "", $value[ge_title]),
+                            ));
+                    }
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "dbe";
+                }
+            }
+            break;
         case "gs_list": //список серий в жанре
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
