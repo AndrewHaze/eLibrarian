@@ -511,7 +511,7 @@
                 <b-form-input
                   id="collapse6Input5"
                   type="text"
-                  v-model="form.bk_programms"
+                  v-model="form.bk_doc_programms"
                   required
                   placeholder
                   size="sm"
@@ -976,10 +976,15 @@ export default {
           self.form.bk_original_title = rd[0].bk_src_title;
           self.form.bk_seriesNumber = rd[0].bk_seriesNumber;
           self.form.bk_date =
-            rd[0].bk_data === "2099-01-01" ? null : rd[0].bk_data;
+            rd[0].bk_date === "2099-01-01" ? null : rd[0].bk_date;
           self.form.bk_annotation = rd[0].bk_annotation;
           self.form.bk_doc_id = rd[0].bk_doc_id;
           self.form.bk_translators = rd[0].bk_translators;
+          self.form.bk_doc_authors = rd[0].bk_doc_authors;
+          self.form.bk_doc_programms = rd[0].bk_doc_programms;
+          self.form.bk_doc_id = rd[0].bk_doc_id;
+          self.form.bk_doc_date =
+            rd[0].bk_doc_date === "2099-01-01" ? null : rd[0].bk_doc_date;
         }
       );
       //список всех авторов
