@@ -316,11 +316,21 @@ if (isset($_POST["cmd"])) {
                                 "bk_seriesNumber" => $value[bk_number],
                                 "bk_file_name" => $value[bk_file],
                                 "bk_date" => $value[bk_date],
+                                "bk_keywords" => $value[bk_keywords],
                                 "bk_translators" => $value[bk_translators],
                                 "bk_doc_id" => $value[bk_doc_id],
                                 "bk_doc_authors" => $value[bk_doc_authors],
                                 "bk_doc_programms" => $value[bk_doc_programms],
                                 "bk_doc_date" => $value[bk_doc_date],
+                                "bk_doc_ocr_authors" => $value[bk_doc_ocr_authors],
+                                "bk_doc_ver" => $value[bk_doc_ver],
+                                "bk_doc_url" => $value[bk_doc_url],
+                                "bk_doc_history" => $value[bk_doc_history],
+                                "bk_pub_title" => $value[bk_pub_title],
+                                "bk_pub_publisher" => $value[bk_pub_publisher],
+                                "bk_pub_city" => $value[bk_pub_city],
+                                "bk_pub_year" => $value[bk_pub_year],
+                                "bk_pub_isbn" => $value[bk_pub_isbn],
                             ));
                     }
                 } else {
@@ -1012,7 +1022,7 @@ if (isset($_POST["cmd"])) {
                         //fwrite($handle, "Название книги: ".$book_title."\n\n");
 
                         //Аннотация
-                        $book_annotation = trim($title_info->getElementsByTagName('annotation')->item(0)->nodeValue);
+                        $book_annotation = preg_replace('/\s\s+/', chr(13), trim($title_info->getElementsByTagName('annotation')->item(0)->nodeValue));
                         //fwrite($handle, "Аннотация: ".$book_annotation."\n\n");
 
                         //Обложка
@@ -1055,6 +1065,8 @@ if (isset($_POST["cmd"])) {
                         } else {
                             $cover = '';
                         }
+
+                        $bk_keywords = $title_info->getElementsByTagName('keywords')->item(0)->nodeValue;
 
                         //Дата
                         if (empty($title_info->getElementsByTagName('date')->item(0))) {
@@ -1146,7 +1158,7 @@ if (isset($_POST["cmd"])) {
                         //program-used
                         $bk_doc_programms = $document_info->getElementsByTagName('program-used')->item(0)->nodeValue;
 
-                        //Дата
+                        //Дата документа
                         if (empty($document_info->getElementsByTagName('date')->item(0))) {
                             $doc_date = '2099-01-01';
                         } else {
@@ -1157,9 +1169,32 @@ if (isset($_POST["cmd"])) {
                         }
                         $doc_time = strtotime($doc_date);
 
+                        //src-ocr
+                        $src_ocr = $document_info->getElementsByTagName('src-ocr')->item(0)->nodeValue;
+
                         //book id
                         $book_id = $document_info->getElementsByTagName('id')->item(0)->nodeValue;
 
+                        //book version
+                        $bk_doc_version = $document_info->getElementsByTagName('version')->item(0)->nodeValue;
+
+                        //book src-url
+                        $bk_doc_url = $document_info->getElementsByTagName('src-url')->item(0)->nodeValue;
+
+                        $bk_doc_history = preg_replace('/\s\s+/', chr(13), trim($document_info->getElementsByTagName('history')->item(0)->nodeValue));
+
+                        //Подгружаем секцию 'publish-info'
+                        $publish_info = $description->getElementsByTagName('publish-info')->item(0);
+
+                        $bk_pub_title = $publish_info->getElementsByTagName('book-name')->item(0)->nodeValue;
+
+                        $bk_pub_publisher = $publish_info->getElementsByTagName('publisher')->item(0)->nodeValue;
+
+                        $bk_pub_city = $publish_info->getElementsByTagName('city')->item(0)->nodeValue;
+
+                        $bk_pub_year = $publish_info->getElementsByTagName('year')->item(0)->nodeValue;
+
+                        $bk_pub_isbn = trim(str_replace('ISBN', '', $publish_info->getElementsByTagName('isbn')->item(0)->nodeValue));
 
                         /********************************** MAIN QUERIES ***********************************************/
 
@@ -1174,11 +1209,21 @@ if (isset($_POST["cmd"])) {
                                                                  bk_src_lang,
                                                                  bk_file,
                                                                  bk_cover,
+                                                                 bk_keywords,
                                                                  bk_translators,
                                                                  bk_doc_id,
                                                                  bk_doc_authors,
                                                                  bk_doc_programms,
-                                                                 bk_doc_date)
+                                                                 bk_doc_date,
+                                                                 bk_doc_ocr_authors,
+                                                                 bk_doc_ver,
+                                                                 bk_doc_url,
+                                                                 bk_doc_history, 
+                                                                 bk_pub_title,
+                                                                 bk_pub_publisher,
+                                                                 bk_pub_city,
+                                                                 bk_pub_year,
+                                                                 bk_pub_isbn)
                                                           VALUES ((SELECT ur_id FROM users WHERE ur_login = :login),
                                                                  :id_sequence,
                                                                  :book_number,
@@ -1190,11 +1235,21 @@ if (isset($_POST["cmd"])) {
                                                                  :book_src_lang,
                                                                  :book_file,
                                                                  :book_cover,
+                                                                 :bk_keywords,
                                                                  :bk_translators,
                                                                  :book_id,
                                                                  :bk_doc_authors,
                                                                  :bk_doc_programms,
-                                                                 :bk_doc_date );');
+                                                                 :bk_doc_date,
+                                                                 :bk_doc_ocr_authors,
+                                                                 :bk_doc_version,
+                                                                 :bk_doc_url,
+                                                                 :bk_doc_history,
+                                                                 :bk_pub_title,
+                                                                 :bk_pub_publisher,
+                                                                 :bk_pub_city,
+                                                                 :bk_pub_year,
+                                                                 :bk_pub_isbn);');
                         $stmt->bindValue(':login', $username, PDO::PARAM_STR);
                         $stmt->bindValue(':id_sequence', $id_sequence, PDO::PARAM_INT);
                         $stmt->bindValue(':book_number', $sequence_number, PDO::PARAM_INT);
@@ -1207,10 +1262,21 @@ if (isset($_POST["cmd"])) {
                         $stmt->bindValue(':book_src_lang', $book_orig_language, PDO::PARAM_STR);
                         $stmt->bindValue(':book_file', $filename, PDO::PARAM_STR);
                         $stmt->bindValue(':book_cover', $cover, PDO::PARAM_LOB);
+                        $stmt->bindValue(':bk_keywords', $bk_keywords, PDO::PARAM_STR);
                         $stmt->bindValue(':bk_translators', $translators, PDO::PARAM_STR);
                         $stmt->bindValue(':bk_doc_authors', $bk_doc_authors, PDO::PARAM_STR);
                         $stmt->bindValue(':bk_doc_programms', $bk_doc_programms, PDO::PARAM_STR);
                         $stmt->bindValue(':bk_doc_date', date('Y-m-d', $doc_time));
+                        $stmt->bindValue(':bk_doc_ocr_authors', $src_ocr, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_doc_version', $bk_doc_version, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_doc_url', $bk_doc_url, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_doc_history', $bk_doc_history, PDO::PARAM_STR);
+
+                        $stmt->bindValue(':bk_pub_title', $bk_pub_title, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_pub_publisher', $bk_pub_publisher, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_pub_city', $bk_pub_city, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_pub_year', $bk_pub_year, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_pub_isbn', $bk_pub_isbn, PDO::PARAM_STR);
                         //Связанные таблицы
                         if ($stmt->execute()) {
                             $id_book = $pdo->lastInsertId();
