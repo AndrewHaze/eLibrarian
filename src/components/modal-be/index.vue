@@ -63,7 +63,7 @@
             <b-collapse id="collapse1" class="collapseWrap" v-model="showCollapse1">
               <b-form-group
                 id="collapse1InputGroup1"
-                label="Название:"
+                label="Название<span>*</span>:"
                 label-for="collapse1Input1"
                 label-size="sm"
               >
@@ -94,7 +94,7 @@
               <!-- Разделитель -->
               <b-form-group
                 id="collapse1InputGroup3"
-                label="Авторы:"
+                label="Авторы<span>*</span>:"
                 label-for="collapse1Select1"
                 label-size="sm"
               >
@@ -172,6 +172,7 @@
                     <b-form-input
                       id="collapse2Input2"
                       type="number"
+                      min="0"
                       v-model="form.bk_seriesNumber"
                       placeholder="№ серии"
                       size="sm"
@@ -274,7 +275,7 @@
               <!-- Разделитель -->
               <b-form-group
                 id="collapse3InputGroup5"
-                label="Переводчик(и):"
+                label="Переводчики:"
                 label-for="collapse3Input5"
                 label-size="sm"
               >
@@ -361,7 +362,7 @@
                 <b-form-input
                   id="collapse5Input2"
                   type="text"
-                  v-model="form.bk_publisher"
+                  v-model="form.bk_pub_publisher"
                   placeholder="Введите издателя"
                   size="sm"
                 ></b-form-input>
@@ -375,7 +376,7 @@
                     label-for="collapse5Input4"
                     label-size="sm"
                   >
-                    <b-form-input id="collapse5Input4" type="text" v-model="form.bk_city" size="sm"></b-form-input>
+                    <b-form-input id="collapse5Input4" type="text" v-model="form.bk_pub_city" size="sm"></b-form-input>
                   </b-form-group>
                 </b-col>
                 <!-- Разделитель -->
@@ -390,7 +391,6 @@
                       id="collapse5Input5"
                       type="text"
                       v-model="form.bk_pub_year"
-                      required
                       placeholder="Введите год издания"
                       size="sm"
                     ></b-form-input>
@@ -407,8 +407,7 @@
                     <b-form-input
                       id="collapse5Input6"
                       type="text"
-                      v-model="form.bk_isbn"
-                      required
+                      v-model="form.bk_pub_isbn"
                       placeholder="Введите ISBN"
                       size="sm"
                     ></b-form-input>
@@ -433,6 +432,23 @@
             </div>
             <b-collapse id="collapse6" class="collapseWrap" v-model="showCollapse6">
               <b-row>
+                <b-col sm="2">
+                  <b-form-group
+                    id="collapse6InputGroup3"
+                    label="Версия:"
+                    label-for="collapse6Input3"
+                    label-size="sm"
+                  >
+                    <b-form-input
+                      id="collapse6Input3"
+                      type="text"
+                      v-model="form.bk_doc_ver"
+                      placeholder="Введите версию документа"
+                      size="sm"
+                    ></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <!-- Разделитель -->
                 <b-col sm="6">
                   <b-form-group
                     id="collapse6InputGroup1"
@@ -460,28 +476,27 @@
                       id="collapse6Input2"
                       type="date"
                       v-model="form.bk_doc_date"
-                      required
                       placeholder="Введите дату документа"
                       size="sm"
                     ></b-form-input>
                   </b-form-group>
                 </b-col>
-                <!-- Разделитель -->
-                <b-col sm="2">
+              </b-row>
+              <!-- Разделитель -->
+              <b-row>
+                <b-col>
                   <b-form-group
-                    id="collapse6InputGroup3"
-                    label="Версия:"
-                    label-for="collapse6Input3"
+                    id="collapse6InputGroup8"
+                    label="История:"
+                    label-for="collapse6Input8"
                     label-size="sm"
                   >
-                    <b-form-input
-                      id="collapse6Input3"
-                      type="text"
-                      v-model="form.bk_doc_ver"
-                      required
-                      placeholder="Введите версию документа"
-                      size="sm"
-                    ></b-form-input>
+                    <b-form-textarea id="collapse6Textarea8" 
+                                     v-model="form.bk_doc_history" 
+                                     size="sm"
+                                     :rows="3">
+
+                    </b-form-textarea>
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -496,7 +511,6 @@
                   id="collapse6Input4"
                   type="text"
                   v-model="form.bk_doc_authors"
-                  required
                   placeholder
                   size="sm"
                 ></b-form-input>
@@ -512,7 +526,6 @@
                   id="collapse6Input5"
                   type="text"
                   v-model="form.bk_doc_programms"
-                  required
                   placeholder
                   size="sm"
                 ></b-form-input>
@@ -527,8 +540,7 @@
                 <b-form-input
                   id="collapse6Input6"
                   type="text"
-                  v-model="form.bk_url"
-                  required
+                  v-model="form.bk_doc_url"
                   placeholder
                   size="sm"
                 ></b-form-input>
@@ -543,29 +555,15 @@
                 <b-form-input
                   id="collapse6Input7"
                   type="text"
-                  v-model="form.bk_ocr_authors"
-                  required
+                  v-model="form.bk_doc_ocr_authors"
                   placeholder
                   size="sm"
                 ></b-form-input>
               </b-form-group>
-              <!-- Разделитель -->
-              <b-row>
-                <b-col>
-                  <b-form-group
-                    id="collapse6InputGroup8"
-                    label="История:"
-                    label-for="collapse6Input8"
-                    label-size="sm"
-                  >
-                    <b-form-textarea id="collapse6Textarea8" v-model="form.bk_ver_history"></b-form-textarea>
-                  </b-form-group>
-                </b-col>
-              </b-row>
             </b-collapse>
             <!-- ###################################### colappse 7 ###################################-->
             <div class="colappse-header">
-              <span>Дополнительно</span>
+              <span>Служебная информация</span>
               <b-btn
                 @click="showCollapse7 = !showCollapse7"
                 :class="showCollapse7 ? 'collapsed' : null"
@@ -748,6 +746,9 @@ input[type="file"] {
       }
     }
   }
+  .form-group > label > span {
+    color: red;
+  }
 }
 
 //Bootstrap form-control-sm скин для multiselect
@@ -869,12 +870,13 @@ export default {
         bk_cover: null,
         bk_keywords: "",
         bk_translators: "",
-        
+        ///////////////
         bk_pub_title: "",
         bk_pub_publisher: "",
         bk_pub_city: "",
         bk_pub_year: "",
         bk_pub_isbn: "",
+        ///////////////
         bk_doc_id: "",
         bk_doc_date: "",
         bk_doc_ver: "",
@@ -883,11 +885,11 @@ export default {
         bk_doc_programms: "",
         bk_doc_url: "",
         bk_doc_ocr_authors: "",
+        ///////////////
         bk_doc_file_name: "",
         bk_doc_file_date: "",
         bk_doc_file_size: "",
-        bk_doc_format: "",
-        
+        bk_doc_format: "fb2",
       },
       s2OptionsAuthors: [],
       s2OptionsGenres: [],
@@ -979,12 +981,22 @@ export default {
             rd[0].bk_date === "2099-01-01" ? null : rd[0].bk_date;
           self.form.bk_annotation = rd[0].bk_annotation;
           self.form.bk_doc_id = rd[0].bk_doc_id;
+          self.form.bk_keywords = rd[0].bk_keywords;
           self.form.bk_translators = rd[0].bk_translators;
           self.form.bk_doc_authors = rd[0].bk_doc_authors;
           self.form.bk_doc_programms = rd[0].bk_doc_programms;
           self.form.bk_doc_id = rd[0].bk_doc_id;
           self.form.bk_doc_date =
             rd[0].bk_doc_date === "2099-01-01" ? null : rd[0].bk_doc_date;
+          self.form.bk_doc_ocr_authors = rd[0].bk_doc_ocr_authors;  
+          self.form.bk_doc_ver = rd[0].bk_doc_ver;
+          self.form.bk_doc_url = rd[0].bk_doc_url;
+          self.form.bk_doc_history = rd[0].bk_doc_history;
+          self.form.bk_pub_title = rd[0].bk_pub_title;
+          self.form.bk_pub_publisher = rd[0].bk_pub_publisher;
+          self.form.bk_pub_city = rd[0].bk_pub_city;
+          self.form.bk_pub_year = rd[0].bk_pub_year;
+          self.form.bk_pub_isbn = rd[0].bk_pub_isbn;  
         }
       );
       //список всех авторов
