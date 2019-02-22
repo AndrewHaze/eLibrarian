@@ -552,6 +552,7 @@ export default {
     },
     showBookScanner() {
       this.listInputFiles = [];
+      document.getElementById('fi1').value = '';
       this.listProcessingFiles = [];
       this.mbsItems = [];
       this.fCount = -1;
