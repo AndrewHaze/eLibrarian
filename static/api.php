@@ -315,8 +315,12 @@ if (isset($_POST["cmd"])) {
                                 "bk_annotation" => $value[bk_annotation],
                                 "bk_seriesNumber" => $value[bk_number],
                                 "bk_file_name" => $value[bk_file],
-                                "bk_data" => $value[bk_date],
+                                "bk_date" => $value[bk_date],
                                 "bk_translators" => $value[bk_translators],
+                                "bk_doc_id" => $value[bk_doc_id],
+                                "bk_doc_authors" => $value[bk_doc_authors],
+                                "bk_doc_programms" => $value[bk_doc_programms],
+                                "bk_doc_date" => $value[bk_doc_date],
                             ));
                     }
                 } else {
@@ -1074,13 +1078,6 @@ if (isset($_POST["cmd"])) {
                             $book_orig_language = $title_info->getElementsByTagName('src-lang')->item(0)->nodeValue;
                         }
 
-                        //Подгружаем секцию 'document-info'
-                        $document_info = $description->getElementsByTagName('document-info')->item(0);
-
-                        //book id
-                        $book_id = $document_info->getElementsByTagName('id')->item(0)->nodeValue;
-                        //fwrite($handle, "ID книги: ".$book_id."\n\n");
-
                         //Серия
                         if (empty($title_info->getElementsByTagName('sequence')->item(0))) {
                             $sequence = "яяяяяя"; //Для сортировки
@@ -1126,38 +1123,78 @@ if (isset($_POST["cmd"])) {
                                 $first_name = trim($translator[0]) ?: "";
                                 $last_name = trim($translator[1]) ?: "";
                                 $middle_name = trim($translator[2]) ?: "";
-                                $translators = $last_name.' '.$first_name.' '.$middle_name.', ';
+                                $translators = $last_name . ' ' . $first_name . ' ' . $middle_name . ', ';
                             }
                             $translators = substr($translators, 0, -2);
                         }
 
+                        //Подгружаем секцию 'document-info'
+                        $document_info = $description->getElementsByTagName('document-info')->item(0);
+                        //doc authors
+                        $authors_list = $document_info->getElementsByTagName('author');
+                        if (count($authors_list) > 0) {
+                            $element = '';
+                            foreach ($authors_list as $element) {
+                                $author = array($element->getElementsByTagName('nickname')->item(0)->nodeValue,
+                                    $element->getElementsByTagName('email')->item(0)->nodeValue);
+                                $nickname = trim($author[0]) ?: "";
+                                $email = trim($author[1]) ?: ""; //пока не используется
+                                $bk_doc_authors = $nickname . ', ';
+                            }
+                            $bk_doc_authors = substr($bk_doc_authors, 0, -2);
+                        }
+                        //program-used
+                        $bk_doc_programms = $document_info->getElementsByTagName('program-used')->item(0)->nodeValue;
+
+                        //Дата
+                        if (empty($document_info->getElementsByTagName('date')->item(0))) {
+                            $doc_date = '2099-01-01';
+                        } else {
+                            $doc_date = $document_info->getElementsByTagName('date')->item(0)->GetAttribute('value');
+                            if (!$doc_date || $doc_date == '') {
+                                $doc_date = '2099-01-01';
+                            }
+                        }
+                        $doc_time = strtotime($doc_date);
+
+                        //book id
+                        $book_id = $document_info->getElementsByTagName('id')->item(0)->nodeValue;
+
+
                         /********************************** MAIN QUERIES ***********************************************/
 
-                        $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id, 
-                                                                 bk_se_id, 
-                                                                 bk_number, 
-                                                                 bk_doc_id, 
-                                                                 bk_title, 
-                                                                 bk_src_title, 
-                                                                 bk_annotation, 
-                                                                 bk_date, bk_lang, 
-                                                                 bk_src_lang, 
-                                                                 bk_file, 
-                                                                 bk_cover, 
-                                                                 bk_translators)
-                                                          VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), 
-                                                                 :id_sequence, 
-                                                                 :book_number, 
-                                                                 :book_id, 
-                                                                 :book_title, 
-                                                                 :src_book_title, 
-                                                                 :book_annotation, 
-                                                                 :book_date, 
-                                                                 :book_lang, 
-                                                                 :book_src_lang, 
-                                                                 :book_file, 
-                                                                 :book_cover, 
-                                                                 :bk_translators);');
+                        $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id,
+                                                                 bk_se_id,
+                                                                 bk_number,
+                                                                 bk_title,
+                                                                 bk_src_title,
+                                                                 bk_annotation,
+                                                                 bk_date, 
+                                                                 bk_lang,
+                                                                 bk_src_lang,
+                                                                 bk_file,
+                                                                 bk_cover,
+                                                                 bk_translators,
+                                                                 bk_doc_id,
+                                                                 bk_doc_authors,
+                                                                 bk_doc_programms,
+                                                                 bk_doc_date)
+                                                          VALUES ((SELECT ur_id FROM users WHERE ur_login = :login),
+                                                                 :id_sequence,
+                                                                 :book_number,
+                                                                 :book_title,
+                                                                 :src_book_title,
+                                                                 :book_annotation,
+                                                                 :book_date,
+                                                                 :book_lang,
+                                                                 :book_src_lang,
+                                                                 :book_file,
+                                                                 :book_cover,
+                                                                 :bk_translators,
+                                                                 :book_id,
+                                                                 :bk_doc_authors,
+                                                                 :bk_doc_programms,
+                                                                 :bk_doc_date );');
                         $stmt->bindValue(':login', $username, PDO::PARAM_STR);
                         $stmt->bindValue(':id_sequence', $id_sequence, PDO::PARAM_INT);
                         $stmt->bindValue(':book_number', $sequence_number, PDO::PARAM_INT);
@@ -1171,7 +1208,9 @@ if (isset($_POST["cmd"])) {
                         $stmt->bindValue(':book_file', $filename, PDO::PARAM_STR);
                         $stmt->bindValue(':book_cover', $cover, PDO::PARAM_LOB);
                         $stmt->bindValue(':bk_translators', $translators, PDO::PARAM_STR);
-
+                        $stmt->bindValue(':bk_doc_authors', $bk_doc_authors, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_doc_programms', $bk_doc_programms, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_doc_date', date('Y-m-d', $doc_time));
                         //Связанные таблицы
                         if ($stmt->execute()) {
                             $id_book = $pdo->lastInsertId();
