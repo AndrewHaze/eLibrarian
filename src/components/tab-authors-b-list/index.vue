@@ -548,6 +548,9 @@ export default {
       let element = this.bListItems[
         this.bListItems.map(el => el.id).indexOf(item.currentTarget.id.substr(4))
       ];
+      this.bookID = element.id.substr(2);
+      store.commit("setBookID", this.bookID);
+      this.fileName = element.fileName;
       this.isRead = element.isRead;
       this.isToPlan = element.isToPlan;
       this.isFavorites = element.isFavorites;
