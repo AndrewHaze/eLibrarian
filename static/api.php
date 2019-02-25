@@ -331,6 +331,9 @@ if (isset($_POST["cmd"])) {
                                 "bk_pub_city" => $value[bk_pub_city],
                                 "bk_pub_year" => $value[bk_pub_year],
                                 "bk_pub_isbn" => $value[bk_pub_isbn],
+                                "bk_doc_file_name" => $value[bk_doc_file_name],
+                                "bk_doc_file_size" => $value[bk_doc_file_size],
+                                "bk_doc_file_date" => $value[bk_doc_file_date],
                             ));
                     }
                 } else {
@@ -972,7 +975,11 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $filename = $_POST["file"];
-                //$handle = fopen("uploads/bookparsing.log", "w");
+                $filesize = filesize("uploads/".$filename);
+                $filedate = $_POST["date"];
+                $src_filename = $_POST["name"];
+                $handle = fopen("uploads/bookparsing.log", "w");
+                fwrite($handle, $filedate."\n\n");
                 $file = 'uploads/' . $filename;
                 $fileext = pathinfo($file, PATHINFO_EXTENSION);
                 //Создаем XML документ
@@ -1223,7 +1230,10 @@ if (isset($_POST["cmd"])) {
                                                                  bk_pub_publisher,
                                                                  bk_pub_city,
                                                                  bk_pub_year,
-                                                                 bk_pub_isbn)
+                                                                 bk_pub_isbn,
+                                                                 bk_doc_file_name,
+                                                                 bk_doc_file_size,
+                                                                 bk_doc_file_date)
                                                           VALUES ((SELECT ur_id FROM users WHERE ur_login = :login),
                                                                  :id_sequence,
                                                                  :book_number,
@@ -1249,7 +1259,10 @@ if (isset($_POST["cmd"])) {
                                                                  :bk_pub_publisher,
                                                                  :bk_pub_city,
                                                                  :bk_pub_year,
-                                                                 :bk_pub_isbn);');
+                                                                 :bk_pub_isbn,
+                                                                 :bk_doc_file_name,
+                                                                 :bk_doc_file_size,
+                                                                 :bk_doc_file_date);');
                         $stmt->bindValue(':login', $username, PDO::PARAM_STR);
                         $stmt->bindValue(':id_sequence', $id_sequence, PDO::PARAM_INT);
                         $stmt->bindValue(':book_number', $sequence_number, PDO::PARAM_INT);
@@ -1277,6 +1290,11 @@ if (isset($_POST["cmd"])) {
                         $stmt->bindValue(':bk_pub_city', $bk_pub_city, PDO::PARAM_STR);
                         $stmt->bindValue(':bk_pub_year', $bk_pub_year, PDO::PARAM_STR);
                         $stmt->bindValue(':bk_pub_isbn', $bk_pub_isbn, PDO::PARAM_STR);
+
+                        $stmt->bindValue(':bk_doc_file_name', $src_filename, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_doc_file_size', $filesize, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_doc_file_date', date('Y-m-d', strtotime($filedate)));
+                        
                         //Связанные таблицы
                         if ($stmt->execute()) {
                             $id_book = $pdo->lastInsertId();
