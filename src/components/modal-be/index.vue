@@ -588,7 +588,7 @@
                     <b-form-input
                       id="collapse7Input1"
                       type="date"
-                      v-model="form.bk_file_date"
+                      v-model="form.bk_doc_file_date"
                       size="sm"
                       readonly
                     ></b-form-input>
@@ -605,7 +605,7 @@
                     <b-form-input
                       id="collapse7Input2"
                       type="text"
-                      v-model="form.bk_file_size"
+                      v-model="form.bk_doc_file_size"
                       size="sm"
                       readonly
                     ></b-form-input>
@@ -622,7 +622,7 @@
                     <b-form-input
                       id="collapse7Input3"
                       type="text"
-                      v-model="form.bk_format"
+                      v-model="form.bk_doc_format"
                       size="sm"
                       readonly
                     ></b-form-input>
@@ -639,7 +639,7 @@
                 <b-form-input
                   id="collapse7Input4"
                   type="text"
-                  v-model="form.bk_file_name"
+                  v-model="form.bk_doc_file_name"
                   size="sm"
                 ></b-form-input>
               </b-form-group>
@@ -997,6 +997,9 @@ export default {
           self.form.bk_pub_city = rd[0].bk_pub_city;
           self.form.bk_pub_year = rd[0].bk_pub_year;
           self.form.bk_pub_isbn = rd[0].bk_pub_isbn;  
+          self.form.bk_doc_file_name = rd[0].bk_doc_file_name;
+          self.form.bk_doc_file_size = rd[0].bk_doc_file_size;
+          self.form.bk_doc_file_date = rd[0].bk_doc_file_date;
         }
       );
       //список всех авторов

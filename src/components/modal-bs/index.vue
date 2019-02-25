@@ -502,6 +502,8 @@ export default {
         const self = this;
         let formData = new FormData();
         formData.append("file", filesList[i]);
+        let fSize = new Date(filesList[i].lastModified);
+        console.log(fSize)
         axios({
           method: "post",
           url: this.$store.getters.prefix + "/static/upload.php",
@@ -518,7 +520,8 @@ export default {
                 text: rd.data.base_name,
                 disabled: false,
                 value: rd.data.hash_name,
-                status: rd.data.status
+                status: rd.data.status,
+                filedate: fSize
               });
               self.fCount--;
             } else {
@@ -528,7 +531,8 @@ export default {
                 value: Math.random()
                   .toString(36)
                   .substr(2, 9),
-                status: "err"
+                status: "err",
+                filedate: fSize
               });
               self.fCount--;
             }
@@ -540,7 +544,8 @@ export default {
               value: Math.random()
                 .toString(36)
                 .substr(2, 9),
-              status: "err"
+              status: "err",
+              filedate: fSize
             });
             self.fCount--;
           });
@@ -652,7 +657,9 @@ export default {
             url: this.$store.getters.prefix + "/static/api.php",
             data: {
               cmd: "proc",
-              file: self.buf[i].value
+              file: self.buf[i].value,
+              name: self.buf[i].text,
+              date: self.buf[i].filedate
             },
             withCredentials: true, //передаем куки
             headers: {
