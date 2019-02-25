@@ -123,6 +123,13 @@ export default {
 </script>
 
 <style lang="scss">
+$min-width: 860px;
+
+
+html, body {
+  width: 100%;
+}
+
 html {
   position: relative;
   min-height: 100%;
@@ -136,6 +143,14 @@ body {
   & > div {
     height: 100%;
   }
+}
+
+header, body, footer {
+  min-width: $min-width;
+}
+
+.navbar {
+  min-width: $min-width - 20;
 }
 
 section {
