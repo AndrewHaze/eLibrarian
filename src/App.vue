@@ -145,7 +145,7 @@ body {
   }
 }
 
-header, body, footer {
+body>header, body, body>footer {
   min-width: $min-width;
 }
 
