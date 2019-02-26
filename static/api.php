@@ -975,11 +975,12 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $filename = $_POST["file"];
-                $filesize = filesize("uploads/".$filename);
+                $filesize = filesize("uploads/" . $filename);
                 $filedate = $_POST["date"];
                 $src_filename = $_POST["name"];
+
                 $handle = fopen("uploads/bookparsing.log", "w");
-                fwrite($handle, $filedate."\n\n");
+
                 $file = 'uploads/' . $filename;
                 $fileext = pathinfo($file, PATHINFO_EXTENSION);
                 //Создаем XML документ
@@ -1188,20 +1189,31 @@ if (isset($_POST["cmd"])) {
                         //book src-url
                         $bk_doc_url = $document_info->getElementsByTagName('src-url')->item(0)->nodeValue;
 
-                        $bk_doc_history = preg_replace('/\s\s+/', chr(13), trim($document_info->getElementsByTagName('history')->item(0)->nodeValue));
+                        //book history
+                        if (empty($document_info->getElementsByTagName('history')->item(0))) {
+                            $bk_doc_history = '';
+                        } else {
+                            $bk_doc_history = preg_replace('/\s\s+/', chr(13), trim($document_info->getElementsByTagName('history')->item(0)->nodeValue));
+                        }
 
                         //Подгружаем секцию 'publish-info'
                         $publish_info = $description->getElementsByTagName('publish-info')->item(0);
 
-                        $bk_pub_title = $publish_info->getElementsByTagName('book-name')->item(0)->nodeValue;
+                        if ($publish_info) {
 
-                        $bk_pub_publisher = $publish_info->getElementsByTagName('publisher')->item(0)->nodeValue;
+                            $bk_pub_title = $publish_info->getElementsByTagName('book-name')->item(0)->nodeValue;
 
-                        $bk_pub_city = $publish_info->getElementsByTagName('city')->item(0)->nodeValue;
+                            $bk_pub_publisher = $publish_info->getElementsByTagName('publisher')->item(0)->nodeValue;
 
-                        $bk_pub_year = $publish_info->getElementsByTagName('year')->item(0)->nodeValue;
+                            $bk_pub_city = $publish_info->getElementsByTagName('city')->item(0)->nodeValue;
 
-                        $bk_pub_isbn = trim(str_replace('ISBN', '', $publish_info->getElementsByTagName('isbn')->item(0)->nodeValue));
+                            $bk_pub_year = $publish_info->getElementsByTagName('year')->item(0)->nodeValue;
+
+                            $bk_pub_isbn = $publish_info->getElementsByTagName('isbn')->item(0)->nodeValue;
+                            if (stripos($bk_pub_isbn, 'ISBN')) {
+                                $bk_pub_isbn = trim(str_replace('ISBN', '', $bk_pub_isbn));
+                            }
+                        }
 
                         /********************************** MAIN QUERIES ***********************************************/
 
@@ -1211,7 +1223,7 @@ if (isset($_POST["cmd"])) {
                                                                  bk_title,
                                                                  bk_src_title,
                                                                  bk_annotation,
-                                                                 bk_date, 
+                                                                 bk_date,
                                                                  bk_lang,
                                                                  bk_src_lang,
                                                                  bk_file,
@@ -1225,7 +1237,7 @@ if (isset($_POST["cmd"])) {
                                                                  bk_doc_ocr_authors,
                                                                  bk_doc_ver,
                                                                  bk_doc_url,
-                                                                 bk_doc_history, 
+                                                                 bk_doc_history,
                                                                  bk_pub_title,
                                                                  bk_pub_publisher,
                                                                  bk_pub_city,
@@ -1294,7 +1306,7 @@ if (isset($_POST["cmd"])) {
                         $stmt->bindValue(':bk_doc_file_name', $src_filename, PDO::PARAM_STR);
                         $stmt->bindValue(':bk_doc_file_size', $filesize, PDO::PARAM_STR);
                         $stmt->bindValue(':bk_doc_file_date', date('Y-m-d', strtotime($filedate)));
-                        
+
                         //Связанные таблицы
                         if ($stmt->execute()) {
                             $id_book = $pdo->lastInsertId();
