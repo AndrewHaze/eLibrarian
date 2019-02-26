@@ -20,7 +20,9 @@
       <b-form-row>
         <b-col sm="3" class="cover-wrap">
           <div class="cover-wrap-sticky">
-            <b-img thumbnail fluid :src="coverImage"/>
+            <div id="drop-area">
+              <b-img thumbnail fluid :src="coverImage"/>
+            </div>
             <div>
               <b-button variant="success" block size="sm" @click="openFiles" class="mt-2">Загрузить</b-button>
               <b-button
@@ -28,7 +30,7 @@
                 :disabled="!isCover"
                 block
                 size="sm"
-                @click
+                @click="convertImageToBase64"
                 class="mt-2"
               >Скачать</b-button>
               <b-button
@@ -376,7 +378,12 @@
                     label-for="collapse5Input4"
                     label-size="sm"
                   >
-                    <b-form-input id="collapse5Input4" type="text" v-model="form.bk_pub_city" size="sm"></b-form-input>
+                    <b-form-input
+                      id="collapse5Input4"
+                      type="text"
+                      v-model="form.bk_pub_city"
+                      size="sm"
+                    ></b-form-input>
                   </b-form-group>
                 </b-col>
                 <!-- Разделитель -->
@@ -491,12 +498,12 @@
                     label-for="collapse6Input8"
                     label-size="sm"
                   >
-                    <b-form-textarea id="collapse6Textarea8" 
-                                     v-model="form.bk_doc_history" 
-                                     size="sm"
-                                     :rows="3">
-
-                    </b-form-textarea>
+                    <b-form-textarea
+                      id="collapse6Textarea8"
+                      v-model="form.bk_doc_history"
+                      size="sm"
+                      :rows="3"
+                    ></b-form-textarea>
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -666,6 +673,12 @@ $header-bk-color: #abafb4;
 
 input[type="file"] {
   display: none;
+}
+
+.highlight {
+  border: 2px dashed purple;
+  border-radius: 0.2rem;
+  padding: 1px;
 }
 
 .cover-wrap {
@@ -889,7 +902,7 @@ export default {
         bk_doc_file_name: "",
         bk_doc_file_date: "",
         bk_doc_file_size: "",
-        bk_doc_format: "fb2",
+        bk_doc_format: "fb2"
       },
       s2OptionsAuthors: [],
       s2OptionsGenres: [],
@@ -900,12 +913,50 @@ export default {
   },
   watch: {},
   mounted: function() {
+    const self = this;
+
     window.addEventListener("resize", this.handleResize);
     this.mHeight = window.innerHeight - shiftL;
     if (this.mHeight > 1200) {
       this.mHeight = 1200;
     }
-    const self = this;
+
+
+    ///////////////////////////// драг&дроп обложки (начало) ////////////////////////////////////
+    let dropArea = document.getElementById("drop-area");
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+      dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ["dragenter", "dragover"].forEach(eventName => {
+      dropArea.addEventListener(eventName, highlight, false);
+    });
+
+    ["dragleave", "drop"].forEach(eventName => {
+      dropArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+      dropArea.classList.add("highlight");
+    }
+
+    function unhighlight(e) {
+      dropArea.classList.remove("highlight");
+    }
+
+    dropArea.addEventListener("drop", handleDrop, false);
+
+    function handleDrop(e) {
+      self.coverImage = URL.createObjectURL(e.dataTransfer.files[0]);
+      self.isCover = true;
+    }
+    ///////////////////////////// драг&дроп обложки (конец) ////////////////////////////////////
+
     //список языков
     this.callApi(
       this.$store.getters.prefix + "/static/api.php",
@@ -939,7 +990,7 @@ export default {
   },
   methods: {
     closeBookEditor() {
-      this.form.bk_genres = '';
+      this.form.bk_genres = "";
     },
     shownBookEditor() {
       document.getElementById("book" + this.bkID).scrollTop = 0;
@@ -990,7 +1041,7 @@ export default {
           self.form.bk_doc_id = rd[0].bk_doc_id;
           self.form.bk_doc_date =
             rd[0].bk_doc_date === "2099-01-01" ? null : rd[0].bk_doc_date;
-          self.form.bk_doc_ocr_authors = rd[0].bk_doc_ocr_authors;  
+          self.form.bk_doc_ocr_authors = rd[0].bk_doc_ocr_authors;
           self.form.bk_doc_ver = rd[0].bk_doc_ver;
           self.form.bk_doc_url = rd[0].bk_doc_url;
           self.form.bk_doc_history = rd[0].bk_doc_history;
@@ -998,7 +1049,7 @@ export default {
           self.form.bk_pub_publisher = rd[0].bk_pub_publisher;
           self.form.bk_pub_city = rd[0].bk_pub_city;
           self.form.bk_pub_year = rd[0].bk_pub_year;
-          self.form.bk_pub_isbn = rd[0].bk_pub_isbn;  
+          self.form.bk_pub_isbn = rd[0].bk_pub_isbn;
           self.form.bk_doc_file_name = rd[0].bk_doc_file_name;
           self.form.bk_doc_file_size = rd[0].bk_doc_file_size;
           self.form.bk_doc_file_date = rd[0].bk_doc_file_date;
@@ -1091,10 +1142,26 @@ export default {
     handleFileChange(e) {
       e.preventDefault();
       this.coverImage = URL.createObjectURL(e.target.files[0]);
+      this.isCover = true;
     },
     deleteCover() {
       this.isCover = false;
       this.coverImage = "/static/assets/nocover.jpg";
+    },
+    convertImageToBase64() {
+      const self = this;
+      let img = document.createElement("img");
+      let url = this.coverImage;
+      img.src = url;
+      img.onload = function() {
+        let key = encodeURIComponent(url),
+          canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        let ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        self.coverImage = canvas.toDataURL("image/png");
+      };
     }
   }
 };

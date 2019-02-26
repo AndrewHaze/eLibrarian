@@ -526,8 +526,11 @@ export default {
       this.bListItems.forEach(function(entry) {
         entry.isActive = false;
       });
+      //сопоставить текущий item с элементом в массиве bListItems
       let element = this.bListItems[
-        this.bListItems.map(el => el.id).indexOf(item.currentTarget.id.substr(4))
+        this.bListItems
+          .map(el => el.id)
+          .indexOf(item.currentTarget.id.substr(4))
       ];
       this.bookID = element.id.substr(2);
       store.commit("setBookID", this.bookID);
@@ -535,7 +538,7 @@ export default {
       element.isActive = true;
       this.selectedItem = element;
       this.bMenu = true;
-      
+
       this.menuPos(item.currentTarget.id);
       if (
         document.getElementById(this.sid + "ip1") &&
@@ -545,18 +548,23 @@ export default {
       }
     },
     mouseOverBook(item) {
+      //сопоставить текущий item с элементом в массиве bListItems
       let element = this.bListItems[
-        this.bListItems.map(el => el.id).indexOf(item.currentTarget.id.substr(4))
+        this.bListItems
+          .map(el => el.id)
+          .indexOf(item.currentTarget.id.substr(4))
       ];
-      this.bookID = element.id.substr(2);
-      store.commit("setBookID", this.bookID);
-      this.fileName = element.fileName;
-      this.isRead = element.isRead;
-      this.isToPlan = element.isToPlan;
-      this.isFavorites = element.isFavorites;
-      this.howManyStars = element.isFavorites;
-      this.bMenu = element.isActive || false;
-      this.menuPos(item.currentTarget.id);
+      if (element.isActive) {
+        this.bookID = element.id.substr(2);
+        store.commit("setBookID", this.bookID);
+        this.fileName = element.fileName;
+        this.isRead = element.isRead;
+        this.isToPlan = element.isToPlan;
+        this.isFavorites = element.isFavorites;
+        this.howManyStars = element.isFavorites;
+        this.bMenu = element.isActive || false;
+        this.menuPos(item.currentTarget.id);
+      }
     },
     mouseLeaveBook() {
       this.bMenu = false;
@@ -573,7 +581,7 @@ export default {
       store.commit("setAuthorID", -1);
       this.$router.push({
         name: "Reader",
-        params: { fileName: '/static/storage/z.fb2' },
+        params: { fileName: "/static/storage/z.fb2" }
         //params: { fileName: '../uploads/'+this.fileName }
       });
     },
@@ -827,7 +835,6 @@ $ip-width: 21rem;
   padding-left: 0.2rem;
   overflow-y: auto;
   overflow-x: hidden;
-  
 
   div {
     display: flex;
