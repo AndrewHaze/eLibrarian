@@ -62,7 +62,7 @@ CREATE TABLE `books` (
   `bk_pub_publisher` varchar(255) NOT NULL,
   `bk_pub_city` varchar(255) NOT NULL,
   `bk_pub_year` date DEFAULT NULL,
-  `bk_pub_isbn` varchar(25) NOT NULL,
+  `bk_pub_isbn` varchar(255) NOT NULL,
   `bk_doc_history` text NOT NULL,
   `bk_doc_date` date DEFAULT NULL,
   `bk_doc_ver` varchar(25) NOT NULL,
