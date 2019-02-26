@@ -827,7 +827,7 @@ $ip-width: 21rem;
   padding-left: 0.2rem;
   overflow-y: auto;
   overflow-x: hidden;
-  //transition: width 10s ease-out 5s;
+  
 
   div {
     display: flex;

@@ -938,7 +938,9 @@ export default {
     window.removeEventListener("resize", this.handleResize);
   },
   methods: {
-    closeBookEditor() {},
+    closeBookEditor() {
+      this.form.bk_genres = '';
+    },
     shownBookEditor() {
       document.getElementById("book" + this.bkID).scrollTop = 0;
     },
@@ -1087,22 +1089,8 @@ export default {
       document.getElementById("cover-loader").click();
     },
     handleFileChange(e) {
-      let filesList = e.target.files;
-      if (!filesList.length) return;
-      // let formData = new FormData();
-      // formData.append("file", filesList[0]);
-      for (let i = 0; i < filesList.length; i++) {
-        var reader = new FileReader();
-        // Closure to capture the file information.
-        reader.onload = (function(theFile) {
-          return function(e) {
-            // Render thumbnail.
-            this.fileName = e.target.result;
-          };
-        })(filesList[i]);
-        // Read in the image file as a data URL.
-        reader.readAsDataURL(filesList[i]);
-      }
+      e.preventDefault();
+      this.coverImage = URL.createObjectURL(e.target.files[0]);
     },
     deleteCover() {
       this.isCover = false;
