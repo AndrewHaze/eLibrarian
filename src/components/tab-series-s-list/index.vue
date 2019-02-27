@@ -33,7 +33,7 @@
         <div class="tb-body-element-right">{{ item.books }}</div>
       </div>
     </div>
-    <transition name="fade">
+    <!-- <transition name="fade">
       <div
         v-show="sMenu"
         class="series-menu"
@@ -50,7 +50,7 @@
           </b-button-group>
         </b-button-toolbar>
       </div>
-    </transition>
+    </transition> -->
     
     
     <b-modal
