@@ -2,7 +2,9 @@
   <section>
     <h6 v-if="(!this.curAuthor && !this.curSeries && !this.curGenres)">Нет данных для отображения</h6>
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
-      <div v-if="isLoading" class="loading-screen" :class="{ rightmargin: infoPanel }"><loading v-if="isLoading"></loading></div>
+      <div v-if="isLoading" class="loading-screen" :class="{ rightmargin: infoPanel }">
+        <loading v-if="isLoading"></loading>
+      </div>
       <div
         :id="sid+'_cover-book-list'"
         class="cover-book-list"
@@ -194,25 +196,25 @@
             <template slot="button-content">
               <font-awesome-icon icon="star-half-alt"/>
             </template>
-            <b-dropdown-item class="star" @click="starsButton1Click" title="Оценить книгу на 1">
+            <b-dropdown-item class="star" @click="starsButton1Click" title="Оценить книгу на 1" :active="howManyStars === 1">
               <font-awesome-icon icon="star"/>
             </b-dropdown-item>
-            <b-dropdown-item class="star" @click="starsButton2Click" title="Оценить книгу на 2">
+            <b-dropdown-item class="star" @click="starsButton2Click" title="Оценить книгу на 2" :active="howManyStars === 2">
               <template v-for="n in 2">
                 <font-awesome-icon icon="star"/>
               </template>
             </b-dropdown-item>
-            <b-dropdown-item class="star" @click="starsButton3Click" title="Оценить книгу на 3">
+            <b-dropdown-item class="star" @click="starsButton3Click" title="Оценить книгу на 3" :active="howManyStars === 3">
               <template v-for="n in 3">
                 <font-awesome-icon icon="star"/>
               </template>
             </b-dropdown-item>
-            <b-dropdown-item class="star" @click="starsButton4Click" title="Оценить книгу на 4">
+            <b-dropdown-item class="star" @click="starsButton4Click" title="Оценить книгу на 4" :active="howManyStars === 4">
               <template v-for="n in 4">
                 <font-awesome-icon icon="star"/>
               </template>
             </b-dropdown-item>
-            <b-dropdown-item class="star" @click="starsButton5Click" title="Оценить книгу на 5">
+            <b-dropdown-item class="star" @click="starsButton5Click" title="Оценить книгу на 5" :active="howManyStars === 5">
               <template v-for="n in 5">
                 <font-awesome-icon icon="star"/>
               </template>
@@ -535,6 +537,10 @@ export default {
       this.bookID = element.id.substr(2);
       store.commit("setBookID", this.bookID);
       this.fileName = element.fileName;
+      this.isRead = element.isRead;
+      this.isToPlan = element.isToPlan;
+      this.isFavorites = element.isFavorites;
+      this.howManyStars = element.howManyStars;
       element.isActive = true;
       this.selectedItem = element;
       this.bMenu = true;
@@ -561,7 +567,7 @@ export default {
         this.isRead = element.isRead;
         this.isToPlan = element.isToPlan;
         this.isFavorites = element.isFavorites;
-        this.howManyStars = element.isFavorites;
+        this.howManyStars = element.howManyStars;
         this.bMenu = element.isActive || false;
         this.menuPos(item.currentTarget.id);
       }
@@ -818,15 +824,7 @@ $ip-width: 21rem;
   .btn:focus {
     box-shadow: none !important;
   }
-}
 
-.star {
-  color: #ffd700;
-
-  &:hover,
-  &:focus {
-    color: #ffd700;
-  }
 }
 
 .cover-book-list {
@@ -1087,6 +1085,15 @@ $ip-width: 21rem;
     .tbl-table-row + .tbl-table-row {
       border-top: 1px solid $line-color;
     }
+  }
+}
+
+.star {
+  color: #ffd700;
+
+  &:hover,
+  &:focus {
+    color: #ffd700;
   }
 }
 
