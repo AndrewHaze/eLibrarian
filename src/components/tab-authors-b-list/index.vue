@@ -1089,11 +1089,11 @@ $ip-width: 21rem;
 }
 
 .star {
-  color: #ffd700;
+  color: #ffd700 !important;
 
   &:hover,
   &:focus {
-    color: #ffd700;
+    color: #ffd700 !important;
   }
 }
 
