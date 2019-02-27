@@ -2,7 +2,7 @@
   <section>
     <h6 v-if="(!this.curAuthor && !this.curSeries && !this.curGenres)">Нет данных для отображения</h6>
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
-      <div v-if="isLoading" class="loading-screen" :class="{ rightmargin: infoPanel }""><loading v-if="isLoading"></loading></div>
+      <div v-if="isLoading" class="loading-screen" :class="{ rightmargin: infoPanel }"><loading v-if="isLoading"></loading></div>
       <div
         :id="sid+'_cover-book-list'"
         class="cover-book-list"
