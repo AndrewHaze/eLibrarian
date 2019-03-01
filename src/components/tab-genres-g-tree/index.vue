@@ -108,9 +108,17 @@ export default {
   },
   methods: {
     itemClick(node) {
-      store.commit("setGenresID", node.model.id);
+      /* 
+         gId — отличительный признак для одинаковых id 
+         у разных узлов дерева, для срабатывания wath,
+         после срабатывания дробь отбрасываем 
+      */
+      let gId = (node.model.type === 'leaf') ? 0 : .1;
+      store.commit("setGenresID", node.model.id + gId);
+      /////////////////////////////////////////////////
       store.commit("setGenresType", node.model.type);
       store.commit("setGenresTitle", node.model.text);
+      console.log(node.model.id, node.model.type)
     },
     sortText() {
       this.bAsc = false;

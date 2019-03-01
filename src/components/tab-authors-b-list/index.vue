@@ -196,50 +196,25 @@
             <template slot="button-content">
               <font-awesome-icon icon="star-half-alt"/>
             </template>
-            <b-dropdown-item
-              class="star"
-              @click="starsButton1Click"
-              title="Оценить книгу на 1"
-              :active="howManyStars === 1"
-            >
+            <b-dropdown-item class="star" @click="starsButton1Click" title="Оценить книгу на 1" :active="howManyStars === 1">
               <font-awesome-icon icon="star"/>
             </b-dropdown-item>
-            <b-dropdown-item
-              class="star"
-              @click="starsButton2Click"
-              title="Оценить книгу на 2"
-              :active="howManyStars === 2"
-            >
+            <b-dropdown-item class="star" @click="starsButton2Click" title="Оценить книгу на 2" :active="howManyStars === 2">
               <template v-for="n in 2">
                 <font-awesome-icon icon="star"/>
               </template>
             </b-dropdown-item>
-            <b-dropdown-item
-              class="star"
-              @click="starsButton3Click"
-              title="Оценить книгу на 3"
-              :active="howManyStars === 3"
-            >
+            <b-dropdown-item class="star" @click="starsButton3Click" title="Оценить книгу на 3" :active="howManyStars === 3">
               <template v-for="n in 3">
                 <font-awesome-icon icon="star"/>
               </template>
             </b-dropdown-item>
-            <b-dropdown-item
-              class="star"
-              @click="starsButton4Click"
-              title="Оценить книгу на 4"
-              :active="howManyStars === 4"
-            >
+            <b-dropdown-item class="star" @click="starsButton4Click" title="Оценить книгу на 4" :active="howManyStars === 4">
               <template v-for="n in 4">
                 <font-awesome-icon icon="star"/>
               </template>
             </b-dropdown-item>
-            <b-dropdown-item
-              class="star"
-              @click="starsButton5Click"
-              title="Оценить книгу на 5"
-              :active="howManyStars === 5"
-            >
+            <b-dropdown-item class="star" @click="starsButton5Click" title="Оценить книгу на 5" :active="howManyStars === 5">
               <template v-for="n in 5">
                 <font-awesome-icon icon="star"/>
               </template>
@@ -393,6 +368,13 @@ export default {
         this.selectedItem = null;
         return;
       }
+      /* 
+         убираем отличительный признак (дробь .1 прибавленную к id) 
+         для различия при выборе "ветки" или "листа" c одинаковым id,
+         чтобы watch их различал
+      */
+      val = Math.floor(val);
+      ///////////////////////////////////////////////////////////////
       this.isLoading = true;
       const self = this;
       this.curGenres = this.$store.getters.genresTitle;
@@ -849,6 +831,7 @@ $ip-width: 21rem;
   .btn:focus {
     box-shadow: none !important;
   }
+
 }
 
 .cover-book-list {
@@ -1122,7 +1105,6 @@ $ip-width: 21rem;
 }
 
 .content {
-  .dropdown-item.active,
   .active {
     background-color: $selected-color;
     transition: background-color 0.2s;
