@@ -731,9 +731,9 @@ input[type="file"] {
     border-radius: 10px;
     background-color: #fff;
     margin-top: 5px;
-    &:focus {
-      box-shadow: none;
-    }
+    // &:focus {
+    //   box-shadow: none;
+    // }
     &:hover {
       background-color: #737b83;
     }
@@ -759,8 +759,15 @@ input[type="file"] {
       }
     }
   }
-  .form-group > label > span {
-    color: red;
+
+  .form-group {
+    overflow: hidden;
+    > label {
+      white-space: nowrap;
+      > span {
+        color: red;
+      }
+    }
   }
 }
 
@@ -920,7 +927,6 @@ export default {
     if (this.mHeight > 1200) {
       this.mHeight = 1200;
     }
-
 
     ///////////////////////////// драг&дроп обложки (начало) ////////////////////////////////////
     let dropArea = document.getElementById("drop-area");
