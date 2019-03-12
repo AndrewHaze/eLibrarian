@@ -46,6 +46,7 @@
           </div>
         </b-col>
         <b-col sm="9">
+          
           <b-container fluid class="px-0">
             <!-- ###################################### colappse 1 ###################################-->
             <div class="colappse-header">
@@ -63,12 +64,13 @@
               </b-btn>
             </div>
             <b-collapse id="collapse1" class="collapseWrap" v-model="showCollapse1">
+              
               <b-form-group
                 id="collapse1InputGroup1"
-                label="Название<span>*</span>:"
                 label-for="collapse1Input1"
                 label-size="sm"
               >
+                <span slot="label" title="Обязательное поле">Название<span class="label-asterix">*</span>:</span>
                 <b-form-input
                   id="collapse1Input1"
                   type="text"
@@ -96,10 +98,10 @@
               <!-- Разделитель -->
               <b-form-group
                 id="collapse1InputGroup3"
-                label="Авторы<span>*</span>:"
                 label-for="collapse1Select1"
                 label-size="sm"
               >
+                <span slot="label" title="Обязательное поле">Авторы<span class="label-asterix">*</span>:</span>
                 <multiselect
                   id="collapse1Select1"
                   :multiple="true"
@@ -761,10 +763,9 @@ input[type="file"] {
   }
 
   .form-group {
-    overflow: hidden;
     > label {
       white-space: nowrap;
-      > span {
+      .label-asterix {
         color: red;
       }
     }

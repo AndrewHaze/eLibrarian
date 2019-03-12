@@ -1,9 +1,9 @@
 <template>
   <section>
-    <h6 v-if="(!this.curAuthor && !this.curSeries && !this.curGenres)">Нет данных для отображения</h6>
+    <div class="for-nothing-selected" v-if="(!this.curSLibrary && !this.curAuthor && !this.curSeries && !this.curGenres)">Ничего не выбрано...</div>
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
       <div v-if="isLoading" class="loading-screen" :class="{ rightmargin: infoPanel }">
-        <loading v-if="isLoading"></loading>
+        <b-spinner variant="warning" />
       </div>
       <div
         :id="sid+'_cover-book-list'"
@@ -253,11 +253,12 @@ import store from "../../store";
 
 export default {
   name: "books-list",
-  props: ["curAI", "curSI", "curGI", "sid"],
+  props: ["curSLI", "curAI", "curSI", "curGI", "sid"],
   data: function() {
     return {
       isLoading: true,
       ////
+      curSLibrary: null,
       curAuthor: null,
       curSeries: null,
       curGenres: null,
@@ -282,6 +283,29 @@ export default {
     };
   },
   watch: {
+    curSLI: function(val) {
+      if (val === -1) {
+        this.curSLibrary = null;
+        this.selectedItem = null;
+        return;
+      }
+      this.isLoading = true;
+      const self = this;
+      
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "ab_list", //список книг
+          dat: val
+        },
+        "",
+        function(rd) {
+          self.bListItems = rd; //возвр. данные (Responce)
+          self.selectedItem = null;
+        }
+      );
+      
+    },
     curAI: function(val) {
       if (val === -1) {
         this.curAuthor = null;
@@ -722,19 +746,18 @@ $ip-width: 21rem;
   overflow: hidden;
 }
 
-.loading-screen {
+.for-nothing-selected {
   position: absolute;
   top: 0;
-  left: 0;
   bottom: 0;
+  left: 0;
   right: 0;
-  background-color: #fff;
-  z-index: 100;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-bottom: 30%;
-  font-size: 1.2rem;
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  text-align: center;
+  padding-bottom: 9rem;
+  font-size: 1.1rem;
 }
 
 #tad,

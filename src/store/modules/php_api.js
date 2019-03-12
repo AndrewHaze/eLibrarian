@@ -3,6 +3,7 @@ const state = {
   possibility: true,
   reg: false,
   at: 'eLibrarian v.0.0.1',
+  sli: -1,
   ai: -1,
   si: -1,
   gi: -1,
@@ -24,6 +25,7 @@ const getters = {
   //флаг: окно после регистрации 
   congratulation: state => state.reg,
   appTitle: state => state.at,
+  librarySID: state => state.sli, //секция в библиотеке
   authorID: state => state.ai,
   seriesID: state => state.si,
   genresID: state => state.gi,
@@ -73,6 +75,9 @@ const mutations = {
   },
   showRegModal(state, show) {
     state.reg = show
+  },
+  setLibrarySID(state, value) {
+    state.sli = value
   },
   setAuthorID(state, value) {
     state.ai = value

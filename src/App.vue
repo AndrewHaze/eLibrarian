@@ -2,7 +2,7 @@
   <div id="app">
     <header>
       <!-- Fixed navbar -->
-      <b-navbar type="dark" variant="dark fixed-top" toggleable>
+      <b-navbar type="dark" variant="dark fixed-top">
         <b-navbar-toggle target="nav_dropdown_collapse"></b-navbar-toggle>
         <b-collapse is-nav id="nav_dropdown_collapse">
           <b-navbar-nav v-if="isProfileLoaded">
@@ -85,7 +85,7 @@ export default {
     if ((this.storageAvailable('localStorage')) && localStorage.InfoPanel) {
       store.commit("setblLook", ['on']);
       this.selectedCheckbox = ['on'];
-    } else this.selectedCheckbox = '';
+    } else this.selectedCheckbox = null;
   },
   methods: {
     logout: function() {
@@ -157,9 +157,28 @@ section {
   height: 100%;
 }
 
+* {
+  outline: 0 !important;
+}
+
 .cf100 {
   padding: 75px 15px 0;
   box-sizing: border-box;
+}
+
+.loading-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: #fff;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 30%;
+  font-size: 1.2rem;
 }
 
 .footer {
@@ -172,6 +191,7 @@ section {
   color: lightgrey;
   background-color: #343a40;
   padding: 16px 0;
+  //z-index: 200;
 }
 
 .footer > .container {

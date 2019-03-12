@@ -17,6 +17,9 @@
       <b-row class="z100">
         <b-col>
           <b-tabs v-model="tabIndex">
+            <b-tab title="Библиотека">
+              <library-tab ref="aLib"></library-tab>
+            </b-tab>
             <b-tab title="Авторы">
               <authors-tab ref="aTab"></authors-tab>
             </b-tab>
@@ -251,6 +254,7 @@ import ModalBookEditor from "../modal-be";
 import AuthorsTab from "../tab-authors";
 import GenresTab from "../tab-genres";
 import SeriesTab from "../tab-series";
+import LibraryTab from "../tab-library";
 
 export default {
   name: "home",
@@ -260,7 +264,8 @@ export default {
     ModalBookEditor,
     AuthorsTab,
     GenresTab,
-    SeriesTab
+    SeriesTab,
+    LibraryTab
   },
   data() {
     return {
@@ -281,10 +286,12 @@ export default {
   },
   methods: {
     updateAll() {
+      store.commit("setLibrarySID", -1);
       store.commit("setAuthorID", -1);
       store.commit("setGenresID", -1);
       store.commit("setSeriesID", -1);
       if (this.$refs.aTab) {
+        this.$refs.aLib.getLibraryS();
         this.$refs.aTab.getAuthors();
         this.$refs.gTab.getGenres();
         this.$refs.sTab.getSeries();
