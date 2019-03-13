@@ -46,7 +46,6 @@
           </div>
         </b-col>
         <b-col sm="9">
-          
           <b-container fluid class="px-0">
             <!-- ###################################### colappse 1 ###################################-->
             <div class="colappse-header">
@@ -54,7 +53,7 @@
               <b-btn
                 @click="showCollapse1 = !showCollapse1"
                 :class="showCollapse1 ? 'collapsed' : null"
-                aria-controls="collapse1"
+                aria-controls="collapse-1"
                 :aria-expanded="showCollapse1 ? 'true' : 'false'"
                 variant="outline-secondary"
                 class="btn-circle"
@@ -63,16 +62,16 @@
                 <font-awesome-icon icon="chevron-down" v-else/>
               </b-btn>
             </div>
-            <b-collapse id="collapse1" class="collapseWrap" v-model="showCollapse1">
+            <b-collapse id="collapse-1" class="collapse-wrap" v-model="showCollapse1">
               
               <b-form-group
-                id="collapse1InputGroup1"
-                label-for="collapse1Input1"
+                id="collapse-1-input-group-1"
+                label-for="collapse1-input-1"
                 label-size="sm"
               >
                 <span slot="label" title="Обязательное поле">Название<span class="label-asterix">*</span>:</span>
                 <b-form-input
-                  id="collapse1Input1"
+                  id="collapse-1-input-1"
                   type="text"
                   v-model="form.bk_title"
                   required
@@ -82,13 +81,13 @@
               </b-form-group>
               <!-- Разделитель -->
               <b-form-group
-                id="collapse1InputGroup2"
+                id="collapse-1-input-group-2"
                 label="Оригинальное название:"
-                label-for="collapse1Input2"
+                label-for="collapse-1-input-2"
                 label-size="sm"
               >
                 <b-form-input
-                  id="collapse1Input2"
+                  id="collapse-1-input-2"
                   type="text"
                   v-model="form.bk_original_title"
                   placeholder="Введите оригинальное название книги"
@@ -97,13 +96,13 @@
               </b-form-group>
               <!-- Разделитель -->
               <b-form-group
-                id="collapse1InputGroup3"
-                label-for="collapse1Select1"
+                id="collapse-1-input-group-3"
+                label-for="collapse-1-select-1"
                 label-size="sm"
               >
                 <span slot="label" title="Обязательное поле">Авторы<span class="label-asterix">*</span>:</span>
                 <multiselect
-                  id="collapse1Select1"
+                  id="collapse-1-select-1"
                   :multiple="true"
                   placeholder="Выберите автора"
                   selectLabel="Нажмите Enter, чтобы выбрать"
@@ -119,13 +118,13 @@
               </b-form-group>
               <!-- Разделитель -->
               <b-form-group
-                id="collapse1InputGroup4"
+                id="collapse-1-input-group-4"
                 label="Жанры:"
-                label-for="collapse1Select2"
+                label-for="collapse-1-select-2"
                 label-size="sm"
               >
                 <multiselect
-                  id="collapse1Select2"
+                  id="collapse-1-select-2"
                   :multiple="true"
                   v-model="form.bk_genres"
                   placeholder="Выберите жанр"
@@ -145,13 +144,13 @@
               <b-row>
                 <b-col>
                   <b-form-group
-                    id="collapse1InputGroup5"
+                    id="collapse-1-input-group-5"
                     label="Серия:"
-                    label-for="collapse1Select3"
+                    label-for="collapse-1-select-3"
                     label-size="sm"
                   >
                     <multiselect
-                      id="collapse1Select3"
+                      id="collapse-1-select-3"
                       v-model="form.bk_series"
                       :options="s2OptionsSeries"
                       placeholder="Выберите серию"
@@ -168,13 +167,13 @@
                 <!-- Разделитель -->
                 <b-col sm="2">
                   <b-form-group
-                    id="collapse2InputGroup2"
+                    id="collapse-2-input-group-2"
                     label="Номер:"
-                    label-for="collapse2Input2"
+                    label-for="collapse-2-input-2"
                     label-size="sm"
                   >
                     <b-form-input
-                      id="collapse2Input2"
+                      id="collapse-2-input-2"
                       type="number"
                       min="0"
                       v-model="form.bk_seriesNumber"
@@ -191,7 +190,7 @@
               <b-btn
                 @click="showCollapse3 = !showCollapse3"
                 :class="showCollapse3 ? 'collapsed' : null"
-                aria-controls="collapse3"
+                aria-controls="collapse-3"
                 :aria-expanded="showCollapse3 ? 'true' : 'false'"
                 variant="outline-secondary"
                 class="btn-circle"
@@ -200,28 +199,28 @@
                 <font-awesome-icon icon="chevron-down" v-else/>
               </b-btn>
             </div>
-            <b-collapse id="collapse3" class="collapseWrap" v-model="showCollapse3">
+            <b-collapse id="collapse-3" class="collapse-wrap" v-model="showCollapse3">
               <b-row>
                 <b-col sm="4">
                   <b-form-group
-                    id="collapse3InputGroup1"
+                    id="collapse-3-input-group-1"
                     label="Дата:"
-                    label-for="collapse3Input1"
+                    label-for="collapse-3-input-1"
                     label-size="sm"
                   >
-                    <b-form-input id="collapse3Input1" type="date" v-model="form.bk_date" size="sm"></b-form-input>
+                    <b-form-input id="collapse-3-input-1" type="date" v-model="form.bk_date" size="sm"></b-form-input>
                   </b-form-group>
                 </b-col>
                 <!-- Разделитель -->
                 <b-col sm="4">
                   <b-form-group
-                    id="collapse3InputGroup2"
+                    id="collapse-3-input-group-2"
                     label="Язык:"
-                    label-for="collapse3Select1"
+                    label-for="collapse-3-select-1"
                     label-size="sm"
                   >
                     <multiselect
-                      id="collapse3Select1"
+                      id="collapse-3-select-1"
                       v-model="form.bk_language"
                       :options="s2OptionsLang"
                       placeholder="Выберите язык"
@@ -239,13 +238,13 @@
                 <!-- Разделитель -->
                 <b-col sm="4">
                   <b-form-group
-                    id="collapse3InputGroup3"
+                    id="collapse-3-input-group-3"
                     label="Язык оригинала:"
-                    label-for="collapse3Input3"
+                    label-for="collapse-3-input-3"
                     label-size="sm"
                   >
                     <multiselect
-                      id="collapse3Select2"
+                      id="collapse-3-select-2"
                       v-model="form.bk_orig_language"
                       :options="s2OptionsOrigLang"
                       placeholder="Выберите язык оригинала"
@@ -263,13 +262,13 @@
               </b-row>
               <!-- Разделитель -->
               <b-form-group
-                id="collapse3InputGroup4"
+                id="collapse-3-input-group-4"
                 label="Ключевые слова:"
-                label-for="collapse3Input4"
+                label-for="collapse-3-input-4"
                 label-size="sm"
               >
                 <b-form-input
-                  id="collapse3Input4"
+                  id="collapse-3-input-4"
                   type="text"
                   v-model="form.bk_keywords"
                   placeholder="Введите ключевые слова"
@@ -278,13 +277,13 @@
               </b-form-group>
               <!-- Разделитель -->
               <b-form-group
-                id="collapse3InputGroup5"
+                id="collapse-3-input-group-5"
                 label="Переводчики:"
-                label-for="collapse3Input5"
+                label-for="collapse-3-input-5"
                 label-size="sm"
               >
                 <b-form-input
-                  id="collapse3Input5"
+                  id="collapse-3-input-5"
                   type="text"
                   v-model="form.bk_translators"
                   placeholder="Введите переводчика"
@@ -298,7 +297,7 @@
               <b-btn
                 @click="showCollapse4 = !showCollapse4"
                 :class="showCollapse4 ? 'collapsed' : null"
-                aria-controls="collapse4"
+                aria-controls="collapse-4"
                 :aria-expanded="showCollapse4 ? 'true' : 'false'"
                 variant="outline-secondary"
                 class="btn-circle"
@@ -307,17 +306,17 @@
                 <font-awesome-icon icon="chevron-down" v-else/>
               </b-btn>
             </div>
-            <b-collapse id="collapse4" class="collapseWrap" v-model="showCollapse4">
+            <b-collapse id="collapse-4" class="collapse-wrap" v-model="showCollapse4">
               <b-row>
                 <b-col>
                   <b-form-group
-                    id="collapse4InputGroup1"
+                    id="collapse-4-input-group-1"
                     label="Аннотация:"
-                    label-for="collapse4Input1"
+                    label-for="collapse-4-input-1"
                     label-size="sm"
                   >
                     <b-form-textarea
-                      id="collapse4Textarea1"
+                      id="collapse-4-textarea-1"
                       v-model="form.bk_annotation"
                       size="sm"
                       :rows="3"
@@ -332,7 +331,7 @@
               <b-btn
                 @click="showCollapse5 = !showCollapse5"
                 :class="showCollapse5 ? 'collapsed' : null"
-                aria-controls="collapse5"
+                aria-controls="collapse-5"
                 :aria-expanded="showCollapse5 ? 'true' : 'false'"
                 variant="outline-secondary"
                 class="btn-circle"
@@ -341,15 +340,15 @@
                 <font-awesome-icon icon="chevron-down" v-else/>
               </b-btn>
             </div>
-            <b-collapse id="collapse5" class="collapseWrap" v-model="showCollapse5">
+            <b-collapse id="collapse-5" class="collapse-wrap" v-model="showCollapse5">
               <b-form-group
-                id="collapse5InputGroup1"
+                id="collapse-5-input-group-1"
                 label="Название публикации:"
-                label-for="collapse5Input1"
+                label-for="collapse-5-input-1"
                 label-size="sm"
               >
                 <b-form-input
-                  id="collapse5Input1"
+                  id="collapse-5-input-1"
                   type="text"
                   v-model="form.bk_pub_title"
                   placeholder="Введите название публикации"
@@ -358,13 +357,13 @@
               </b-form-group>
               <!-- Разделитель -->
               <b-form-group
-                id="collapse5InputGroup2"
+                id="collapse-5-input-group-2"
                 label="Издатель:"
-                label-for="collapse5Input2"
+                label-for="collapse-5-input-2"
                 label-size="sm"
               >
                 <b-form-input
-                  id="collapse5Input2"
+                  id="collapse-5-input-2"
                   type="text"
                   v-model="form.bk_pub_publisher"
                   placeholder="Введите издателя"
@@ -375,13 +374,13 @@
               <b-row>
                 <b-col sm="5">
                   <b-form-group
-                    id="collapse5InputGroup4"
+                    id="collapse-5-input-group-4"
                     label="Город:"
-                    label-for="collapse5Input4"
+                    label-for="collapse-5-input-4"
                     label-size="sm"
                   >
                     <b-form-input
-                      id="collapse5Input4"
+                      id="collapse-5-input-4"
                       type="text"
                       v-model="form.bk_pub_city"
                       size="sm"
@@ -391,13 +390,13 @@
                 <!-- Разделитель -->
                 <b-col sm="2">
                   <b-form-group
-                    id="collapse5InputGroup5"
+                    id="collapse-5-input-group-5"
                     label="Год издания:"
-                    label-for="collapse5Input5"
+                    label-for="collapse-5-input-5"
                     label-size="sm"
                   >
                     <b-form-input
-                      id="collapse5Input5"
+                      id="collapse-5-input-5"
                       type="text"
                       v-model="form.bk_pub_year"
                       placeholder="Введите год издания"
@@ -408,13 +407,13 @@
                 <!-- Разделитель -->
                 <b-col sm="5">
                   <b-form-group
-                    id="collapse5InputGroup6"
+                    id="collapse-5-input-group-6"
                     label="ISBN:"
-                    label-for="collapse5Input6"
+                    label-for="collapse-5-input-6"
                     label-size="sm"
                   >
                     <b-form-input
-                      id="collapse5Input6"
+                      id="collapse-5-input-6"
                       type="text"
                       v-model="form.bk_pub_isbn"
                       placeholder="Введите ISBN"
@@ -430,7 +429,7 @@
               <b-btn
                 @click="showCollapse6 = !showCollapse6"
                 :class="showCollapse6 ? 'collapsed' : null"
-                aria-controls="collapse6"
+                aria-controls="collapse-6"
                 :aria-expanded="showCollapse6 ? 'true' : 'false'"
                 variant="outline-secondary"
                 class="btn-circle"
@@ -439,17 +438,17 @@
                 <font-awesome-icon icon="chevron-down" v-else/>
               </b-btn>
             </div>
-            <b-collapse id="collapse6" class="collapseWrap" v-model="showCollapse6">
+            <b-collapse id="collapse-6" class="collapse-wrap" v-model="showCollapse6">
               <b-row>
                 <b-col sm="2">
                   <b-form-group
-                    id="collapse6InputGroup3"
+                    id="collapse-6-input-group-3"
                     label="Версия:"
-                    label-for="collapse6Input3"
+                    label-for="collapse-6-input-3"
                     label-size="sm"
                   >
                     <b-form-input
-                      id="collapse6Input3"
+                      id="collapse-6-input-3"
                       type="text"
                       v-model="form.bk_doc_ver"
                       placeholder="Введите версию документа"
@@ -460,13 +459,13 @@
                 <!-- Разделитель -->
                 <b-col sm="6">
                   <b-form-group
-                    id="collapse6InputGroup1"
+                    id="collapse-6-input-group-1"
                     label="ID документа:"
-                    label-for="collapse6Input1"
+                    label-for="collapse-6-input-1"
                     label-size="sm"
                   >
                     <b-form-input
-                      id="collapse6Input1"
+                      id="collapse-6-input-1"
                       type="text"
                       v-model="form.bk_doc_id"
                       size="sm"
@@ -476,13 +475,13 @@
                 <!-- Разделитель -->
                 <b-col sm="4">
                   <b-form-group
-                    id="collapse6InputGroup2"
+                    id="collapse-6-input-group-2"
                     label="Дата:"
-                    label-for="collapse6Input2"
+                    label-for="collapse-6-input-2"
                     label-size="sm"
                   >
                     <b-form-input
-                      id="collapse6Input2"
+                      id="collapse-6-input-2"
                       type="date"
                       v-model="form.bk_doc_date"
                       placeholder="Введите дату документа"
@@ -495,13 +494,13 @@
               <b-row>
                 <b-col>
                   <b-form-group
-                    id="collapse6InputGroup8"
+                    id="collapse-6-input-group-8"
                     label="История:"
-                    label-for="collapse6Input8"
+                    label-for="collapse-6-input-8"
                     label-size="sm"
                   >
                     <b-form-textarea
-                      id="collapse6Textarea8"
+                      id="collapse-6-Textarea-8"
                       v-model="form.bk_doc_history"
                       size="sm"
                       :rows="3"
@@ -511,13 +510,13 @@
               </b-row>
               <!-- Разделитель -->
               <b-form-group
-                id="collapse6InputGroup4"
+                id="collapse-6-input-group-4"
                 label="Авторы:"
-                label-for="collapse6Input4"
+                label-for="collapse-6-input-4"
                 label-size="sm"
               >
                 <b-form-input
-                  id="collapse6Input4"
+                  id="collapse-6-input-4"
                   type="text"
                   v-model="form.bk_doc_authors"
                   placeholder
@@ -526,13 +525,13 @@
               </b-form-group>
               <!-- Разделитель -->
               <b-form-group
-                id="collapse6InputGroup5"
+                id="collapse-6-input-group-5"
                 label="Программы:"
-                label-for="collapse6Input5"
+                label-for="collapse-6-input-5"
                 label-size="sm"
               >
                 <b-form-input
-                  id="collapse6Input5"
+                  id="collapse-6-input-5"
                   type="text"
                   v-model="form.bk_doc_programms"
                   placeholder
@@ -541,13 +540,13 @@
               </b-form-group>
               <!-- Разделитель -->
               <b-form-group
-                id="collapse6InputGroup6"
+                id="collapse-6-input-group-6"
                 label="Исходный URL:"
-                label-for="collapse6Input6"
+                label-for="collapse-6-input-6"
                 label-size="sm"
               >
                 <b-form-input
-                  id="collapse6Input6"
+                  id="collapse-6-input-6"
                   type="text"
                   v-model="form.bk_doc_url"
                   placeholder
@@ -556,13 +555,13 @@
               </b-form-group>
               <!-- Разделитель -->
               <b-form-group
-                id="collapse6InputGroup7"
+                id="collapse-6-input-group-7"
                 label="Автор OCR:"
-                label-for="collapse6Input7"
+                label-for="collapse-6-input-7"
                 label-size="sm"
               >
                 <b-form-input
-                  id="collapse6Input7"
+                  id="collapse-6-input-7"
                   type="text"
                   v-model="form.bk_doc_ocr_authors"
                   placeholder
@@ -576,7 +575,7 @@
               <b-btn
                 @click="showCollapse7 = !showCollapse7"
                 :class="showCollapse7 ? 'collapsed' : null"
-                aria-controls="collapse7"
+                aria-controls="collapse-7"
                 :aria-expanded="showCollapse7 ? 'true' : 'false'"
                 variant="outline-secondary"
                 class="btn-circle"
@@ -585,17 +584,17 @@
                 <font-awesome-icon icon="chevron-down" v-else/>
               </b-btn>
             </div>
-            <b-collapse id="collapse7" class="collapseWrap" v-model="showCollapse7">
+            <b-collapse id="collapse-7" class="collapse-wrap" v-model="showCollapse7">
               <b-row>
                 <b-col sm="4">
                   <b-form-group
-                    id="collapse7InputGroup1"
+                    id="collapse-7-input-group-1"
                     label="Дата файла:"
-                    label-for="collapse7Input1"
+                    label-for="collapse-7-input-1"
                     label-size="sm"
                   >
                     <b-form-input
-                      id="collapse7Input1"
+                      id="collapse-7-input-1"
                       type="date"
                       v-model="form.bk_doc_file_date"
                       size="sm"
@@ -606,13 +605,13 @@
                 <!-- Разделитель -->
                 <b-col sm="4">
                   <b-form-group
-                    id="collapse7InputGroup2"
+                    id="collapse-7-input-group-2"
                     label="Размер файла:"
-                    label-for="collapse7Input2"
+                    label-for="collapse-7-input-2"
                     label-size="sm"
                   >
                     <b-form-input
-                      id="collapse7Input2"
+                      id="collapse-7-input-2"
                       type="text"
                       v-model="form.bk_doc_file_size"
                       size="sm"
@@ -623,13 +622,13 @@
                 <!-- Разделитель -->
                 <b-col sm="4">
                   <b-form-group
-                    id="collapse7InputGroup3"
+                    id="collapse-7-input-group-3"
                     label="Формат:"
-                    label-for="collapse7Input3"
+                    label-for="collapse-7-input-3"
                     label-size="sm"
                   >
                     <b-form-input
-                      id="collapse7Input3"
+                      id="collapse-7-input-3"
                       type="text"
                       v-model="form.bk_doc_format"
                       size="sm"
@@ -640,13 +639,13 @@
               </b-row>
               <!-- Разделитель -->
               <b-form-group
-                id="collapse7InputGroup4"
+                id="collapse-7-input-group-4"
                 label="Имя файла:"
-                label-for="collapse7Input4"
+                label-for="collapse-7-input-4"
                 label-size="sm"
               >
                 <b-form-input
-                  id="collapse7Input4"
+                  id="collapse-7-input-4"
                   type="text"
                   v-model="form.bk_doc_file_name"
                   size="sm"
@@ -741,7 +740,7 @@ input[type="file"] {
     }
   }
 }
-.collapseWrap {
+.collapse-wrap {
   padding: 0.5rem 1rem 0;
   .col-fix-2btn {
     display: flex;
