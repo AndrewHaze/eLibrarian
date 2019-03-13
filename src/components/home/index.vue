@@ -249,12 +249,12 @@ $hover-color: rgba(221, 221, 221, 0.4);
 import { mapGetters } from "vuex";
 import store from "../../store";
 import Login from "../login";
-import ModalBooksScanner from "../modal-bs";
-import ModalBookEditor from "../modal-be";
-import AuthorsTab from "../tab-authors";
-import GenresTab from "../tab-genres";
-import SeriesTab from "../tab-series";
-import LibraryTab from "../tab-library";
+import ModalBooksScanner from "./modal-bs";
+import ModalBookEditor from "./modal-be";
+import AuthorsTab from "./tab-authors";
+import GenresTab from "./tab-genres";
+import SeriesTab from "./tab-series";
+import LibraryTab from "./tab-library";
 
 export default {
   name: "home",

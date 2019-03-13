@@ -273,13 +273,13 @@ $header-bk-color: #abafb4;
 
   #fls .raw span {
     &:before {
-      background-image: url("../../assets/raw.png");
+      background-image: url("../../../assets/raw.png");
     }
   }
 
   #fls .add span {
     &:before {
-      background-image: url("../../assets/add.png");
+      background-image: url("../../../assets/add.png");
     }
   }
 
@@ -287,31 +287,31 @@ $header-bk-color: #abafb4;
     color: red;
 
     &:before {
-      background-image: url("../../assets/err.png");
+      background-image: url("../../../assets/err.png");
     }
   }
 
   #fls .dma span {
     &:before {
-      background-image: url("../../assets/dma.png");
+      background-image: url("../../../assets/dma.png");
     }
   }
 
   #fls .ndf span {
     &:before {
-      background-image: url("../../assets/ndf.png");
+      background-image: url("../../../assets/ndf.png");
     }
   }
 
   #fls .per span {
     &:before {
-      background-image: url("../../assets/per.png");
+      background-image: url("../../../assets/per.png");
     }
   }
 
   #fls .dbe span {
     &:before {
-      background-image: url("../../assets/dbe.png");
+      background-image: url("../../../assets/dbe.png");
     }
   }
 
@@ -420,7 +420,7 @@ $ring_color: #cce5ff;
 
 <script>
 import axios from "axios";
-import ListItems from "../modal-bs-items-list";
+import ListItems from "./modal-bs-items-list";
 
 const shiftL = 285;
 const shiftR = 6;
