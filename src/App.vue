@@ -170,7 +170,7 @@ section {
   position: absolute;
   top: 0;
   left: 0;
-  bottom: 0;
+  bottom: 3px;
   right: 0;
   background-color: #fff;
   z-index: 100;
@@ -179,6 +179,11 @@ section {
   align-items: center;
   padding-bottom: 30%;
   font-size: 1.2rem;
+  box-sizing: border-box;
+}
+
+.btn {
+  cursor: pointer;
 }
 
 .footer {

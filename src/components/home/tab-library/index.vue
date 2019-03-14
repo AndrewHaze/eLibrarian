@@ -1,6 +1,6 @@
 <template>
   <section>
-    <b-row class="fix-height pt-3">
+    <b-row class="fix-height fix-height-tl pt-3">
       <b-col class="sidebar sidebar-lib ml-3 p-0" :style="{ maxHeight: mHeight + 'px', minHeight: mHeight + 'px' }">
         <div id="lib-navigation" class="lib-navigation">
           <div class="ln-header">Библиотека</div>
@@ -30,7 +30,7 @@
 import BooksList from "../../lib/books-list";
 import store from "../../../store";
 
-const shiftL = 215;
+const shiftL = 210;
 
 export default {
   name: "tab-library",
@@ -49,7 +49,6 @@ export default {
   mounted: function() {
     this.getLibraryS();
     
-    
     window.addEventListener("resize", this.handleResize);
     this.mHeight = window.innerHeight - shiftL;
     if (this.mHeight > 1200) {
@@ -66,7 +65,13 @@ export default {
   },
 
   methods: {
-    getLibraryS() {},
+    getLibraryS() {
+      let elements = document.querySelectorAll('#lib-navigation .active');  
+      if (elements[0]) {
+        elements[0].classList.remove('active');
+      }
+      store.commit("setLibrarySID", -1);
+    },
     handleResize() {
       this.mHeight = window.innerHeight - shiftL;
       if (this.mHeight > 1200) {
@@ -74,12 +79,11 @@ export default {
       }
     },
     itemClick(item) {
-      let elements = document.querySelectorAll('#lib-navigation .active');  
-      if (elements[0]) {
-        elements[0].classList.remove('active');
-      }
+      this.getLibraryS();
       let elem = document.getElementById('li'+item);
       elem.classList.add('active');
+      store.commit("setLibrarySID", item);
+      
     }
   }
 };
@@ -90,6 +94,11 @@ $line-color: #dee2e6;
 $header-font-color: #495057;
 $selected-color: #ddd;
 $hover-color: rgba(221, 221, 221, 0.4);
+
+.fix-height-tl {
+  height: calc(100vh - 174px);
+}
+
 
 .sidebar-lib {
   flex: 0 0 13.5rem !important;

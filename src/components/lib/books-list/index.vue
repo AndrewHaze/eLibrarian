@@ -1,9 +1,12 @@
 <template>
   <section>
-    <div class="for-nothing-selected" v-if="(!this.curSLibrary && !this.curAuthor && !this.curSeries && !this.curGenres)">Ничего не выбрано...</div>
+    <div
+      class="for-nothing-selected"
+      v-if="(!this.curSLibrary && !this.curAuthor && !this.curSeries && !this.curGenres)"
+    >Ничего не выбрано...</div>
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
       <div v-if="isLoading" class="loading-screen" :class="{ rightmargin: infoPanel }">
-        <b-spinner variant="warning" />
+        <b-spinner variant="warning"/>
       </div>
       <div
         :id="sid+'_cover-book-list'"
@@ -125,14 +128,14 @@
     </div>
     <transition name="slide">
       <div v-if="infoPanel && selectedItem" :id="sid+'ip1'" class="book-info-panel">
-        <div class="authors">{{ selectedItem.author }}</div>
-        <div class="genres">{{ selectedItem.genres }}</div>
-        <div class="title">{{ selectedItem.title }}</div>
-        <div class="series" v-if="selectedSeries != ''">{{ selectedSeries }}</div>
-        <div class="cover" :class="{ nocover: selectedItem.cover === '' }">
-          <img v-if="selectedItem.cover" :src="'data:image/jpg;base64,'+selectedItem.cover">
-        </div>
-        <div class="annotation">{{ selectedItem.annotation }}</div>
+            <div class="authors">{{ selectedItem.author }}</div>
+            <div class="genres">{{ selectedItem.genres }}</div>
+            <div class="title">{{ selectedItem.title }}</div>
+            <div class="series" v-if="selectedSeries != ''">{{ selectedSeries }}</div>
+            <div class="cover" :class="{ nocover: selectedItem.cover === '' }">
+              <img v-if="selectedItem.cover" :src="'data:image/jpg;base64,'+selectedItem.cover">
+            </div>
+            <div class="annotation">{{ selectedItem.annotation }}</div>
       </div>
       <div v-else-if="infoPanel && curAuthor" class="book-info-panel">
         <div class="book-author">{{ this.curAuthor }}</div>
@@ -196,25 +199,50 @@
             <template slot="button-content">
               <font-awesome-icon icon="star-half-alt"/>
             </template>
-            <b-dropdown-item class="star" @click="starsButton1Click" title="Оценить книгу на 1" :active="howManyStars === 1">
+            <b-dropdown-item
+              class="star"
+              @click="starsButton1Click"
+              title="Оценить книгу на 1"
+              :active="howManyStars === 1"
+            >
               <font-awesome-icon icon="star"/>
             </b-dropdown-item>
-            <b-dropdown-item class="star" @click="starsButton2Click" title="Оценить книгу на 2" :active="howManyStars === 2">
+            <b-dropdown-item
+              class="star"
+              @click="starsButton2Click"
+              title="Оценить книгу на 2"
+              :active="howManyStars === 2"
+            >
               <template v-for="n in 2">
                 <font-awesome-icon icon="star"/>
               </template>
             </b-dropdown-item>
-            <b-dropdown-item class="star" @click="starsButton3Click" title="Оценить книгу на 3" :active="howManyStars === 3">
+            <b-dropdown-item
+              class="star"
+              @click="starsButton3Click"
+              title="Оценить книгу на 3"
+              :active="howManyStars === 3"
+            >
               <template v-for="n in 3">
                 <font-awesome-icon icon="star"/>
               </template>
             </b-dropdown-item>
-            <b-dropdown-item class="star" @click="starsButton4Click" title="Оценить книгу на 4" :active="howManyStars === 4">
+            <b-dropdown-item
+              class="star"
+              @click="starsButton4Click"
+              title="Оценить книгу на 4"
+              :active="howManyStars === 4"
+            >
               <template v-for="n in 4">
                 <font-awesome-icon icon="star"/>
               </template>
             </b-dropdown-item>
-            <b-dropdown-item class="star" @click="starsButton5Click" title="Оценить книгу на 5" :active="howManyStars === 5">
+            <b-dropdown-item
+              class="star"
+              @click="starsButton5Click"
+              title="Оценить книгу на 5"
+              :active="howManyStars === 5"
+            >
               <template v-for="n in 5">
                 <font-awesome-icon icon="star"/>
               </template>
@@ -265,9 +293,9 @@ export default {
       selectedSeries: "",
       selectedSeriesNumber: 0,
       //список серий
-      sListItems: [],
+      sListItems: null,
       //список книг
-      bListItems: [],
+      bListItems: null,
       bookID: "",
       isRead: false,
       isToPlan: false,
@@ -288,23 +316,35 @@ export default {
         this.curSLibrary = null;
         this.selectedItem = null;
         return;
+      } else {
+        this.curSLibrary = val;
       }
       this.isLoading = true;
       const self = this;
-      
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {
-          cmd: "ab_list", //список книг
+          cmd: "series_by_condition",
           dat: val
         },
         "",
         function(rd) {
+          self.sListItems = rd;
+        }
+      );
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "books_by_condition", //список книг
+          dat: val
+        },
+        "",
+        function(rd) {
+          //console.log('curSLibrary: ');
           self.bListItems = rd; //возвр. данные (Responce)
           self.selectedItem = null;
         }
       );
-      
     },
     curAI: function(val) {
       if (val === -1) {
@@ -752,14 +792,15 @@ $ip-width: 21rem;
   bottom: 0;
   left: 0;
   right: 0;
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   padding-bottom: 9rem;
   font-size: 1.1rem;
 }
 
+#tld,
 #tad,
 #tsd,
 #tgd {
@@ -854,7 +895,6 @@ $ip-width: 21rem;
   .btn:focus {
     box-shadow: none !important;
   }
-
 }
 
 .cover-book-list {
