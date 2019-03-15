@@ -63,14 +63,13 @@
               </b-btn>
             </div>
             <b-collapse id="collapse-1" class="collapse-wrap" v-model="showCollapse1">
+              
               <b-form-group
                 id="collapse-1-input-group-1"
                 label-for="collapse1-input-1"
                 label-size="sm"
               >
-                <span slot="label" title="Обязательное поле">Название
-                  <span class="label-asterix">*</span>:
-                </span>
+                <span slot="label" title="Обязательное поле">Название<span class="label-asterix">*</span>:</span>
                 <b-form-input
                   id="collapse-1-input-1"
                   type="text"
@@ -101,9 +100,7 @@
                 label-for="collapse-1-select-1"
                 label-size="sm"
               >
-                <span slot="label" title="Обязательное поле">Авторы
-                  <span class="label-asterix">*</span>:
-                </span>
+                <span slot="label" title="Обязательное поле">Авторы<span class="label-asterix">*</span>:</span>
                 <multiselect
                   id="collapse-1-select-1"
                   :multiple="true"
@@ -211,12 +208,7 @@
                     label-for="collapse-3-input-1"
                     label-size="sm"
                   >
-                    <b-form-input
-                      id="collapse-3-input-1"
-                      type="date"
-                      v-model="form.bk_date"
-                      size="sm"
-                    ></b-form-input>
+                    <b-form-input id="collapse-3-input-1" type="date" v-model="form.bk_date" size="sm"></b-form-input>
                   </b-form-group>
                 </b-col>
                 <!-- Разделитель -->

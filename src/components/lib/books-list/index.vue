@@ -2,7 +2,7 @@
   <section>
     <div
       class="for-nothing-selected"
-      v-if="(!this.curSLibrary && !this.curAuthor && !this.curSeries && !this.curGenres)"
+      v-if="(!curSLibrary && !curAuthor && !curSeries && !curGenres)"
     >Ничего не выбрано...</div>
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
       <div v-if="isLoading" class="loading-screen" :class="{ rightmargin: infoPanel }">
@@ -11,7 +11,7 @@
       <div
         :id="sid+'_cover-book-list'"
         class="cover-book-list"
-        v-if="look === 'cover'"
+        v-if="look === 'cover' && !isLoading"
         @scroll="onScroll"
       >
         <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
@@ -62,9 +62,9 @@
         </div>
       </div>
       <!--******************************************************************************************-->
-      <div class="tree-book-list" v-else-if="look === 'tree'">Tree View</div>
+      <div class="tree-book-list" v-else-if="look === 'tree' && !isLoading">Tree View</div>
       <!--******************************************************************************************-->
-      <div class="table-book-list" v-else-if="look === 'table'">
+      <div class="table-book-list" v-else-if="look === 'table' && !isLoading">
         <div class="tbl-table">
           <div class="tbl-header" :class="{ thPad: isPad }">
             <div class="tbl-table-row">
