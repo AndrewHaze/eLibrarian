@@ -296,7 +296,7 @@ if (isset($_POST["cmd"])) {
                 }
             }
             break;
-        case "series_by_condition": //список серий автора
+        case "series_by_condition": //серии по условию
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 unset($condition);
@@ -312,7 +312,19 @@ if (isset($_POST["cmd"])) {
                     break;                    
                     case 4: 
                         $condition = " AND bk_favorites = 1 ";
+                    break;   
+                    case 5: 
+                        $condition = " AND YEARWEEK(CURDATE()) = YEARWEEK(bk_added) ";
+                    break;
+                    case 6: 
+                        $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) AND MONTH(CURDATE()) = MONTH(bk_added) ";
                     break;                    
+                    case 7: 
+                        $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) ";
+                    break;  
+                    case 8: 
+                        $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) ";
+                    break;                                        
                     default:
                         $condition = " ";
                 }
@@ -340,7 +352,7 @@ if (isset($_POST["cmd"])) {
                 }
             }
             break;            
-        case "books_by_condition": //книги по дате
+        case "books_by_condition": //книги по условию
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 unset($condition);
@@ -356,7 +368,19 @@ if (isset($_POST["cmd"])) {
                     break;                    
                     case 4: 
                         $condition = " AND bk_favorites = 1 ";
+                    break;   
+                    case 5: 
+                        $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) AND MONTH(CURDATE()) = MONTH(bk_added) AND WEEK(CURDATE()) = WEEK(bk_added) ";
+                    break;
+                    case 6: 
+                        $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) AND MONTH(CURDATE()) = MONTH(bk_added) ";
                     break;                    
+                    case 7: 
+                        $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) ";
+                    break;     
+                    case 8: 
+                        $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) ";
+                    break;                                  
                     default:
                         $condition = " ";
                 }
