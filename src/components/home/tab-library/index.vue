@@ -36,7 +36,6 @@
               <font-awesome-icon icon="calendar-day" style="color: #00bcd4"/>За период
             </div>
           </div>
-          {{date1}}
           <div class="datepicker-wrap" v-if="isDatapickers">
             <datepicker v-model="date1" :inline="true" :language="ru" :format="yyyy-MM-dd"></datepicker>
             <datepicker v-model="date2" :inline="true" :language="ru" :format="yyyy-MM-dd"></datepicker>
@@ -119,7 +118,7 @@ export default {
         this.isDatapickers = false;
         store.commit("setLibrarySID", item);
       }
-    },
+    }
   }
 };
 </script>
@@ -174,9 +173,14 @@ $hover-color: rgba(221, 221, 221, 0.4);
     }
   }
 
+  .datepicker-wrap {
+    width: 100%;
+  }
+
   /* datepicker calendar skin */
   .vdp-datepicker {
     .vdp-datepicker__calendar {
+      overflow: hidden;
       width: 100%;
       margin-top: 0.5rem;
       border-left: 0;
@@ -215,7 +219,15 @@ $hover-color: rgba(221, 221, 221, 0.4);
         }
         &.day:hover {
           border-color: $selected-color;
-          //background: $hover-color;
+        }
+        &.day.blank:hover {
+          border-color: white;
+        }
+        &.month:hover {
+          border-color: $selected-color;
+        }
+        &.year:hover {
+          border-color: $selected-color;
         }
       }
     }
