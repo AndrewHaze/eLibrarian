@@ -128,6 +128,7 @@ $min-width: 860px;
 
 html, body {
   width: 100%;
+  overflow: hidden;
 }
 
 html {
