@@ -321,11 +321,15 @@ export default {
       }
       this.isLoading = true;
       const self = this;
+      let dateFrom = this.$store.getters.dateFrom;
+      let dateTo = this.$store.getters.dateTo;
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "series_by_condition",
-          dat: val
+          dat: val,
+          dat1: dateFrom,
+          dat2: dateTo
         },
         "",
         function(rd) {
@@ -336,7 +340,9 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "books_by_condition", //список книг
-          dat: val
+          dat: val,
+          dat1: dateFrom,
+          dat2: dateTo
         },
         "",
         function(rd) {

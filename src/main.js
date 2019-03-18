@@ -18,6 +18,7 @@ Vue.component('loading', Loading)
 
 Vue.use(VJstree)
 Vue.use(BootstrapVue)
+
 Vue.config.productionTip = false
 
 Vue.mixin({

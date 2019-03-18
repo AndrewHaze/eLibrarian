@@ -37,8 +37,8 @@
             </div>
           </div>
           <div class="datepicker-wrap" v-if="isDatapickers">
-            <datepicker v-model="date1" :inline="true" :language="ru" :format="yyyy-MM-dd"></datepicker>
-            <datepicker v-model="date2" :inline="true" :language="ru" :format="yyyy-MM-dd"></datepicker>
+            <datepicker v-model="date1" :inline="true" :language="ru"></datepicker>
+            <datepicker v-model="date2" :inline="true" :language="ru"></datepicker>
           </div>
         </div>
       </b-col>
@@ -56,6 +56,7 @@ import Datepicker from "vuejs-datepicker";
 import { ru } from "vuejs-datepicker/dist/locale";
 
 const shiftL = 210;
+var moment = require("moment");
 
 export default {
   name: "tab-library",
@@ -88,6 +89,14 @@ export default {
   beforeDestroy: function() {
     window.removeEventListener("resize", this.handleResize);
   },
+  watch: {
+    date1: function() {
+      store.commit("setDateFrom", moment(this.date1).format("YYYY-MM-DD"));
+    },
+    date2: function() {
+      store.commit("setDateTo", moment(this.date2).format("YYYY-MM-DD"));
+    }
+  },
   computed: {
     currentSLI: function() {
       return this.$store.getters.librarySID;
@@ -108,16 +117,20 @@ export default {
         this.mHeight = 1200;
       }
     },
+
     itemClick(item) {
       this.getLibraryS();
       let elem = document.getElementById("li" + item);
       elem.classList.add("active");
       if (item === 8) {
         this.isDatapickers = true;
+        store.commit("setDateFrom", moment(this.date1).format("YYYY-MM-DD"));
+        store.commit("setDateTo", moment(this.date2).format("YYYY-MM-DD"));
+        
       } else {
         this.isDatapickers = false;
-        store.commit("setLibrarySID", item);
       }
+      store.commit("setLibrarySID", item);
     }
   }
 };

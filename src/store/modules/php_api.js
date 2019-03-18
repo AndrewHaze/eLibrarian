@@ -4,6 +4,8 @@ const state = {
   reg: false,
   at: 'eLibrarian v.0.0.1',
   sli: -1,
+  df: null,
+  dt: null,
   ai: -1,
   si: -1,
   gi: -1,
@@ -34,6 +36,9 @@ const getters = {
   genresType: state => state.gty,
   genresTitle: state => state.gt,
   orderCode: state => state.oc,
+  //для выбора по дате
+  dateFrom: state => state.df,
+  dateTo: state => state.dt,
 
   /******************* Интерфейс *******************/
   currentTab: state => state.tab, //текущая вкладка
@@ -78,6 +83,12 @@ const mutations = {
   },
   setLibrarySID(state, value) {
     state.sli = value
+  },
+  setDateFrom(state, value) {
+    state.df = value
+  },
+  setDateTo(state, value) {
+    state.dt = value
   },
   setAuthorID(state, value) {
     state.ai = value
