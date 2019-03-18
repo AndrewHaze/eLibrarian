@@ -323,7 +323,8 @@ if (isset($_POST["cmd"])) {
                         $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) ";
                     break;  
                     case 8: 
-                        $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) ";
+                        $condition = " AND bk_added >= '".$_POST['dat1']."' AND bk_added <= '".$_POST['dat2']."' ";
+                        //$condition = " ";
                     break;                                        
                     default:
                         $condition = " ";
@@ -336,7 +337,6 @@ if (isset($_POST["cmd"])) {
                                          AND ur_login = :login
                                          ORDER BY se_title');
                 $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                
                 if ($stmt->execute()) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
@@ -379,7 +379,9 @@ if (isset($_POST["cmd"])) {
                         $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) ";
                     break;     
                     case 8: 
-                        $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) ";
+                        $condition = " AND bk_added >= '".$_POST['dat1']."' AND bk_added <= '".$_POST['dat2']."' ";
+                        $handle = fopen("uploads/bookparsing.log", "w");
+                        fwrite($handle, $condition);
                     break;                                  
                     default:
                         $condition = " ";
@@ -411,6 +413,7 @@ if (isset($_POST["cmd"])) {
                 $stmt->bindValue(':login1', $username, PDO::PARAM_STR);
                 $stmt->bindValue(':login2', $username, PDO::PARAM_STR);
                 $stmt->bindValue(':login3', $username, PDO::PARAM_STR);
+                
                 if ($stmt->execute()) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
