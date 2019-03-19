@@ -92,9 +92,11 @@ export default {
   watch: {
     date1: function() {
       store.commit("setDateFrom", moment(this.date1).format("YYYY-MM-DD"));
+      store.commit("setLibrarySID", 8  +Number(moment(this.date1).format("YYYYMMDD"))/100000000);
     },
     date2: function() {
       store.commit("setDateTo", moment(this.date2).format("YYYY-MM-DD"));
+      store.commit("setLibrarySID", 8 + Number(moment(this.date2).format("YYYYMMDD"))/100000000);
     }
   },
   computed: {
@@ -126,7 +128,6 @@ export default {
         this.isDatapickers = true;
         store.commit("setDateFrom", moment(this.date1).format("YYYY-MM-DD"));
         store.commit("setDateTo", moment(this.date2).format("YYYY-MM-DD"));
-        
       } else {
         this.isDatapickers = false;
       }

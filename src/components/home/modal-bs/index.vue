@@ -503,7 +503,6 @@ export default {
         let formData = new FormData();
         formData.append("file", filesList[i]);
         let fSize = new Date(filesList[i].lastModified);
-        console.log(fSize)
         axios({
           method: "post",
           url: this.$store.getters.prefix + "/static/upload.php",

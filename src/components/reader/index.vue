@@ -20,7 +20,6 @@ $hover-color: rgba(221, 221, 221, 0.4);
 <script>
 import store from "../../store";
 
-
 export default {
   name: "reader",
   data: function() {
@@ -33,10 +32,7 @@ export default {
     store.commit("setReader", true);
   },
   mounted: function() {
-    
     this.fileName = this.$route.params.fileName;
-    
-    console.log();
   }
 };
 </script>

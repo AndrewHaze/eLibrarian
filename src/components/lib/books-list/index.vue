@@ -5,137 +5,140 @@
       v-if="(!curSLibrary && !curAuthor && !curSeries && !curGenres)"
     >Ничего не выбрано...</div>
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
-      <div v-if="isLoading" class="loading-screen" :class="{ rightmargin: infoPanel }">
-        <b-spinner variant="warning"/>
-      </div>
-      <div
-        :id="sid+'_cover-book-list'"
-        class="cover-book-list"
-        v-if="look === 'cover' && !isLoading"
-        @scroll="onScroll"
-      >
-        <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
-          <div class="series-title" v-if="sItem.seriesTitle === 'яяяяяя'">
-            <span>Без серии</span>
-          </div>
-          <div class="series-title" v-else>
-            <span>{{ sItem.seriesTitle }}</span>
-          </div>
-          <div
-            class="item"
-            v-for="bItem in bListItems"
-            :id="sid+'_'+bItem.id"
-            :key="sid+'_'+bItem.id"
-            v-if="bItem.seriesTitle == sItem.seriesTitle"
-            :class="{active: bItem.isActive}"
-            @click="itemClickHandler"
-            @mouseover="mouseOverBook"
-            @mouseleave="mouseLeaveBook"
-          >
-            <div class="cover" :class="{ nocover: bItem.cover === '' }">
-              <img v-if="bItem.cover" :src="'data:image/jpg;base64,'+bItem.cover">
+      <div class="data-wrap" v-if="isData">
+        <div
+          :id="sid+'_cover-book-list'"
+          class="cover-book-list"
+          v-if="look === 'cover' && !isLoading"
+          @scroll="onScroll"
+        >
+          <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
+            <div class="series-title" v-if="sItem.seriesTitle === 'яяяяяя'">
+              <span>Без серии</span>
             </div>
-            <div class="info">
-              <div class="book-authors">{{ strAuthor(bItem.author) }}</div>
-              <div class="book-title">{{ bItem.title }}</div>
-              <div>{{ strGenres(bItem.genres) }}</div>
+            <div class="series-title" v-else>
+              <span>{{ sItem.seriesTitle }}</span>
             </div>
-            <div class="mark-group">
-              <div class="mg-left">
-                <span v-if="bItem.isRead" title="Прочитано">
-                  <font-awesome-icon icon="check" style="color: #30e52a"/>
-                </span>
-                <span v-if="bItem.isToPlan" title="Запланировано">
-                  <font-awesome-icon icon="calendar-check" style="color: #ffa500"/>
-                </span>
-                <span v-if="bItem.isFavorites" title="Понравилось">
-                  <font-awesome-icon icon="heart" style="color: #c91212"/>
-                </span>
-              </div>
-              <div class="mg-right" :title="'Оценка: '+ bItem.howManyStars">
-                <template v-for="n in 5">
-                  <font-awesome-icon icon="star" :class="{ star: (bItem.howManyStars >= n) }"/>
-                </template>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!--******************************************************************************************-->
-      <div class="tree-book-list" v-else-if="look === 'tree' && !isLoading">Tree View</div>
-      <!--******************************************************************************************-->
-      <div class="table-book-list" v-else-if="look === 'table' && !isLoading">
-        <div class="tbl-table">
-          <div class="tbl-header" :class="{ thPad: isPad }">
-            <div class="tbl-table-row">
-              <div class="tbl-table-cell cell-1">
-                <font-awesome-icon icon="check"/>
-              </div>
-              <div class="tbl-table-cell cell-2">
-                <font-awesome-icon icon="calendar-check"/>
-              </div>
-              <div class="tbl-table-cell cell-3">
-                <font-awesome-icon icon="heart"/>
-              </div>
-              <div class="tbl-table-cell cell-4">Название</div>
-              <div class="tbl-table-cell cell-5">Серия</div>
-              <div class="tbl-table-cell cell-6">№</div>
-              <div class="tbl-table-cell cell-7">Жанр</div>
-              <div class="tbl-table-cell cell-8">Рейтинг</div>
-            </div>
-          </div>
-          <div :id="sid+'table-body'" class="tbl-table-body" @scroll="onScroll">
             <div
-              class="tbl-table-row"
+              class="item"
               v-for="bItem in bListItems"
-              :key="sid+'_'+bItem.id"
               :id="sid+'_'+bItem.id"
+              :key="sid+'_'+bItem.id"
+              v-if="bItem.seriesTitle == sItem.seriesTitle"
               :class="{active: bItem.isActive}"
               @click="itemClickHandler"
               @mouseover="mouseOverBook"
               @mouseleave="mouseLeaveBook"
             >
-              <div class="tbl-table-cell cell-1" title="Прочитано">
-                <font-awesome-icon v-if="bItem.isRead" icon="check" style="color: #30e52a"/>
+              <div class="cover" :class="{ nocover: bItem.cover === '' }">
+                <img v-if="bItem.cover" :src="'data:image/jpg;base64,'+bItem.cover">
               </div>
-              <div class="tbl-table-cell cell-2" title="Запланировано">
-                <font-awesome-icon
-                  v-if="bItem.isToPlan"
-                  icon="calendar-check"
-                  style="color: #ffa500"
-                />
+              <div class="info">
+                <div class="book-authors">{{ strAuthor(bItem.author) }}</div>
+                <div class="book-title">{{ bItem.title }}</div>
+                <div>{{ strGenres(bItem.genres) }}</div>
               </div>
-              <div class="tbl-table-cell cell-3" title="Понравилось">
-                <font-awesome-icon v-if="bItem.isFavorites" icon="heart" style="color: #c91212"/>
+              <div class="mark-group">
+                <div class="mg-left">
+                  <span v-if="bItem.isRead" title="Прочитано">
+                    <font-awesome-icon icon="check" style="color: #30e52a"/>
+                  </span>
+                  <span v-if="bItem.isToPlan" title="Запланировано">
+                    <font-awesome-icon icon="calendar-check" style="color: #ffa500"/>
+                  </span>
+                  <span v-if="bItem.isFavorites" title="Понравилось">
+                    <font-awesome-icon icon="heart" style="color: #c91212"/>
+                  </span>
+                </div>
+                <div class="mg-right" :title="'Оценка: '+ bItem.howManyStars">
+                  <template v-for="n in 5">
+                    <font-awesome-icon icon="star" :class="{ star: (bItem.howManyStars >= n) }"/>
+                  </template>
+                </div>
               </div>
-              <div class="tbl-table-cell cell-4">{{ bItem.title }}</div>
-              <div class="tbl-table-cell cell-5">
-                <span v-if="bItem.seriesTitle != 'яяяяяя'">{{ bItem.seriesTitle }}</span>
+            </div>
+          </div>
+        </div>
+        <!--******************************************************************************************-->
+        <div class="tree-book-list" v-else-if="look === 'tree' && !isLoading">Tree View</div>
+        <!--******************************************************************************************-->
+        <div class="table-book-list" v-else-if="look === 'table' && !isLoading">
+          <div class="tbl-table">
+            <div class="tbl-header" :class="{ thPad: isPad }">
+              <div class="tbl-table-row">
+                <div class="tbl-table-cell cell-1">
+                  <font-awesome-icon icon="check"/>
+                </div>
+                <div class="tbl-table-cell cell-2">
+                  <font-awesome-icon icon="calendar-check"/>
+                </div>
+                <div class="tbl-table-cell cell-3">
+                  <font-awesome-icon icon="heart"/>
+                </div>
+                <div class="tbl-table-cell cell-4">Название</div>
+                <div class="tbl-table-cell cell-5">Серия</div>
+                <div class="tbl-table-cell cell-6">№</div>
+                <div class="tbl-table-cell cell-7">Жанр</div>
+                <div class="tbl-table-cell cell-8">Рейтинг</div>
               </div>
-              <div class="tbl-table-cell cell-6">
-                <span v-if="bItem.seriesTitle != 'яяяяяя'">{{ bItem.seriesNumber }}</span>
-              </div>
-              <div class="tbl-table-cell cell-7">{{ bItem.genres }}</div>
-              <div class="tbl-table-cell cell-8" :title="'Оценка: '+ bItem.howManyStars">
-                <template v-for="n in 5">
-                  <font-awesome-icon icon="star" :class="{ star: (bItem.howManyStars >= n) }"/>
-                </template>
+            </div>
+            <div :id="sid+'table-body'" class="tbl-table-body" @scroll="onScroll">
+              <div
+                class="tbl-table-row"
+                v-for="bItem in bListItems"
+                :key="sid+'_'+bItem.id"
+                :id="sid+'_'+bItem.id"
+                :class="{active: bItem.isActive}"
+                @click="itemClickHandler"
+                @mouseover="mouseOverBook"
+                @mouseleave="mouseLeaveBook"
+              >
+                <div class="tbl-table-cell cell-1" title="Прочитано">
+                  <font-awesome-icon v-if="bItem.isRead" icon="check" style="color: #30e52a"/>
+                </div>
+                <div class="tbl-table-cell cell-2" title="Запланировано">
+                  <font-awesome-icon
+                    v-if="bItem.isToPlan"
+                    icon="calendar-check"
+                    style="color: #ffa500"
+                  />
+                </div>
+                <div class="tbl-table-cell cell-3" title="Понравилось">
+                  <font-awesome-icon v-if="bItem.isFavorites" icon="heart" style="color: #c91212"/>
+                </div>
+                <div class="tbl-table-cell cell-4">{{ bItem.title }}</div>
+                <div class="tbl-table-cell cell-5">
+                  <span v-if="bItem.seriesTitle != 'яяяяяя'">{{ bItem.seriesTitle }}</span>
+                </div>
+                <div class="tbl-table-cell cell-6">
+                  <span v-if="bItem.seriesTitle != 'яяяяяя'">{{ bItem.seriesNumber }}</span>
+                </div>
+                <div class="tbl-table-cell cell-7">{{ bItem.genres }}</div>
+                <div class="tbl-table-cell cell-8" :title="'Оценка: '+ bItem.howManyStars">
+                  <template v-for="n in 5">
+                    <font-awesome-icon icon="star" :class="{ star: (bItem.howManyStars >= n) }"/>
+                  </template>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      <div v-else class="for-nothing-selected">Ничего не найдено...</div>
+      <div v-if="isLoading" class="loading-screen">
+        <b-spinner variant="warning"/>
+      </div>
     </div>
     <transition name="slide">
       <div v-if="infoPanel && selectedItem" :id="sid+'ip1'" class="book-info-panel">
-            <div class="authors">{{ selectedItem.author }}</div>
-            <div class="genres">{{ selectedItem.genres }}</div>
-            <div class="title">{{ selectedItem.title }}</div>
-            <div class="series" v-if="selectedSeries != ''">{{ selectedSeries }}</div>
-            <div class="cover" :class="{ nocover: selectedItem.cover === '' }">
-              <img v-if="selectedItem.cover" :src="'data:image/jpg;base64,'+selectedItem.cover">
-            </div>
-            <div class="annotation">{{ selectedItem.annotation }}</div>
+        <div class="authors">{{ selectedItem.author }}</div>
+        <div class="genres">{{ selectedItem.genres }}</div>
+        <div class="title">{{ selectedItem.title }}</div>
+        <div class="series" v-if="selectedSeries != ''">{{ selectedSeries }}</div>
+        <div class="cover" :class="{ nocover: selectedItem.cover === '' }">
+          <img v-if="selectedItem.cover" :src="'data:image/jpg;base64,'+selectedItem.cover">
+        </div>
+        <div class="annotation">{{ selectedItem.annotation }}</div>
       </div>
       <div v-else-if="infoPanel && curAuthor" class="book-info-panel">
         <div class="book-author">{{ this.curAuthor }}</div>
@@ -316,18 +319,19 @@ export default {
         this.curSLibrary = null;
         this.selectedItem = null;
         return;
-      } else {
-        this.curSLibrary = val;
-      }
+      } 
       this.isLoading = true;
       const self = this;
+      let value = Math.floor(val);
       let dateFrom = this.$store.getters.dateFrom;
       let dateTo = this.$store.getters.dateTo;
+      //в остальных местах явно возвращаем из responce
+      this.curSLibrary = value;
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "series_by_condition",
-          dat: val,
+          dat: value,
           dat1: dateFrom,
           dat2: dateTo
         },
@@ -340,13 +344,12 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "books_by_condition", //список книг
-          dat: val,
+          dat: value,
           dat1: dateFrom,
           dat2: dateTo
         },
         "",
         function(rd) {
-          //console.log('curSLibrary: ');
           self.bListItems = rd; //возвр. данные (Responce)
           self.selectedItem = null;
         }
@@ -496,11 +499,11 @@ export default {
     },
     bListItems: function() {
       this.setTableHeaderPad(); //проверяем и добавляем отступ в заголовок таблицы
-      this.isLoading = false;
       let el = document.getElementById(this.sid + "_cover-book-list");
       if (el) {
         if (el.scrollTop != 0) el.scrollTop = 0;
       }
+      this.isLoading = false;
     }
   },
   computed: {
@@ -511,6 +514,9 @@ export default {
     },
     infoPanel: function() {
       return store.getters.iPanel === "on" ? true : false;
+    },
+    isData: function() {
+      return this.bListItems ? this.bListItems.length > 0 : false;
     }
   },
   methods: {
@@ -804,6 +810,7 @@ $ip-width: 21rem;
   text-align: center;
   padding-bottom: 9rem;
   font-size: 1.1rem;
+  z-index: 0;
 }
 
 #tld,
@@ -903,12 +910,17 @@ $ip-width: 21rem;
   }
 }
 
+.data-wrap {
+  display: block;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .cover-book-list {
   display: block;
   height: 100%;
   padding-left: 0.2rem;
-  overflow-y: auto;
-  overflow-x: hidden;
 
   div {
     display: flex;

@@ -118,7 +118,6 @@ export default {
       /////////////////////////////////////////////////
       store.commit("setGenresType", node.model.type);
       store.commit("setGenresTitle", node.model.text);
-      console.log(node.model.id, node.model.type)
     },
     sortText() {
       this.bAsc = false;
