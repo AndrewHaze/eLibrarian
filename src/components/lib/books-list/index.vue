@@ -596,10 +596,12 @@ export default {
           mH = 32;
         //координаты родителя
         let p = document.getElementById(this.sid).getBoundingClientRect();
+        
         //координаты относительно родителя
         let c = document.getElementById(id).getBoundingClientRect();
         this.bMenuX = c.left + (c.width - mW) / 2 - p.left;
-        if (this.getViewportHeight() > c.bottom + p.top - mH * 2.5) {
+        let factor = (this.sid === 'tld') ? 1.5 : 2.5; 
+        if (this.getViewportHeight() > c.bottom + p.top - mH * factor) {
           this.bMenuY = c.bottom - p.top - 3;
         } else {
           this.bMenuY = c.top - p.top - mH + 3;
@@ -663,6 +665,7 @@ export default {
     },
     onScroll() {
       this.bMenu = false;
+      console.log(1)
     },
     openReaderClick(item) {
       store.commit("setReader", true);
@@ -911,16 +914,15 @@ $ip-width: 21rem;
 }
 
 .data-wrap {
-  display: block;
   height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .cover-book-list {
   display: block;
   height: 100%;
   padding-left: 0.2rem;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   div {
     display: flex;
