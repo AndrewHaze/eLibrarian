@@ -181,7 +181,6 @@ section {
   padding-bottom: 30%;
   font-size: 1.2rem;
   box-sizing: border-box;
-  z-index: 100;
 }
 
 .btn {
