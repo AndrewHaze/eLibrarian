@@ -482,9 +482,6 @@ export default {
     countLPF: function() {
       return this.listProcessingFiles.length;
     },
-    userID: function() {
-      return this.$store.getters.userID
-    }
   },
   methods: {
     handleResize() {
@@ -506,7 +503,6 @@ export default {
         let formData = new FormData();
         formData.append("file", filesList[i]);
         let fSize = new Date(filesList[i].lastModified);
-        console.log(filesList[i],formData.has(name))
         axios({
           method: "post",
           url: this.$store.getters.prefix + "/static/upload.php",
@@ -573,7 +569,6 @@ export default {
         {
           cmd: "clear_upload", //очищаем загрузку при закрытии окна
           dat: "",
-          uid: this.userID
         },
         "",
         function(rd) {}
@@ -664,7 +659,7 @@ export default {
               file: self.buf[i].value,
               name: self.buf[i].text,
               date: self.buf[i].filedate,
-              id: self.$store.getters.getProfile.name
+              uid: sessionStorage.getItem('user-login')
             },
             withCredentials: true, //передаем куки
             headers: {

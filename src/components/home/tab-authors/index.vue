@@ -57,9 +57,6 @@ export default {
     currentAI: function() {
       return this.$store.getters.authorID;
     },
-    userID: function() {
-      return this.$store.getters.userID
-    }
   },
   watch: {
     selected: function() {
@@ -76,7 +73,7 @@ export default {
         {
           cmd: "с_list",
           dat: "authors",
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {
@@ -88,7 +85,7 @@ export default {
         {
           cmd: "a_list",
           dat: "",
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {

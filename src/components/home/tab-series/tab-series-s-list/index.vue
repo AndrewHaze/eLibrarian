@@ -157,9 +157,6 @@ export default {
           return { text: f.label, value: f.key };
         });
     },
-    userID: function() {
-      return this.$store.getters.userID
-    }
   },
   methods: {
     itemClickHandler(item) {
@@ -220,7 +217,7 @@ export default {
           cmd: "del_author",
           id: this.seriesID,
           check: this.status,
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {}

@@ -93,7 +93,6 @@ export default {
         function(rd) {
           if (rd) {
             store.commit("showRegModal", false);
-            store.commit("setUserId", rd);
             self.$store
               .dispatch(AUTH_REQUEST, {
                 username,

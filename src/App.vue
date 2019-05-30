@@ -116,7 +116,7 @@ export default {
     },
     selectedCheckbox: function() {
       store.commit("setInfoPanel", this.selectedCheckbox[0]);
-    }  
+    },
   }
 };
 </script>

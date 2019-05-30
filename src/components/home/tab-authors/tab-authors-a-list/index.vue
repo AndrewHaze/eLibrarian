@@ -288,9 +288,6 @@ export default {
           return { text: f.label, value: f.key };
         });
     },
-    userID: function() {
-      return this.$store.getters.userID
-    }
   },
   methods: {
     //modal 2-3
@@ -436,7 +433,7 @@ export default {
           cmd: "del_author",
           id: this.authorID,
           check: this.status,
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {}

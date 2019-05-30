@@ -57,9 +57,6 @@ export default {
     currentSI: function() {
       return this.$store.getters.seriesID;
     },
-    userID: function() {
-      return this.$store.getters.userID
-    }
   },
   watch: {
     selected: function() {
@@ -76,7 +73,7 @@ export default {
         {
           cmd: "с_list",
           dat: "series",
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {
@@ -88,7 +85,7 @@ export default {
         {
           cmd: "sa_list",
           dat: "",
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {

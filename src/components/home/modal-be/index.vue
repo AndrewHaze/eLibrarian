@@ -918,11 +918,6 @@ export default {
       s2OptionsOrigLang: []
     };
   },
-  computed: {
-    userID: function() {
-      return this.$store.getters.userID
-    }
-  },
   mounted: function() {
     const self = this;
 
@@ -974,7 +969,7 @@ export default {
       {
         cmd: "lg_list",
         dat: "",
-        uid: this.userID
+        uid: sessionStorage.getItem('user-login')
       },
       "",
       function(rd) {
@@ -988,7 +983,7 @@ export default {
       {
         cmd: "bg_list",
         dat: "",
-        uid: this.userID
+        uid: sessionStorage.getItem('user-login')
       },
       "",
       function(rd) {
@@ -1018,7 +1013,7 @@ export default {
         {
           cmd: "b_authors",
           dat: self.bkID,
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {
@@ -1031,7 +1026,7 @@ export default {
         {
           cmd: "book",
           dat: self.bkID,
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {
@@ -1076,7 +1071,7 @@ export default {
         {
           cmd: "a_list",
           dat: "simple",
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {
@@ -1089,7 +1084,7 @@ export default {
         {
           cmd: "sa_list",
           dat: "simple",
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {
@@ -1102,7 +1097,7 @@ export default {
         {
           cmd: "b_ser",
           dat: self.bkID,
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {
@@ -1115,7 +1110,7 @@ export default {
         {
           cmd: "b_lang",
           dat: self.bkID,
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {
@@ -1128,7 +1123,7 @@ export default {
         {
           cmd: "b_lang_src",
           dat: self.bkID,
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {
@@ -1142,7 +1137,7 @@ export default {
         {
           cmd: "b_genres",
           dat: self.bkID,
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {

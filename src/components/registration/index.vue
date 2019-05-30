@@ -56,11 +56,6 @@ export default {
       passwordState: null
     };
   },
-  computed: {
-    userID: function() {
-      return this.$store.getters.userID
-    }
-  },
   methods: {
     regFinish: function() {
       const { username, password } = this;
@@ -70,7 +65,7 @@ export default {
           cmd: "register", //проверяем наличие зарег. пользователей
           usr: username,
           psw: password,
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {
@@ -120,7 +115,7 @@ export default {
         {
           cmd: "exist", //проверяем наличие зарег. пользователей
           dat: username,
-          uid: this.userID
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {
