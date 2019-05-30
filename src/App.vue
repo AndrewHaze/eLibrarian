@@ -108,7 +108,6 @@ export default {
     ...mapState({
       authLoading: state => state.auth.status === "loading",
       name: state => `${state.user.profile.name}`
-      //name: state => `${state.auth.owner}`
     })
   },
   watch: {
@@ -181,6 +180,7 @@ section {
   padding-bottom: 30%;
   font-size: 1.2rem;
   box-sizing: border-box;
+  z-index: 100;
 }
 
 .btn {

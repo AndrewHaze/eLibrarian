@@ -918,7 +918,11 @@ export default {
       s2OptionsOrigLang: []
     };
   },
-  watch: {},
+  computed: {
+    userID: function() {
+      return this.$store.getters.userID
+    }
+  },
   mounted: function() {
     const self = this;
 
@@ -964,11 +968,13 @@ export default {
     ///////////////////////////// драг&дроп обложки (конец) ////////////////////////////////////
 
     //список языков
+    
     this.callApi(
       this.$store.getters.prefix + "/static/api.php",
       {
         cmd: "lg_list",
-        dat: ""
+        dat: "",
+        uid: this.userID
       },
       "",
       function(rd) {
@@ -981,7 +987,8 @@ export default {
       this.$store.getters.prefix + "/static/api.php",
       {
         cmd: "bg_list",
-        dat: ""
+        dat: "",
+        uid: this.userID
       },
       "",
       function(rd) {
@@ -1010,7 +1017,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "b_authors",
-          dat: self.bkID
+          dat: self.bkID,
+          uid: this.userID
         },
         "",
         function(rd) {
@@ -1022,7 +1030,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "book",
-          dat: self.bkID
+          dat: self.bkID,
+          uid: this.userID
         },
         "",
         function(rd) {
@@ -1066,7 +1075,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "a_list",
-          dat: "simple"
+          dat: "simple",
+          uid: this.userID
         },
         "",
         function(rd) {
@@ -1078,7 +1088,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "sa_list",
-          dat: "simple"
+          dat: "simple",
+          uid: this.userID
         },
         "",
         function(rd) {
@@ -1090,7 +1101,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "b_ser",
-          dat: self.bkID
+          dat: self.bkID,
+          uid: this.userID
         },
         "",
         function(rd) {
@@ -1102,7 +1114,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "b_lang",
-          dat: self.bkID
+          dat: self.bkID,
+          uid: this.userID
         },
         "",
         function(rd) {
@@ -1114,7 +1127,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "b_lang_src",
-          dat: self.bkID
+          dat: self.bkID,
+          uid: this.userID
         },
         "",
         function(rd) {
@@ -1127,7 +1141,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "b_genres",
-          dat: self.bkID
+          dat: self.bkID,
+          uid: this.userID
         },
         "",
         function(rd) {

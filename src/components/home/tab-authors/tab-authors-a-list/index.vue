@@ -287,6 +287,9 @@ export default {
         .map(f => {
           return { text: f.label, value: f.key };
         });
+    },
+    userID: function() {
+      return this.$store.getters.userID
     }
   },
   methods: {
@@ -432,7 +435,8 @@ export default {
         {
           cmd: "del_author",
           id: this.authorID,
-          check: this.status
+          check: this.status,
+          uid: this.userID
         },
         "",
         function(rd) {}

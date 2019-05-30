@@ -56,6 +56,11 @@ export default {
       passwordState: null
     };
   },
+  computed: {
+    userID: function() {
+      return this.$store.getters.userID
+    }
+  },
   methods: {
     regFinish: function() {
       const { username, password } = this;
@@ -64,7 +69,8 @@ export default {
         {
           cmd: "register", //проверяем наличие зарег. пользователей
           usr: username,
-          psw: password
+          psw: password,
+          uid: this.userID
         },
         "",
         function(rd) {
@@ -113,7 +119,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "exist", //проверяем наличие зарег. пользователей
-          dat: username
+          dat: username,
+          uid: this.userID
         },
         "",
         function(rd) {

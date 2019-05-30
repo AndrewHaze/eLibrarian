@@ -315,45 +315,7 @@ export default {
   },
   watch: {
     curSLI: function(val) {
-      if (val === -1) {
-        this.curSLibrary = null;
-        this.selectedItem = null;
-        return;
-      } 
-      this.isLoading = true;
-      const self = this;
-      let value = Math.floor(val);
-      let dateFrom = this.$store.getters.dateFrom;
-      let dateTo = this.$store.getters.dateTo;
-      //в остальных местах явно возвращаем из responce
-      this.curSLibrary = value;
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "series_by_condition",
-          dat: value,
-          dat1: dateFrom,
-          dat2: dateTo
-        },
-        "",
-        function(rd) {
-          self.sListItems = rd;
-        }
-      );
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "books_by_condition", //список книг
-          dat: value,
-          dat1: dateFrom,
-          dat2: dateTo
-        },
-        "",
-        function(rd) {
-          self.bListItems = rd; //возвр. данные (Responce)
-          self.selectedItem = null;
-        }
-      );
+      this.csMetod(val);
     },
     curAI: function(val) {
       if (val === -1) {
@@ -520,6 +482,48 @@ export default {
     }
   },
   methods: {
+    csMetod: function(val) {
+      if (val === -1) {
+        this.curSLibrary = null;
+        this.selectedItem = null;
+        return;
+      } 
+      this.isLoading = true;
+      const self = this;
+      let value = Math.floor(val);
+      let dateFrom = this.$store.getters.dateFrom;
+      let dateTo = this.$store.getters.dateTo;
+      //в остальных местах явно возвращаем из responce
+      this.curSLibrary = value;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "series_by_condition",
+          dat: value,
+          dat1: dateFrom,
+          dat2: dateTo
+        },
+        "",
+        function(rd) {
+          self.sListItems = rd;
+          console.log(1)
+        }
+      );
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "books_by_condition", //список книг
+          dat: value,
+          dat1: dateFrom,
+          dat2: dateTo
+        },
+        "",
+        function(rd) {
+          self.bListItems = rd; //возвр. данные (Responce)
+          self.selectedItem = null;
+        }
+      );
+    },
     strAuthor: function(val) {
       if (val.length > 200) {
         return "Коллектив авторов";
@@ -665,7 +669,6 @@ export default {
     },
     onScroll() {
       this.bMenu = false;
-      console.log(1)
     },
     openReaderClick(item) {
       store.commit("setReader", true);
@@ -679,11 +682,11 @@ export default {
     },
     readButtonClick(item) {
       this.bMenu = false;
-      let element = this.bListItems[
-        this.bListItems.map(el => el.id).indexOf(this.selectedItem.id)
-      ];
+      let index = this.bListItems.map(el => el.id).indexOf(this.selectedItem.id);
+      let element = this.bListItems[index];
       element.isRead = !element.isRead;
       const self = this;
+      
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {
@@ -694,6 +697,9 @@ export default {
         "",
         function(rd) {
           if (!rd) element.isRead = !element.isRead;
+          if ((self.sid === 'tld') && (self.curSLibrary === 2)) {
+            
+          }
         }
       );
     },

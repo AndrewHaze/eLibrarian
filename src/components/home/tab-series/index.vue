@@ -56,6 +56,9 @@ export default {
   computed: {
     currentSI: function() {
       return this.$store.getters.seriesID;
+    },
+    userID: function() {
+      return this.$store.getters.userID
     }
   },
   watch: {
@@ -72,7 +75,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "с_list",
-          dat: "series"
+          dat: "series",
+          uid: this.userID
         },
         "",
         function(rd) {
@@ -83,7 +87,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "sa_list",
-          dat: ""
+          dat: "",
+          uid: this.userID
         },
         "",
         function(rd) {

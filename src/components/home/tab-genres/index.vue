@@ -61,6 +61,9 @@ export default {
     //порядок сортировки
     currentOC: function() {
       return this.$store.getters.orderCode;
+    },
+    userID: function() {
+      return this.$store.getters.userID
     }
   },
   watch: {
@@ -83,7 +86,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "с_list",
-          dat: "genres"
+          dat: "genres",
+          uid: this.userID
         },
         "",
         function(rd) {
@@ -97,7 +101,8 @@ export default {
           id: id,
           type: type,
           filter: self.gFilter,
-          order: self.currentOC
+          order: self.currentOC,
+          uid: this.userID
         },
         "",
         function(rd) {

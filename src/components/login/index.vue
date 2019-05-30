@@ -63,7 +63,7 @@ export default {
       this.$store.getters.prefix + "/static/api.php",
       {
         cmd: "first", //проверяем наличие зарег. пользователей
-        dat: ""
+        dat: "",
       },
       "",
       function(rd) {
@@ -86,12 +86,14 @@ export default {
         {
           cmd: "verification", //проверяем наличие зарег. пользователей
           usr: username,
-          psw: password
+          psw: password,
+          uid: username
         },
         "",
         function(rd) {
           if (rd) {
             store.commit("showRegModal", false);
+            store.commit("setUserId", rd);
             self.$store
               .dispatch(AUTH_REQUEST, {
                 username,
@@ -134,7 +136,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "exist", //проверяем наличие зарег. пользователей
-          dat: username
+          dat: username,
+          uid: username
         },
         "",
         function(rd) {

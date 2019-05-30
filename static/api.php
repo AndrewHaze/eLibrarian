@@ -15,7 +15,9 @@ $_POST = json_decode(file_get_contents("php://input"), true);
 
 if (isset($_POST["cmd"])) {
     session_name("xeg6joZqNSGP3FyEi6xW");
-    session_start();
+    if (isset($_POST["uid"])) {
+        session_start($_POST["uid"]);
+    }
     $pdo = pdo_connect();
     switch ($_POST["cmd"]) {
         case "first": //есть заг. пользователи?

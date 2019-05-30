@@ -56,6 +56,9 @@ export default {
   computed: {
     currentAI: function() {
       return this.$store.getters.authorID;
+    },
+    userID: function() {
+      return this.$store.getters.userID
     }
   },
   watch: {
@@ -72,7 +75,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "с_list",
-          dat: "authors"
+          dat: "authors",
+          uid: this.userID
         },
         "",
         function(rd) {
@@ -83,7 +87,8 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "a_list",
-          dat: ""
+          dat: "",
+          uid: this.userID
         },
         "",
         function(rd) {
