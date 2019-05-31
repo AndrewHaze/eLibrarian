@@ -1,14 +1,14 @@
 <?php
 //Включение буферизации вывода
 //что-бы не портить JSON
-ob_start(); 
+ob_start();
 require_once "functions.php";
 
 set_cors();
 
-session_name("xeg6joZqNSGP3FyEi6xW");
+session_name($_POST["uid"]);
 session_start();
-
+$handle = fopen("uploads/bookparsing.log", "w");
 $res = array("data" => array(), "success" => true, "error" => "");
 
 $target_dir = "uploads/";

@@ -502,6 +502,7 @@ export default {
         const self = this;
         let formData = new FormData();
         formData.append("file", filesList[i]);
+        formData.append("uid", sessionStorage.getItem('user-login'));
         let fSize = new Date(filesList[i].lastModified);
         axios({
           method: "post",
@@ -569,6 +570,7 @@ export default {
         {
           cmd: "clear_upload", //очищаем загрузку при закрытии окна
           dat: "",
+          uid: sessionStorage.getItem('user-login')
         },
         "",
         function(rd) {}

@@ -14,10 +14,7 @@ $res = array("data" => array(), "success" => true, "error" => "");
 $_POST = json_decode(file_get_contents("php://input"), true);
 
 if (isset($_POST["cmd"])) {
-    //session_name("xeg6joZqNSGP3FyEi6xW");
-    // if (isset($_POST["uid"])) {
-    //     session_start($_POST["uid"]);
-    // } else session_start();
+    session_name($_POST["uid"]);
     session_start();
     $pdo = pdo_connect();
     switch ($_POST["cmd"]) {
@@ -53,7 +50,6 @@ if (isset($_POST["cmd"])) {
             }
             break;
         case "register": //регистрация
-        
             if ($pdo) {
                 $username = $_POST["usr"];
                 $password = $_POST["psw"];
@@ -90,8 +86,6 @@ if (isset($_POST["cmd"])) {
                 $res["success"] = false;
                 $res["error"] = "PDO Error";
             }
-            
-            
             break;
         case "status_read": //Отметка о прочтении
             if ($pdo and $_SESSION["user"]) {

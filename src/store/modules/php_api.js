@@ -2,7 +2,7 @@ const state = {
   link: "http://l.mgr.loc",
   possibility: true,
   reg: false,
-  at: 'eLibrarian v.0.0.1',
+  at: 'eLibrarian v.0.1.0',
   sli: -1,
   df: null,
   dt: null,
