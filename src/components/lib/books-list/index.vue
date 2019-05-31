@@ -125,7 +125,7 @@
         </div>
       </div>
       <div v-else class="for-nothing-selected">Ничего не найдено...</div>
-      <div v-if="isLoading" class="loading-screen">
+      <div v-if="isLoading" :class="[{rightmargin: infoPanel}, 'loading-screen']">
         <b-spinner variant="warning"/>
       </div>
     </div>

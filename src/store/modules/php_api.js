@@ -18,7 +18,6 @@ const state = {
   ip: ['on'],
   reader: false,
   //
-  uid: '' //мой id пользователя
 }
 
 const getters = {
@@ -51,8 +50,6 @@ const getters = {
   //reader
   isReader: state => state.reader,
 
-  //
-  userID: state => state.uid
 }
 
 function storageAvailable(type) {
@@ -136,10 +133,7 @@ const mutations = {
   },
   setReader(state, value) {
     state.reader = value
-  },
-  setUserId(state, value) {
-    state.uid = value
-  },
+  }
 }
 
 export default {
