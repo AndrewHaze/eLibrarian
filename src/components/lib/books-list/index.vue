@@ -35,7 +35,7 @@
               </div>
               <div class="info">
                 <div class="book-authors">{{ strAuthor(bItem.author) }}</div>
-                <div class="book-title">{{ bItem.title }}</div>
+                <div class="book-title"><span v-html="hyphenate(bItem.title)"></span></div>
                 <div>{{ strGenres(bItem.genres) }}</div>
               </div>
               <div class="mark-group">
@@ -138,7 +138,7 @@
         <div class="cover" :class="{ nocover: selectedItem.cover === '' }">
           <img v-if="selectedItem.cover" :src="'data:image/jpg;base64,'+selectedItem.cover">
         </div>
-        <div class="annotation">{{ selectedItem.annotation }}</div>
+        <div class="annotation"><span v-html="hyphenate(selectedItem.annotation)"></span></div>
       </div>
       <div v-else-if="infoPanel && curAuthor" class="book-info-panel">
         <div class="book-author">{{ this.curAuthor }}</div>
@@ -330,7 +330,7 @@ export default {
         {
           cmd: "as_list", //список серий автора
           dat: val,
-          uid: sessionStorage.getItem('user-login')
+          uid: sessionStorage.getItem("user-login")
         },
         "",
         function(rd) {
@@ -342,7 +342,7 @@ export default {
         {
           cmd: "ab_list", //список книг
           dat: val,
-          uid: sessionStorage.getItem('user-login')
+          uid: sessionStorage.getItem("user-login")
         },
         "",
         function(rd) {
@@ -355,7 +355,7 @@ export default {
         {
           cmd: "author", //выбраный автор
           dat: val,
-          uid: sessionStorage.getItem('user-login')
+          uid: sessionStorage.getItem("user-login")
         },
         "",
         function(rd) {
@@ -377,7 +377,7 @@ export default {
         {
           cmd: "sb_list",
           dat: val,
-          uid: sessionStorage.getItem('user-login')
+          uid: sessionStorage.getItem("user-login")
         },
         "",
         function(rd) {
@@ -390,7 +390,7 @@ export default {
         {
           cmd: "ser", //выбраная серия
           dat: val,
-          uid: sessionStorage.getItem('user-login')
+          uid: sessionStorage.getItem("user-login")
         },
         "",
         function(rd) {
@@ -428,7 +428,7 @@ export default {
           id: val,
           type: type,
           filter: filter,
-          uid: sessionStorage.getItem('user-login')
+          uid: sessionStorage.getItem("user-login")
         },
         "",
         function(rd) {
@@ -443,7 +443,7 @@ export default {
           id: val,
           type: type,
           filter: filter,
-          uid: sessionStorage.getItem('user-login')
+          uid: sessionStorage.getItem("user-login")
         },
         "",
         function(rd) {
@@ -459,7 +459,7 @@ export default {
         {
           cmd: "series",
           dat: val,
-          uid: sessionStorage.getItem('user-login')
+          uid: sessionStorage.getItem("user-login")
         },
         "",
         function(rd) {
@@ -490,12 +490,12 @@ export default {
     }
   },
   methods: {
-    csMetod: function(val) {
+    csMetod(val) {
       if (val === -1) {
         this.curSLibrary = null;
         this.selectedItem = null;
         return;
-      } 
+      }
       this.isLoading = true;
       const self = this;
       let value = Math.floor(val);
@@ -510,12 +510,11 @@ export default {
           dat: value,
           dat1: dateFrom,
           dat2: dateTo,
-          uid: sessionStorage.getItem('user-login')
+          uid: sessionStorage.getItem("user-login")
         },
         "",
         function(rd) {
           self.sListItems = rd;
-          console.log(1)
         }
       );
       this.callApi(
@@ -525,7 +524,7 @@ export default {
           dat: value,
           dat1: dateFrom,
           dat2: dateTo,
-          uid: sessionStorage.getItem('user-login')
+          uid: sessionStorage.getItem("user-login")
         },
         "",
         function(rd) {
@@ -534,12 +533,34 @@ export default {
         }
       );
     },
-    strAuthor: function(val) {
+    hyphenate(text) {
+      let RusA = "[абвгдеёжзийклмнопрстуфхцчшщъыьэюя]";
+      let RusV = "[аеёиоуыэюя]";
+      let RusN = "[бвгджзклмнпрстфхцчшщ]";
+      let RusX = "[йъь]";
+      let Hyphen = "&shy;"; //&shy;
+
+      let re1 = new RegExp("(" + RusX + ")(" + RusA + RusA + ")", "ig");
+      let re2 = new RegExp("(" + RusV + ")(" + RusV + RusA + ")", "ig");
+      let re3 = new RegExp("(" + RusV + RusN + ")(" + RusN + RusV + ")", "ig");
+      let re4 = new RegExp("(" + RusN + RusV + ")(" + RusN + RusV + ")", "ig");
+      let re5 = new RegExp("(" + RusV + RusN + ")(" + RusN + RusN + RusV + ")","ig");
+      let re6 = new RegExp("(" + RusV + RusN + RusN + ")(" + RusN + RusN + RusV + ")","ig");
+
+      text = text.replace(re1, "$1" + Hyphen + "$2");
+      text = text.replace(re2, "$1" + Hyphen + "$2");
+      text = text.replace(re3, "$1" + Hyphen + "$2");
+      text = text.replace(re4, "$1" + Hyphen + "$2");
+      text = text.replace(re5, "$1" + Hyphen + "$2");
+      text = text.replace(re6, "$1" + Hyphen + "$2");
+      return text;
+    },
+    strAuthor(val) {
       if (val.length > 200) {
         return "Коллектив авторов";
       } else return val;
     },
-    strGenres: function(val) {
+    strGenres(val) {
       return val.replace(" (то, что не вошло в другие категории)", "");
     },
     delHandleOk() {
@@ -549,7 +570,7 @@ export default {
         {
           cmd: "del_book",
           dat: this.bookID,
-          uid: sessionStorage.getItem('user-login')
+          uid: sessionStorage.getItem("user-login")
         },
         "",
         function(rd) {}
@@ -611,11 +632,11 @@ export default {
           mH = 32;
         //координаты родителя
         let p = document.getElementById(this.sid).getBoundingClientRect();
-        
+
         //координаты относительно родителя
         let c = document.getElementById(id).getBoundingClientRect();
         this.bMenuX = c.left + (c.width - mW) / 2 - p.left;
-        let factor = (this.sid === 'tld') ? 1.5 : 2.5; 
+        let factor = this.sid === "tld" ? 1.5 : 2.5;
         if (this.getViewportHeight() > c.bottom + p.top - mH * factor) {
           this.bMenuY = c.bottom - p.top - 3;
         } else {
@@ -693,24 +714,25 @@ export default {
     },
     readButtonClick(item) {
       this.bMenu = false;
-      let index = this.bListItems.map(el => el.id).indexOf(this.selectedItem.id);
+      let index = this.bListItems
+        .map(el => el.id)
+        .indexOf(this.selectedItem.id);
       let element = this.bListItems[index];
       element.isRead = !element.isRead;
       const self = this;
-      
+
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "status_read",
           id: this.bookID,
           state: element.isRead,
-          uid: sessionStorage.getItem('user-login')
+          uid: sessionStorage.getItem("user-login")
         },
         "",
         function(rd) {
           if (!rd) element.isRead = !element.isRead;
-          if ((self.sid === 'tld') && (self.curSLibrary === 2)) {
-            
+          if (self.sid === "tld" && self.curSLibrary === 2) {
           }
         }
       );
@@ -728,7 +750,7 @@ export default {
           cmd: "status_toplan",
           id: this.bookID,
           state: element.isToPlan,
-          uid: sessionStorage.getItem('user-login')
+          uid: sessionStorage.getItem("user-login")
         },
         "",
         function(rd) {
@@ -749,7 +771,7 @@ export default {
           cmd: "status_favorites",
           id: this.bookID,
           state: element.isFavorites,
-          uid: sessionStorage.getItem('user-login')
+          uid: sessionStorage.getItem("user-login")
         },
         "",
         function(rd) {
@@ -770,7 +792,7 @@ export default {
           cmd: "set_stars",
           id: this.bookID,
           state: element.howManyStars,
-          uid: sessionStorage.getItem('user-login')
+          uid: sessionStorage.getItem("user-login")
         },
         "",
         function(rd) {}
@@ -1042,6 +1064,9 @@ $ip-width: 21rem;
         position: relative;
         flex-flow: column nowrap;
         line-height: 1.3;
+        * {
+          hyphens: auto;
+        }
 
         .book-authors {
           color: #4c4c4c;
@@ -1052,6 +1077,7 @@ $ip-width: 21rem;
           font-weight: 600;
           margin: 0.3rem 0 0.3rem;
           line-height: 1.1;
+          max-width: 75%;
         }
       }
 
