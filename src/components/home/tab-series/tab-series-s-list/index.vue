@@ -216,8 +216,7 @@ export default {
         {
           cmd: "del_author",
           id: this.seriesID,
-          check: this.status,
-          uid: sessionStorage.getItem('user-login')
+          check: this.status
         },
         "",
         function(rd) {}

@@ -14,7 +14,6 @@ $res = array("data" => array(), "success" => true, "error" => "");
 $_POST = json_decode(file_get_contents("php://input"), true);
 
 if (isset($_POST["cmd"])) {
-    session_name($_POST["uid"]);
     session_start();
     $pdo = pdo_connect();
     switch ($_POST["cmd"]) {
@@ -86,6 +85,9 @@ if (isset($_POST["cmd"])) {
                 $res["success"] = false;
                 $res["error"] = "PDO Error";
             }
+            break;
+        case "check": //логин
+            $res["data"] = $_SESSION['user'];
             break;
         case "status_read": //Отметка о прочтении
             if ($pdo and $_SESSION["user"]) {
@@ -287,7 +289,7 @@ if (isset($_POST["cmd"])) {
                         array_push($res["data"],
                             array(
                                 "id" => "se" . $value[se_id],
-                                "seriesTitle" => $value[se_title]
+                                "seriesTitle" => $value[se_title],
                             ));
                     }
                 } else {
@@ -301,39 +303,39 @@ if (isset($_POST["cmd"])) {
                 $username = $_SESSION["user"];
                 unset($condition);
                 switch ($_POST["dat"]) {
-                    case 1: 
+                    case 1:
                         $condition = " ";
-                    break;
-                    case 2: 
+                        break;
+                    case 2:
                         $condition = " AND bk_read = 1 ";
-                    break;
-                    case 3: 
+                        break;
+                    case 3:
                         $condition = " AND bk_to_plan = 1 ";
-                    break;                    
-                    case 4: 
+                        break;
+                    case 4:
                         $condition = " AND bk_favorites = 1 ";
-                    break;   
-                    case 5: 
+                        break;
+                    case 5:
                         $condition = " AND YEARWEEK(CURDATE()) = YEARWEEK(bk_added) ";
-                    break;
-                    case 6: 
+                        break;
+                    case 6:
                         $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) AND MONTH(CURDATE()) = MONTH(bk_added) ";
-                    break;                    
-                    case 7: 
+                        break;
+                    case 7:
                         $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) ";
-                    break;  
-                    case 8: 
-                        $condition = " AND bk_added >= '".$_POST['dat1']."' AND bk_added <= '".$_POST['dat2']."' ";
+                        break;
+                    case 8:
+                        $condition = " AND bk_added >= '" . $_POST['dat1'] . "' AND bk_added <= '" . $_POST['dat2'] . "' ";
                         //$condition = " ";
-                    break;                                        
+                        break;
                     default:
                         $condition = " ";
                 }
                 $stmt = $pdo->prepare('SELECT DISTINCT se_id, se_title
                                         FROM books, series, users
                                        WHERE se_id = bk_se_id'
-                                         .$condition.   
-                                        'AND bk_ur_id = ur_id
+                    . $condition .
+                    'AND bk_ur_id = ur_id
                                          AND ur_login = :login
                                          ORDER BY se_title');
                 $stmt->bindValue(':login', $username, PDO::PARAM_STR);
@@ -343,7 +345,7 @@ if (isset($_POST["cmd"])) {
                         array_push($res["data"],
                             array(
                                 "id" => "se" . $value[se_id],
-                                "seriesTitle" => $value[se_title]
+                                "seriesTitle" => $value[se_title],
                             ));
                     }
                 } else {
@@ -351,38 +353,38 @@ if (isset($_POST["cmd"])) {
                     $res["error"] = "dbe";
                 }
             }
-            break;            
+            break;
         case "books_by_condition": //книги по условию
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 unset($condition);
                 switch ($_POST["dat"]) {
-                    case 1: 
+                    case 1:
                         $condition = " ";
-                    break;
-                    case 2: 
+                        break;
+                    case 2:
                         $condition = " AND bk_read = 1 ";
-                    break;
-                    case 3: 
+                        break;
+                    case 3:
                         $condition = " AND bk_to_plan = 1 ";
-                    break;                    
-                    case 4: 
+                        break;
+                    case 4:
                         $condition = " AND bk_favorites = 1 ";
-                    break;   
-                    case 5: 
+                        break;
+                    case 5:
                         $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) AND MONTH(CURDATE()) = MONTH(bk_added) AND WEEK(CURDATE()) = WEEK(bk_added) ";
-                    break;
-                    case 6: 
+                        break;
+                    case 6:
                         $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) AND MONTH(CURDATE()) = MONTH(bk_added) ";
-                    break;                    
-                    case 7: 
+                        break;
+                    case 7:
                         $condition = " AND YEAR(CURDATE()) = YEAR(bk_added) ";
-                    break;     
-                    case 8: 
-                        $condition = " AND bk_added >= '".$_POST['dat1']."' AND bk_added <= '".$_POST['dat2']."' ";
+                        break;
+                    case 8:
+                        $condition = " AND bk_added >= '" . $_POST['dat1'] . "' AND bk_added <= '" . $_POST['dat2'] . "' ";
                         $handle = fopen("uploads/bookparsing.log", "w");
                         fwrite($handle, $condition);
-                    break;                                  
+                        break;
                     default:
                         $condition = " ";
                 }
@@ -407,13 +409,13 @@ if (isset($_POST["cmd"])) {
                                         FROM books, series, users
                                        WHERE se_id = bk_se_id
                                          AND bk_ur_id = ur_id'
-                                         .$condition.
-                                         'AND ur_login = :login1
+                    . $condition .
+                    'AND ur_login = :login1
                                          ORDER BY se_title, bk_number, bk_title');
                 $stmt->bindValue(':login1', $username, PDO::PARAM_STR);
                 $stmt->bindValue(':login2', $username, PDO::PARAM_STR);
                 $stmt->bindValue(':login3', $username, PDO::PARAM_STR);
-                
+
                 if ($stmt->execute()) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {

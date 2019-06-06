@@ -72,8 +72,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "с_list",
-          dat: "series",
-          uid: sessionStorage.getItem('user-login')
+          dat: "series"
         },
         "",
         function(rd) {
@@ -84,8 +83,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "sa_list",
-          dat: "",
-          uid: sessionStorage.getItem('user-login')
+          dat: ""
         },
         "",
         function(rd) {

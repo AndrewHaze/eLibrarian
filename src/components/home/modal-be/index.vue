@@ -969,7 +969,6 @@ export default {
       {
         cmd: "lg_list",
         dat: "",
-        uid: sessionStorage.getItem('user-login')
       },
       "",
       function(rd) {
@@ -983,7 +982,6 @@ export default {
       {
         cmd: "bg_list",
         dat: "",
-        uid: sessionStorage.getItem('user-login')
       },
       "",
       function(rd) {
@@ -1012,8 +1010,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "b_authors",
-          dat: self.bkID,
-          uid: sessionStorage.getItem('user-login')
+          dat: self.bkID
         },
         "",
         function(rd) {
@@ -1025,8 +1022,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "book",
-          dat: self.bkID,
-          uid: sessionStorage.getItem('user-login')
+          dat: self.bkID
         },
         "",
         function(rd) {
@@ -1070,8 +1066,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "a_list",
-          dat: "simple",
-          uid: sessionStorage.getItem('user-login')
+          dat: "simple"
         },
         "",
         function(rd) {
@@ -1083,8 +1078,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "sa_list",
-          dat: "simple",
-          uid: sessionStorage.getItem('user-login')
+          dat: "simple"
         },
         "",
         function(rd) {
@@ -1096,8 +1090,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "b_ser",
-          dat: self.bkID,
-          uid: sessionStorage.getItem('user-login')
+          dat: self.bkID
         },
         "",
         function(rd) {
@@ -1109,8 +1102,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "b_lang",
-          dat: self.bkID,
-          uid: sessionStorage.getItem('user-login')
+          dat: self.bkID
         },
         "",
         function(rd) {
@@ -1122,8 +1114,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "b_lang_src",
-          dat: self.bkID,
-          uid: sessionStorage.getItem('user-login')
+          dat: self.bkID
         },
         "",
         function(rd) {
@@ -1136,8 +1127,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "b_genres",
-          dat: self.bkID,
-          uid: sessionStorage.getItem('user-login')
+          dat: self.bkID
         },
         "",
         function(rd) {

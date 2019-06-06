@@ -2,6 +2,7 @@ import Vue from 'vue';
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import { AUTH_LOGOUT } from "./store/actions/auth";
 import VJstree from 'vue-jstree'
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
@@ -32,6 +33,25 @@ Vue.mixin({
     },
     callApi(url, prms, hct, callback) {
       axios({
+        method: "post", //отправка файла pdf
+        url: this.$store.getters.prefix + "/static/api.php",
+        data: { cmd: 'check' },
+        withCredentials: true, //передаем куки
+        headers: {
+          "content-type": "application/x-www-form-urlencoded"
+        }
+      })
+        .then(response => {
+          if ((response.data.data != sessionStorage.getItem('user-login')) && this.$store.getters.isAuthenticated) {
+            this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push("/login"));
+            return true
+          }
+        })
+        .catch(error => {
+          this.setServerError(error.message, error.stack);
+          this.errored = true;
+        });
+      axios({
         method: "post",
         url: url,
         data: prms,
@@ -51,7 +71,7 @@ Vue.mixin({
         .catch(error => {
           this.setServerError(error.message, error.stack);
           this.errored = true;
-        })
+        })             ///????
         .finally(() => (this.loading = false));
     },
     //

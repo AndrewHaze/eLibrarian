@@ -64,8 +64,7 @@ export default {
         {
           cmd: "register", //проверяем наличие зарег. пользователей
           usr: username,
-          psw: password,
-          uid: sessionStorage.getItem('user-login')
+          psw: password
         },
         "",
         function(rd) {
@@ -114,8 +113,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "exist", //проверяем наличие зарег. пользователей
-          dat: username,
-          uid: sessionStorage.getItem('user-login')
+          dat: username
         },
         "",
         function(rd) {

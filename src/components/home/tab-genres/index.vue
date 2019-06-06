@@ -83,8 +83,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "с_list",
-          dat: "genres",
-          uid: sessionStorage.getItem('user-login')
+          dat: "genres"
         },
         "",
         function(rd) {
@@ -98,8 +97,7 @@ export default {
           id: id,
           type: type,
           filter: self.gFilter,
-          order: self.currentOC,
-          uid: sessionStorage.getItem('user-login')
+          order: self.currentOC
         },
         "",
         function(rd) {

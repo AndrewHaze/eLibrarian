@@ -329,8 +329,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "as_list", //список серий автора
-          dat: val,
-          uid: sessionStorage.getItem("user-login")
+          dat: val
         },
         "",
         function(rd) {
@@ -341,8 +340,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "ab_list", //список книг
-          dat: val,
-          uid: sessionStorage.getItem("user-login")
+          dat: val
         },
         "",
         function(rd) {
@@ -354,8 +352,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "author", //выбраный автор
-          dat: val,
-          uid: sessionStorage.getItem("user-login")
+          dat: val
         },
         "",
         function(rd) {
@@ -376,8 +373,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "sb_list",
-          dat: val,
-          uid: sessionStorage.getItem("user-login")
+          dat: val
         },
         "",
         function(rd) {
@@ -389,8 +385,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "ser", //выбраная серия
-          dat: val,
-          uid: sessionStorage.getItem("user-login")
+          dat: val
         },
         "",
         function(rd) {
@@ -427,8 +422,7 @@ export default {
           cmd: "gs_list", //список серий в жанре
           id: val,
           type: type,
-          filter: filter,
-          uid: sessionStorage.getItem("user-login")
+          filter: filter
         },
         "",
         function(rd) {
@@ -442,8 +436,7 @@ export default {
           cmd: "gb_list",
           id: val,
           type: type,
-          filter: filter,
-          uid: sessionStorage.getItem("user-login")
+          filter: filter
         },
         "",
         function(rd) {
@@ -458,8 +451,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "series",
-          dat: val,
-          uid: sessionStorage.getItem("user-login")
+          dat: val
         },
         "",
         function(rd) {
@@ -509,8 +501,7 @@ export default {
           cmd: "series_by_condition",
           dat: value,
           dat1: dateFrom,
-          dat2: dateTo,
-          uid: sessionStorage.getItem("user-login")
+          dat2: dateTo
         },
         "",
         function(rd) {
@@ -523,8 +514,7 @@ export default {
           cmd: "books_by_condition", //список книг
           dat: value,
           dat1: dateFrom,
-          dat2: dateTo,
-          uid: sessionStorage.getItem("user-login")
+          dat2: dateTo
         },
         "",
         function(rd) {
@@ -569,8 +559,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "del_book",
-          dat: this.bookID,
-          uid: sessionStorage.getItem("user-login")
+          dat: this.bookID
         },
         "",
         function(rd) {}
@@ -726,8 +715,7 @@ export default {
         {
           cmd: "status_read",
           id: this.bookID,
-          state: element.isRead,
-          uid: sessionStorage.getItem("user-login")
+          state: element.isRead
         },
         "",
         function(rd) {
@@ -749,8 +737,7 @@ export default {
         {
           cmd: "status_toplan",
           id: this.bookID,
-          state: element.isToPlan,
-          uid: sessionStorage.getItem("user-login")
+          state: element.isToPlan
         },
         "",
         function(rd) {
@@ -770,8 +757,7 @@ export default {
         {
           cmd: "status_favorites",
           id: this.bookID,
-          state: element.isFavorites,
-          uid: sessionStorage.getItem("user-login")
+          state: element.isFavorites
         },
         "",
         function(rd) {
@@ -791,8 +777,7 @@ export default {
         {
           cmd: "set_stars",
           id: this.bookID,
-          state: element.howManyStars,
-          uid: sessionStorage.getItem("user-login")
+          state: element.howManyStars
         },
         "",
         function(rd) {}

@@ -502,7 +502,6 @@ export default {
         const self = this;
         let formData = new FormData();
         formData.append("file", filesList[i]);
-        formData.append("uid", sessionStorage.getItem('user-login'));
         let fSize = new Date(filesList[i].lastModified);
         axios({
           method: "post",
@@ -569,8 +568,7 @@ export default {
         this.$store.getters.prefix + "/static/api.php",
         {
           cmd: "clear_upload", //очищаем загрузку при закрытии окна
-          dat: "",
-          uid: sessionStorage.getItem('user-login')
+          dat: ""
         },
         "",
         function(rd) {}
@@ -661,7 +659,6 @@ export default {
               file: self.buf[i].value,
               name: self.buf[i].text,
               date: self.buf[i].filedate,
-              uid: sessionStorage.getItem('user-login')
             },
             withCredentials: true, //передаем куки
             headers: {

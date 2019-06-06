@@ -87,7 +87,6 @@ export default {
           cmd: "verification", //проверяем наличие зарег. пользователей
           usr: username,
           psw: password,
-          uid: username
         },
         "",
         function(rd) {
@@ -136,7 +135,6 @@ export default {
         {
           cmd: "exist", //проверяем наличие зарег. пользователей
           dat: username,
-          uid: username
         },
         "",
         function(rd) {
