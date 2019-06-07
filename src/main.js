@@ -71,7 +71,7 @@ Vue.mixin({
         .catch(error => {
           this.setServerError(error.message, error.stack);
           this.errored = true;
-        })             ///????
+        })             
         .finally(() => (this.loading = false));
     },
     //

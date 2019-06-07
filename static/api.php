@@ -1364,6 +1364,10 @@ if (isset($_POST["cmd"])) {
                         /********************************** VERIFICATION ***********************************************/
                         // TO DO
                         // Проверка по Названию и автору
+
+                        ///$sql = "select COUNT(*) from books, users where book_title = $book_title AND bk_ur_id = ur_id
+                        ///AND ur_login = $username";
+                        //$count = $stmt->fetchColumn();
                         // проверка ID версии и даты документа
                         // дата файла размер
 
@@ -1430,8 +1434,8 @@ if (isset($_POST["cmd"])) {
                                                                  :bk_doc_file_size,
                                                                  :bk_doc_file_date);');
                         $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                        $stmt->bindValue(':id_sequence', $id_sequence, PDO::PARAM_INT);
-                        $stmt->bindValue(':book_number', $sequence_number, PDO::PARAM_INT);
+                        $stmt->bindValue(':id_sequence', $id_sequence, PDO::PARAM_INT); //серия
+                        $stmt->bindValue(':book_number', $sequence_number, PDO::PARAM_INT); //номер в серии
                         $stmt->bindValue(':bk_added', date('Y-m-d'));
                         $stmt->bindValue(':book_id', $book_id, PDO::PARAM_STR);
                         $stmt->bindValue(':book_title', $book_title, PDO::PARAM_STR);
@@ -1550,6 +1554,29 @@ if (isset($_POST["cmd"])) {
                 }
             } else {
                 $res["error"] = "PDO Error";
+            }
+            break;
+        case "del_book":
+            if ($pdo and $_SESSION["user"]) {
+                $bi = $_POST["dat"];
+                $sql = "DELETE FROM books_genres WHERE bkge_bk_id = $bi";
+                $cnt = $pdo->exec($sql);
+                $sql = "DELETE FROM books_authors WHERE bkar_bk_id = $bi";
+                $cnt = $pdo->exec($sql);
+
+                if ($cnt > 0) {
+                    $sql = "DELETE FROM books WHERE bk_id = $bi";
+                    $cnt1 = $pdo->exec($sql);
+                    if ($cnt1 == 0) {
+                        $res["success"] = false;
+                        $res["error"] = "dbe";
+                    } else {
+                        $res["data"] = $bi;
+                    }
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "dbe";
+                }
             }
             break;
         default:

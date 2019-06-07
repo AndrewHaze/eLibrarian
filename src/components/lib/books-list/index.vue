@@ -35,7 +35,9 @@
               </div>
               <div class="info">
                 <div class="book-authors">{{ strAuthor(bItem.author) }}</div>
-                <div class="book-title"><span v-html="hyphenate(bItem.title)"></span></div>
+                <div class="book-title">
+                  <span v-html="hyphenate(bItem.title)"></span>
+                </div>
                 <div>{{ strGenres(bItem.genres) }}</div>
               </div>
               <div class="mark-group">
@@ -138,7 +140,9 @@
         <div class="cover" :class="{ nocover: selectedItem.cover === '' }">
           <img v-if="selectedItem.cover" :src="'data:image/jpg;base64,'+selectedItem.cover">
         </div>
-        <div class="annotation"><span v-html="hyphenate(selectedItem.annotation)"></span></div>
+        <div class="annotation">
+          <span v-html="hyphenate(selectedItem.annotation)"></span>
+        </div>
       </div>
       <div v-else-if="infoPanel && curAuthor" class="book-info-panel">
         <div class="book-author">{{ this.curAuthor }}</div>
@@ -534,8 +538,14 @@ export default {
       let re2 = new RegExp("(" + RusV + ")(" + RusV + RusA + ")", "ig");
       let re3 = new RegExp("(" + RusV + RusN + ")(" + RusN + RusV + ")", "ig");
       let re4 = new RegExp("(" + RusN + RusV + ")(" + RusN + RusV + ")", "ig");
-      let re5 = new RegExp("(" + RusV + RusN + ")(" + RusN + RusN + RusV + ")","ig");
-      let re6 = new RegExp("(" + RusV + RusN + RusN + ")(" + RusN + RusN + RusV + ")","ig");
+      let re5 = new RegExp(
+        "(" + RusV + RusN + ")(" + RusN + RusN + RusV + ")",
+        "ig"
+      );
+      let re6 = new RegExp(
+        "(" + RusV + RusN + RusN + ")(" + RusN + RusN + RusV + ")",
+        "ig"
+      );
 
       text = text.replace(re1, "$1" + Hyphen + "$2");
       text = text.replace(re2, "$1" + Hyphen + "$2");
@@ -562,7 +572,14 @@ export default {
           dat: this.bookID
         },
         "",
-        function(rd) {}
+        function(rd) {
+          if (rd) {
+              // let index = self.bListItems.map(el => el.id).indexOf('bk'+rd);
+              // self.bListItems.splice(index,1); 
+              // self.selectedItem = null;
+              store.commit("setStimulusValue", Math.random());
+          }
+        }
       );
     },
     hideMenu() {

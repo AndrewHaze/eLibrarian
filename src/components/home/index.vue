@@ -307,12 +307,18 @@ export default {
     ]),
     loading: function() {
       return this.authStatus === "loading" && !this.isAuthenticated;
-    }
+    },
+    update: function() {
+      return this.$store.getters.stimulusValue
+    },
   },
   watch: {
     tabIndex: function(val) {
       store.commit("setCurrentTab", val);
-    }
+    },
+    update(val) {
+      this.updateAll();
+    } 
   }
 };
 </script>

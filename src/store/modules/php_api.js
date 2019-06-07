@@ -17,6 +17,7 @@ const state = {
   bll: "cover",
   ip: ['on'],
   reader: false,
+  stimulus: 0, //для update
   //
 }
 
@@ -40,6 +41,10 @@ const getters = {
   //для выбора по дате
   dateFrom: state => state.df,
   dateTo: state => state.dt,
+  //
+
+   //update
+   stimulusValue: state => state.stimulus,
 
   /******************* Интерфейс *******************/
   currentTab: state => state.tab, //текущая вкладка
@@ -133,7 +138,11 @@ const mutations = {
   },
   setReader(state, value) {
     state.reader = value
-  }
+  },
+    //update
+    setStimulusValue(state, value) {
+      state.stimulus = value
+    }
 }
 
 export default {
