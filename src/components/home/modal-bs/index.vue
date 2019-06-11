@@ -315,6 +315,12 @@ $header-bk-color: #abafb4;
     }
   }
 
+  #fls .cle span {
+    &:before {
+      background-image: url("../../../assets/cle.png");
+    }
+  }
+
   .list-header {
     display: flex;
     align-items: center;
@@ -589,7 +595,7 @@ export default {
     },
     removeClasses(obj) {
       //удаляем классы по списку из array
-      let array = ["add", "raw", "err", "dma", "ndf", "per", "dbe"];
+      let array = ["add", "raw", "err", "dma", "ndf", "per", "dbe", "cle"];
       let clsList = obj.className.split(" "); //Получаем массив классов
       let result = [];
       for (let i = 0; i < clsList.length; i++) {
@@ -758,6 +764,10 @@ export default {
               c[i].classList.add("dbe");
               c[i].setAttribute("title", "Ошибка обновления БД");
               break;
+            case "cle":
+              c[i].classList.add("cle");
+              c[i].setAttribute("title", "Дубликат (идентичный)");
+              break;  
           }
         }
       });

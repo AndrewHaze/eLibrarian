@@ -45,6 +45,9 @@ export default {
         case "dbe":
           value = path + "dbe.png";
           break;
+        case "cle":
+          value = path + "cle.png";
+          break;  
       }
       return value;
     },
@@ -69,6 +72,9 @@ export default {
         case "dbe":
           value = "Ошибка обновления БД";
           break;
+        case "cle":
+          value = "Дубликат (идентичный)";
+          break;  
       }
       return value;
     }

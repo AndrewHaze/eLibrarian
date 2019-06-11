@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost
--- Время создания: Мар 14 2019 г., 17:03
+-- Время создания: Июн 11 2019 г., 15:03
 -- Версия сервера: 5.7.20
 -- Версия PHP: 7.2.0
 
@@ -21,6 +21,52 @@ SET time_zone = "+00:00";
 --
 -- База данных: `elib`
 --
+
+DELIMITER $$
+--
+-- Функции
+--
+CREATE DEFINER=`root`@`%` FUNCTION `checkDoubles` (`f_bk_id` INT) RETURNS TINYINT(1) BEGIN 
+  DECLARE result tinyint;
+  
+  select count(1)
+  into result
+  from books b_new,
+       books b_old
+  where b_old.bk_doc_id = b_new.bk_doc_id
+  	and b_old.bk_ur_id = b_new.bk_ur_id
+    and b_old.bk_title = b_new.bk_title
+    
+    and (SELECT GROUP_CONCAT(bkar_ar_id ORDER BY bkar_ar_id SEPARATOR ",")
+         FROM books_authors
+         WHERE bkar_bk_id = b_old.bk_id) = 
+         (SELECT GROUP_CONCAT(bkar_ar_id ORDER BY bkar_ar_id SEPARATOR ",")
+         FROM books_authors
+         WHERE bkar_bk_id = f_bk_id)
+    
+    /*and not exists (select 1
+                    from books_authors bkar_new
+                    where bkar_new.bkar_bk_id = f_bk_id
+                      and not exists (select 1
+                                      from books_authors bkar_old
+                                      where bkar_old.bkar_bk_id = b_old.bk_id
+                                        and bkar_old.bkar_ar_id = bkar_new.bkar_ar_id))
+
+    and not exists (select 1
+                    from books_authors bkar_old
+                    where bkar_old.bkar_bk_id = b_old.bk_id
+                      and not exists (select 1
+                                      from books_authors bkar_new
+                                      where bkar_new.bkar_bk_id = f_bk_id
+                                        and bkar_new.bkar_ar_id = bkar_old.bkar_ar_id))*/
+    and b_new.bk_id = f_bk_id
+    and b_old.bk_id != f_bk_id;
+  
+ 
+  RETURN result;
+END$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -498,7 +544,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`ur_id`, `ur_login`, `ur_hash`) VALUES
 (1, 'qwerty', '$2y$10$aUvnivc6AVIoF4wMRd06AOk45/NN0RX0sIUxKaaUK56LhHmrPV1lu'),
 (2, 'qaz', '$2y$10$IGDpEFci.272f2G3MQAvOeU6vcC7ceSJBa0p8dpTNLE1Qt0q5H/3a'),
-(3, 'pupkin', '$2y$10$Ivei5yX16FYRkIsRMiWZfutyvQz7.ktUI5C.BM6B8nXeY1GCeMkJC');
+(3, 'pupkin', '$2y$10$Ivei5yX16FYRkIsRMiWZfutyvQz7.ktUI5C.BM6B8nXeY1GCeMkJC'),
+(4, 'aaa', '$2y$10$ujfGjGXEDCnD9g6UtM4SuuKdNBnO1bMeYn0R2eFGu6t2tcYz4vUYm');
 
 --
 -- Индексы сохранённых таблиц
@@ -574,25 +621,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `authors`
 --
 ALTER TABLE `authors`
-  MODIFY `ar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=876;
+  MODIFY `ar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT для таблицы `books`
 --
 ALTER TABLE `books`
-  MODIFY `bk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1396;
+  MODIFY `bk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=169;
 
 --
 -- AUTO_INCREMENT для таблицы `books_authors`
 --
 ALTER TABLE `books_authors`
-  MODIFY `bkar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1706;
+  MODIFY `bkar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=188;
 
 --
 -- AUTO_INCREMENT для таблицы `books_genres`
 --
 ALTER TABLE `books_genres`
-  MODIFY `bkge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2497;
+  MODIFY `bkge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=298;
 
 --
 -- AUTO_INCREMENT для таблицы `genres`
@@ -610,13 +657,13 @@ ALTER TABLE `genres_groups`
 -- AUTO_INCREMENT для таблицы `series`
 --
 ALTER TABLE `series`
-  MODIFY `se_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=717;
+  MODIFY `se_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `ur_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `ur_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
