@@ -97,6 +97,11 @@ export default {
     date2: function() {
       store.commit("setDateTo", moment(this.date2).format("YYYY-MM-DD"));
       store.commit("setLibrarySID", 8 + Number(moment(this.date2).format("YYYYMMDD"))/100000000);
+    },
+    currentSLI: function(val) {
+      if (val != -1) {
+        this.itemClick(val)
+      }
     }
   },
   computed: {

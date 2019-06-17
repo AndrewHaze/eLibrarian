@@ -12,12 +12,14 @@ const state = {
   bi: -1,
   gt: '',
   gty: '',
-  oc: 0,
+  oc: 0, //orderCode
   tab: 0,
   bll: "cover",
   ip: ['on'],
   reader: false,
   stimulus: 0, //для update
+  stimulusL: 0, //для update, персонально для закладки библиотека
+  db: false //deleteBookFlag
   //
 }
 
@@ -41,10 +43,13 @@ const getters = {
   //для выбора по дате
   dateFrom: state => state.df,
   dateTo: state => state.dt,
-  //
+
+  //deleteFlag
+  deleteBookFlag: state => state.db,
 
    //update
    stimulusValue: state => state.stimulus,
+   stimulusValueForLib: state => state.stimulusL,
 
   /******************* Интерфейс *******************/
   currentTab: state => state.tab, //текущая вкладка
@@ -139,10 +144,17 @@ const mutations = {
   setReader(state, value) {
     state.reader = value
   },
-    //update
-    setStimulusValue(state, value) {
-      state.stimulus = value
-    }
+  //update
+  setStimulusValue(state, value) {
+    state.stimulus = value
+  },
+  setStimulusValueForLib(state, value) {
+    state.stimulusL = value
+  },
+  //
+  setDeleteBookFlag(state, value) {
+    state.db = value
+  }
 }
 
 export default {

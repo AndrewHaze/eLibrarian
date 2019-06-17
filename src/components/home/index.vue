@@ -291,8 +291,8 @@ export default {
       if (dbFlag) {
         var lId = this.$store.getters.librarySID;
         var aId = this.$store.getters.authorID;
-        var gId = this.$store.getters.seriesID;
-        var sId = this.$store.getters.genresID;
+        var gId = this.$store.getters.genresID;
+        var sId = this.$store.getters.seriesID;
       }
       store.commit("setLibrarySID", -1);
       store.commit("setAuthorID", -1);
@@ -329,15 +329,25 @@ export default {
     },
     update: function() {
       return this.$store.getters.stimulusValue;
+    },
+    updateLib: function() {
+      return this.$store.getters.stimulusValueForLib;
     }
   },
   watch: {
     tabIndex: function(val) {
       store.commit("setCurrentTab", val);
     },
-    update(val) {
+    update() {
       this.deleteBookFlag = true;
       this.updateAll();
+    },
+    updateLib: function() {
+      let lId = this.$store.getters.librarySID;
+      store.commit("setLibrarySID", -1);
+      this.$nextTick(function() {
+        store.commit("setLibrarySID", lId);
+      })
     }
   }
 };

@@ -50,9 +50,8 @@
           </b-button-group>
         </b-button-toolbar>
       </div>
-    </transition> -->
-    
-    
+    </transition>-->
+
     <b-modal
       id="s-modal1"
       size="lg"
@@ -96,8 +95,6 @@
     box-shadow: none !important;
   }
 }
-
-
 </style>
 
 <script>
@@ -135,7 +132,7 @@ export default {
   data: function() {
     return {
       seriesID: "",
-      
+
       status: "no",
       aAsc: true,
       aDesc: false,
@@ -144,8 +141,7 @@ export default {
       //
       sMenu: false,
       sMenuX: 0,
-      sMenuY: 0,
-      
+      sMenuY: 0
     };
   },
   computed: {
@@ -156,7 +152,7 @@ export default {
         .map(f => {
           return { text: f.label, value: f.key };
         });
-    },
+    }
   },
   methods: {
     itemClickHandler(item) {
@@ -177,7 +173,7 @@ export default {
       if (this.sMenu) {
         //размеры меню
         let sW = 36,
-            sH = 32;
+          sH = 32;
         //координаты родителя
         let p = document.getElementById("tbs").getBoundingClientRect();
         //координаты относительно родителя
@@ -257,10 +253,20 @@ export default {
   },
   //Хук <UPDATED> вызывается после изменения данных в компоненте и перерисовки DOM
   updated: function() {
+    let element = null;
     if (store.getters.seriesID === -1) {
       this.sItems.forEach(function(entry) {
         entry.isActive = false;
       });
+    } else {
+      element = this.sItems[ //вост. подсветку серии после перерерисовки
+        this.sItems.map(el => el.id).indexOf("se" + store.getters.seriesID)
+      ];
+      if (element) {
+        element.isActive = true;
+      } else {
+        store.commit("setSeriesID", -1);
+      }
     }
   }
 };

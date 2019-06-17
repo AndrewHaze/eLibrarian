@@ -1,7 +1,8 @@
 <template>
   <section>
     <div
-      class="for-nothing-selected" :class="{ rightpading: infoPanel }"
+      class="for-nothing-selected"
+      :class="{ rightpading: infoPanel }"
       v-if="(!curSLibrary && !curAuthor && !curSeries && !curGenres)"
     >Ничего не выбрано...</div>
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
@@ -126,7 +127,11 @@
           </div>
         </div>
       </div>
-      <div v-else class="for-nothing-selected" :class="{ rightpading: infoPanel }">Ничего не выбрано...</div>
+      <div
+        v-else
+        class="for-nothing-selected"
+        :class="{ rightpading: infoPanel }"
+      >Ничего не выбрано...</div>
       <div v-if="isLoading" :class="[{rightmargin: infoPanel}, 'loading-screen']">
         <b-spinner variant="warning"/>
       </div>
@@ -147,10 +152,10 @@
       <div v-else-if="infoPanel && curAuthor && isData" class="book-info-panel">
         <div class="book-author">{{ this.curAuthor }}</div>
       </div>
-      <div v-else-if="infoPanel && curSeries" class="book-info-panel">
+      <div v-else-if="infoPanel && curSeries && isData" class="book-info-panel">
         <div class="book-author">{{ this.curSeries }}</div>
       </div>
-      <div v-else-if="infoPanel && curGenres" class="book-info-panel">
+      <div v-else-if="infoPanel && curGenres && isData" class="book-info-panel">
         <div class="book-author">{{ this.curGenres }}</div>
       </div>
     </transition>
@@ -327,42 +332,42 @@ export default {
         this.selectedItem = null;
         return;
       }
-        this.isLoading = true;
-        const self = this;
-        this.callApi(
-          this.$store.getters.prefix + "/static/api.php",
-          {
-            cmd: "as_list", //список серий автора
-            dat: val
-          },
-          "",
-          function(rd) {
-            self.sListItems = rd; //возвр. данные (Responce)
-          }
-        );
-        this.callApi(
-          this.$store.getters.prefix + "/static/api.php",
-          {
-            cmd: "ab_list", //список книг
-            dat: val
-          },
-          "",
-          function(rd) {
-            self.bListItems = rd; //возвр. данные (Responce)
-            self.selectedItem = null;
-          }
-        );
-        this.callApi(
-          this.$store.getters.prefix + "/static/api.php",
-          {
-            cmd: "author", //выбраный автор
-            dat: val
-          },
-          "",
-          function(rd) {
-            self.curAuthor = rd; //возвр. данные (Responce)
-          }
-        );
+      this.isLoading = true;
+      const self = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "as_list", //список серий автора
+          dat: val
+        },
+        "",
+        function(rd) {
+          self.sListItems = rd; //возвр. данные (Responce)
+        }
+      );
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "ab_list", //список книг
+          dat: val
+        },
+        "",
+        function(rd) {
+          self.bListItems = rd; //возвр. данные (Responce)
+          self.selectedItem = null;
+        }
+      );
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "author", //выбраный автор
+          dat: val
+        },
+        "",
+        function(rd) {
+          self.curAuthor = rd; //возвр. данные (Responce)
+        }
+      );
     },
     //////////////////////////////////////////////////////
     curSI: function(val) {
@@ -565,6 +570,7 @@ export default {
     },
     delHandleOk() {
       const self = this;
+      this.isLoading = true;
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
         {
@@ -577,6 +583,7 @@ export default {
             store.commit("setDeleteBookFlag", true);
             store.commit("setStimulusValue", Math.random());
           }
+          self.isLoading = false;
         }
       );
     },
@@ -701,7 +708,9 @@ export default {
       this.bMenu = false;
     },
     mouseOverBookMenu() {
-      this.bMenu = true;
+      if (this.selectedItem) {
+        this.bMenu = true;
+      }
     },
     onScroll() {
       this.bMenu = false;
@@ -735,8 +744,9 @@ export default {
         "",
         function(rd) {
           if (!rd) element.isRead = !element.isRead;
-          if (self.sid === "tld" && self.curSLibrary === 2) {
+          if (self.sid === "tld") {
           }
+          store.commit("setStimulusValueForLib", Math.random());
         }
       );
     },
@@ -757,6 +767,9 @@ export default {
         "",
         function(rd) {
           if (!rd) element.isToPlan = !element.isToPlan;
+          if (self.sid === "tld") {
+          }
+          store.commit("setStimulusValueForLib", Math.random());
         }
       );
     },
@@ -777,6 +790,9 @@ export default {
         "",
         function(rd) {
           if (!rd) element.isFavorites = !element.isFavorites;
+          if (self.sid === "tld") {
+          }
+          store.commit("setStimulusValueForLib", Math.random());
         }
       );
     },
