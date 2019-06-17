@@ -271,7 +271,8 @@ export default {
     return {
       //флаг приветствия при регистрации
       congShow: false,
-      tabIndex: 0
+      tabIndex: 0,
+      deleteBookFlag: false
     };
   },
   created: function() {
@@ -286,16 +287,34 @@ export default {
   },
   methods: {
     updateAll() {
+      let dbFlag = this.$store.getters.deleteBookFlag;
+      if (dbFlag) {
+        var lId = this.$store.getters.librarySID;
+        var aId = this.$store.getters.authorID;
+        var gId = this.$store.getters.seriesID;
+        var sId = this.$store.getters.genresID;
+      }
       store.commit("setLibrarySID", -1);
       store.commit("setAuthorID", -1);
       store.commit("setGenresID", -1);
       store.commit("setSeriesID", -1);
+
+      if (dbFlag) {
+        this.$nextTick(function() {
+          store.commit("setLibrarySID", lId);
+          store.commit("setAuthorID", aId);
+          store.commit("setGenresID", gId);
+          store.commit("setSeriesID", sId);
+        });
+      }
+      
       if (this.$refs.aTab) {
         this.$refs.aLib.getLibraryS();
         this.$refs.aTab.getAuthors();
         this.$refs.gTab.getGenres();
         this.$refs.sTab.getSeries();
       }
+      store.commit("setDeleteBookFlag", false);
     }
   },
   computed: {
@@ -309,16 +328,17 @@ export default {
       return this.authStatus === "loading" && !this.isAuthenticated;
     },
     update: function() {
-      return this.$store.getters.stimulusValue
-    },
+      return this.$store.getters.stimulusValue;
+    }
   },
   watch: {
     tabIndex: function(val) {
       store.commit("setCurrentTab", val);
     },
     update(val) {
+      this.deleteBookFlag = true;
       this.updateAll();
-    } 
+    }
   }
 };
 </script>

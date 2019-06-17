@@ -73,7 +73,7 @@
         </b-button-toolbar>
       </div>
     </transition>
-    
+
     <b-modal
       id="a-modal2"
       size="lg"
@@ -287,7 +287,7 @@ export default {
         .map(f => {
           return { text: f.label, value: f.key };
         });
-    },
+    }
   },
   methods: {
     //modal 2-3
@@ -475,8 +475,18 @@ export default {
   updated: function() {
     if (store.getters.authorID === -1) {
       this.aItems.forEach(function(entry) {
+        //сбрасываем подсветку автора если ничего не выбрано
         entry.isActive = false;
       });
+    } else {
+      let element = this.aItems[ //вост. подсветку автора после перерерисовки
+        this.aItems.map(el => el.id).indexOf("ai" + store.getters.authorID)
+      ];
+      if (element) {
+        element.isActive = true;
+      } else {
+          store.commit("setAuthorID", -1);
+      }
     }
   }
 };

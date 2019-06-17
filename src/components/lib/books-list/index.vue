@@ -1,7 +1,7 @@
 <template>
   <section>
     <div
-      class="for-nothing-selected"
+      class="for-nothing-selected" :class="{ rightpading: infoPanel }"
       v-if="(!curSLibrary && !curAuthor && !curSeries && !curGenres)"
     >Ничего не выбрано...</div>
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
@@ -126,7 +126,7 @@
           </div>
         </div>
       </div>
-      <div v-else class="for-nothing-selected">Ничего не найдено...</div>
+      <div v-else class="for-nothing-selected" :class="{ rightpading: infoPanel }">Ничего не выбрано...</div>
       <div v-if="isLoading" :class="[{rightmargin: infoPanel}, 'loading-screen']">
         <b-spinner variant="warning"/>
       </div>
@@ -144,7 +144,7 @@
           <span v-html="hyphenate(selectedItem.annotation)"></span>
         </div>
       </div>
-      <div v-else-if="infoPanel && curAuthor" class="book-info-panel">
+      <div v-else-if="infoPanel && curAuthor && isData" class="book-info-panel">
         <div class="book-author">{{ this.curAuthor }}</div>
       </div>
       <div v-else-if="infoPanel && curSeries" class="book-info-panel">
@@ -327,42 +327,42 @@ export default {
         this.selectedItem = null;
         return;
       }
-      this.isLoading = true;
-      const self = this;
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "as_list", //список серий автора
-          dat: val
-        },
-        "",
-        function(rd) {
-          self.sListItems = rd; //возвр. данные (Responce)
-        }
-      );
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "ab_list", //список книг
-          dat: val
-        },
-        "",
-        function(rd) {
-          self.bListItems = rd; //возвр. данные (Responce)
-          self.selectedItem = null;
-        }
-      );
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "author", //выбраный автор
-          dat: val
-        },
-        "",
-        function(rd) {
-          self.curAuthor = rd; //возвр. данные (Responce)
-        }
-      );
+        this.isLoading = true;
+        const self = this;
+        this.callApi(
+          this.$store.getters.prefix + "/static/api.php",
+          {
+            cmd: "as_list", //список серий автора
+            dat: val
+          },
+          "",
+          function(rd) {
+            self.sListItems = rd; //возвр. данные (Responce)
+          }
+        );
+        this.callApi(
+          this.$store.getters.prefix + "/static/api.php",
+          {
+            cmd: "ab_list", //список книг
+            dat: val
+          },
+          "",
+          function(rd) {
+            self.bListItems = rd; //возвр. данные (Responce)
+            self.selectedItem = null;
+          }
+        );
+        this.callApi(
+          this.$store.getters.prefix + "/static/api.php",
+          {
+            cmd: "author", //выбраный автор
+            dat: val
+          },
+          "",
+          function(rd) {
+            self.curAuthor = rd; //возвр. данные (Responce)
+          }
+        );
     },
     //////////////////////////////////////////////////////
     curSI: function(val) {
@@ -394,7 +394,7 @@ export default {
         "",
         function(rd) {
           self.sListItems = rd; //возвр. данные (Responce)
-          if (rd) {
+          if (self.sListItems[0]) {
             self.curSeries = self.sListItems[0].seriesTitle;
           }
         }
@@ -574,10 +574,8 @@ export default {
         "",
         function(rd) {
           if (rd) {
-              // let index = self.bListItems.map(el => el.id).indexOf('bk'+rd);
-              // self.bListItems.splice(index,1); 
-              // self.selectedItem = null;
-              store.commit("setStimulusValue", Math.random());
+            store.commit("setDeleteBookFlag", true);
+            store.commit("setStimulusValue", Math.random());
           }
         }
       );
@@ -873,6 +871,10 @@ $ip-width: 21rem;
 
 .rightmargin {
   margin-right: $ip-width;
+}
+
+.rightpadding {
+  padding-right: $ip-width;
 }
 
 .book-info-panel {
