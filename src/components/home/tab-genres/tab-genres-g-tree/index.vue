@@ -113,6 +113,7 @@ export default {
          у разных узлов дерева, для срабатывания wath,
          после срабатывания дробь отбрасываем 
       */
+     console.log(node)
       let gId = (node.model.type === 'leaf') ? 0 : .1;
       store.commit("setGenresID", node.model.id + gId);
       /////////////////////////////////////////////////
@@ -152,5 +153,16 @@ export default {
       store.commit("setOrderCode", this.orderCode);
     }
   },
+    updated: function() {
+
+      let element = this.gItems[ //вост. подсветку автора после перерерисовки
+        this.gItems.map(el => el.value).indexOf(store.getters.genresTitle)
+      ];
+      if (element) {
+        element.selected = true;
+      } else {
+          store.commit("setGenresID", -1);
+      }
+  }
 };
 </script>
