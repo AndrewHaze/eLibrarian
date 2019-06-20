@@ -113,7 +113,6 @@ export default {
          у разных узлов дерева, для срабатывания wath,
          после срабатывания дробь отбрасываем 
       */
-     console.log(node)
       let gId = (node.model.type === 'leaf') ? 0 : .1;
       store.commit("setGenresID", node.model.id + gId);
       /////////////////////////////////////////////////

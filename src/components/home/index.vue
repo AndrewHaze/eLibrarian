@@ -307,7 +307,7 @@ export default {
           store.commit("setSeriesID", sId);
         });
       }
-      
+
       if (this.$refs.aTab) {
         this.$refs.aLib.getLibraryS();
         this.$refs.aTab.getAuthors();
@@ -347,7 +347,47 @@ export default {
       store.commit("setLibrarySID", -1);
       this.$nextTick(function() {
         store.commit("setLibrarySID", lId);
-      })
+      });
+      //обновляем другие вкладки, кроме текущей
+      let aId = this.$store.getters.authorID;
+      let gId = this.$store.getters.genresID;
+      let sId = this.$store.getters.seriesID;
+      switch (this.tabIndex) {
+        case 0:
+          store.commit("setAuthorID", -1);
+          store.commit("setGenresID", -1);
+          store.commit("setSeriesID", -1);
+          this.$nextTick(function() {
+            store.commit("setAuthorID", aId);
+            store.commit("setGenresID", gId);
+            store.commit("setSeriesID", sId);
+          });
+          break;
+        case 1:
+          store.commit("setGenresID", -1);
+          store.commit("setSeriesID", -1);
+          this.$nextTick(function() {
+            store.commit("setGenresID", gId);
+            store.commit("setSeriesID", sId);
+          });
+          break;
+        case 2:
+          store.commit("setAuthorID", -1);
+          store.commit("setSeriesID", -1);
+          this.$nextTick(function() {
+            store.commit("setAuthorID", aId);
+            store.commit("setSeriesID", sId);
+          });
+          break;
+        case 3:
+          store.commit("setAuthorID", -1);
+          store.commit("setGenresID", -1);
+          this.$nextTick(function() {
+            store.commit("setAuthorID", aId);
+            store.commit("setGenresID", gId);
+          });
+          break;      
+      }
     }
   }
 };

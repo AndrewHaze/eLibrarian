@@ -744,8 +744,6 @@ export default {
         "",
         function(rd) {
           if (!rd) element.isRead = !element.isRead;
-          if (self.sid === "tld") {
-          }
           store.commit("setStimulusValueForLib", Math.random());
         }
       );
