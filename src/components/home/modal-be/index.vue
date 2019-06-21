@@ -918,7 +918,7 @@ export default {
       s2OptionsOrigLang: []
     };
   },
-  mounted: function() {
+  mounted () {
     const self = this;
 
     window.addEventListener("resize", this.handleResize);
@@ -926,9 +926,9 @@ export default {
     if (this.mHeight > 1200) {
       this.mHeight = 1200;
     }
-
+    
     ///////////////////////////// драг&дроп обложки (начало) ////////////////////////////////////
-    let dropArea = document.getElementById("drop-area");
+    var dropArea = document.getElementById("drop-area");
     ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
       dropArea.addEventListener(eventName, preventDefaults, false);
     });
