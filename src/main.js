@@ -29,7 +29,15 @@ Vue.mixin({
       console.log('Message: ', m);
       console.log('Data: ', d);
       console.log("***************************");
+      this.makeToast('danger')
       return;
+    },
+    makeToast(variant = null) {
+      this.$bvToast.toast('Toast body content', {
+        title: `Variant ${variant || 'default'}`,
+        variant: variant,
+        solid: true
+      })
     },
     callApi(url, prms, hct, callback) {
       axios({

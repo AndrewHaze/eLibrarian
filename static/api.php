@@ -1357,29 +1357,9 @@ if (isset($_POST["cmd"])) {
                             }
                         }
 
-                        /********************************** VERIFICATION ***********************************************/
-                        // TO DO
-                        // Проверка по Названию и автору
-                        //genres
-                        //autors
-                        
-                        // $sql = "SELECT COUNT(1) from books, users
-                        //         WHERE bk_title = '$book_title'
-                        //         AND bk_date = '$book_date'
-                        //         AND bk_lang = '$book_language'
-                        //         AND bk_ur_id = ur_id
-                        //         AND ur_login = '$username'";
-                        
-                        // $stmt = $pdo->prepare($sql);
-                        // $stmt->execute();
-                        // $cnt = $stmt->fetchColumn();
-                        // if ($pdo->query($sql)) {
+                        /********************************** MAIN QUERIES ***********************************************/
 
-                            $id_book = null;    
-                                     
-                            /********************************** MAIN QUERIES ***********************************************/
-
-                            $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id,
+                        $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id,
                                                                  bk_se_id,
                                                                  bk_number,
                                                                  bk_added,
@@ -1439,124 +1419,130 @@ if (isset($_POST["cmd"])) {
                                                                  :bk_doc_file_name,
                                                                  :bk_doc_file_size,
                                                                  :bk_doc_file_date);');
-                            $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                            $stmt->bindValue(':id_sequence', $id_sequence, PDO::PARAM_INT); //серия
-                            $stmt->bindValue(':book_number', $sequence_number, PDO::PARAM_INT); //номер в серии
-                            $stmt->bindValue(':bk_added', date('Y-m-d'));
-                            $stmt->bindValue(':book_id', $book_id, PDO::PARAM_STR);
-                            $stmt->bindValue(':book_title', $book_title, PDO::PARAM_STR);
-                            $stmt->bindValue(':src_book_title', $src_book_title, PDO::PARAM_STR);
-                            $stmt->bindValue(':book_annotation', $book_annotation, PDO::PARAM_STR);
-                            $stmt->bindValue(':book_date', date('Y-m-d', $time));
-                            $stmt->bindValue(':book_lang', $book_language, PDO::PARAM_STR);
-                            $stmt->bindValue(':book_src_lang', $book_orig_language, PDO::PARAM_STR);
-                            $stmt->bindValue(':book_file', $filename, PDO::PARAM_STR);
-                            $stmt->bindValue(':book_cover', $cover, PDO::PARAM_LOB);
-                            $stmt->bindValue(':bk_keywords', $bk_keywords, PDO::PARAM_STR);
-                            $stmt->bindValue(':bk_translators', $translators, PDO::PARAM_STR);
-                            $stmt->bindValue(':bk_doc_authors', $bk_doc_authors, PDO::PARAM_STR);
-                            $stmt->bindValue(':bk_doc_programms', $bk_doc_programms, PDO::PARAM_STR);
-                            $stmt->bindValue(':bk_doc_date', date('Y-m-d', $doc_time));
-                            $stmt->bindValue(':bk_doc_ocr_authors', $src_ocr, PDO::PARAM_STR);
-                            $stmt->bindValue(':bk_doc_version', $bk_doc_version, PDO::PARAM_STR);
-                            $stmt->bindValue(':bk_doc_url', $bk_doc_url, PDO::PARAM_STR);
-                            $stmt->bindValue(':bk_doc_history', $bk_doc_history, PDO::PARAM_STR);
+                        $stmt->bindValue(':login', $username, PDO::PARAM_STR);
+                        $stmt->bindValue(':id_sequence', $id_sequence, PDO::PARAM_INT); //серия
+                        $stmt->bindValue(':book_number', $sequence_number, PDO::PARAM_INT); //номер в серии
+                        $stmt->bindValue(':bk_added', date('Y-m-d'));
+                        $stmt->bindValue(':book_id', $book_id, PDO::PARAM_STR);
+                        $stmt->bindValue(':book_title', $book_title, PDO::PARAM_STR);
+                        $stmt->bindValue(':src_book_title', $src_book_title, PDO::PARAM_STR);
+                        $stmt->bindValue(':book_annotation', $book_annotation, PDO::PARAM_STR);
+                        $stmt->bindValue(':book_date', date('Y-m-d', $time));
+                        $stmt->bindValue(':book_lang', $book_language, PDO::PARAM_STR);
+                        $stmt->bindValue(':book_src_lang', $book_orig_language, PDO::PARAM_STR);
+                        $stmt->bindValue(':book_file', $filename, PDO::PARAM_STR);
+                        $stmt->bindValue(':book_cover', $cover, PDO::PARAM_LOB);
+                        $stmt->bindValue(':bk_keywords', $bk_keywords, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_translators', $translators, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_doc_authors', $bk_doc_authors, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_doc_programms', $bk_doc_programms, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_doc_date', date('Y-m-d', $doc_time));
+                        $stmt->bindValue(':bk_doc_ocr_authors', $src_ocr, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_doc_version', $bk_doc_version, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_doc_url', $bk_doc_url, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_doc_history', $bk_doc_history, PDO::PARAM_STR);
 
-                            $stmt->bindValue(':bk_pub_title', $bk_pub_title, PDO::PARAM_STR);
-                            $stmt->bindValue(':bk_pub_publisher', $bk_pub_publisher, PDO::PARAM_STR);
-                            $stmt->bindValue(':bk_pub_city', $bk_pub_city, PDO::PARAM_STR);
-                            $stmt->bindValue(':bk_pub_year', $bk_pub_year, PDO::PARAM_STR);
-                            $stmt->bindValue(':bk_pub_isbn', $bk_pub_isbn, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_pub_title', $bk_pub_title, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_pub_publisher', $bk_pub_publisher, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_pub_city', $bk_pub_city, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_pub_year', $bk_pub_year, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_pub_isbn', $bk_pub_isbn, PDO::PARAM_STR);
 
-                            $stmt->bindValue(':bk_doc_file_name', $src_filename, PDO::PARAM_STR);
-                            $stmt->bindValue(':bk_doc_file_size', $filesize, PDO::PARAM_STR);
-                            $stmt->bindValue(':bk_doc_file_date', date('Y-m-d', strtotime($filedate)));
+                        $stmt->bindValue(':bk_doc_file_name', $src_filename, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_doc_file_size', $filesize, PDO::PARAM_STR);
+                        $stmt->bindValue(':bk_doc_file_date', date('Y-m-d', strtotime($filedate)));
 
-                            //Связанные таблицы
-                            if ($stmt->execute()) { //insert
-                                $id_book = $pdo->lastInsertId();
+                        //Связанные таблицы
+                        if ($stmt->execute()) { //insert
+                            $id_book = $pdo->lastInsertId();
 
-                                //Получаем список жанров, к которым относится книга
-                                $genre_list = $title_info->getElementsByTagName('genre');
-                                if (count($genre_list) > 0) {
-                                    foreach ($genre_list as $element) {
-                                        $genre = $element->nodeValue;
-                                        $stmt = $pdo->prepare('INSERT INTO books_genres (bkge_bk_id, bkge_ge_id)
+                            //Получаем список жанров, к которым относится книга
+                            $genre_list = $title_info->getElementsByTagName('genre');
+                            if (count($genre_list) > 0) {
+                                foreach ($genre_list as $element) {
+                                    $genre = $element->nodeValue;
+                                    $stmt = $pdo->prepare('INSERT INTO books_genres (bkge_bk_id, bkge_ge_id)
                                                                    VALUES (:id_books, (SELECT ge_id FROM genres WHERE ge_code = :genre_code));');
-                                        $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
-                                        $stmt->bindValue(':genre_code', $genre, PDO::PARAM_STR);
-                                        $stmt->execute();
-                                    }
+                                    $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
+                                    $stmt->bindValue(':genre_code', $genre, PDO::PARAM_STR);
+                                    $stmt->execute();
                                 }
+                            }
 
-                                //Получаем список авторов.
-                                $authors_list = $title_info->getElementsByTagName('author');
-                                if (count($authors_list) > 0) {
-                                    $element = '';
-                                    foreach ($authors_list as $element) {
-                                        $author = array($element->getElementsByTagName('first-name')->item(0)->nodeValue,
-                                            $element->getElementsByTagName('last-name')->item(0)->nodeValue,
-                                            $element->getElementsByTagName('middle-name')->item(0)->nodeValue);
+                            //Получаем список авторов.
+                            $authors_list = $title_info->getElementsByTagName('author');
+                            if (count($authors_list) > 0) {
+                                $element = '';
+                                foreach ($authors_list as $element) {
+                                    $author = array($element->getElementsByTagName('first-name')->item(0)->nodeValue,
+                                        $element->getElementsByTagName('last-name')->item(0)->nodeValue,
+                                        $element->getElementsByTagName('middle-name')->item(0)->nodeValue);
 
-                                        $first_name = trim($author[0]) ?: "";
-                                        $last_name = trim($author[1]) ?: "";
-                                        $middle_name = trim($author[2]) ?: "";
+                                    $first_name = trim($author[0]) ?: "";
+                                    $last_name = trim($author[1]) ?: "";
+                                    $middle_name = trim($author[2]) ?: "";
 
-                                        $stmt = $pdo->prepare('SELECT COUNT(*) FROM authors
+                                    $stmt = $pdo->prepare('SELECT COUNT(*) FROM authors
                                                                WHERE ar_first_name = :first_name AND ar_last_name = :last_name AND ar_middle_name = :middle_name ');
+                                    $stmt->bindValue(':first_name', $first_name, PDO::PARAM_STR);
+                                    $stmt->bindValue(':last_name', $last_name, PDO::PARAM_STR);
+                                    $stmt->bindValue(':middle_name', $middle_name, PDO::PARAM_STR);
+                                    $stmt->execute();
+                                    $count = $stmt->fetchColumn();
+                                    if ($count === 0) {
+                                        $stmt = $pdo->prepare('INSERT INTO authors (ar_owner, ar_first_name, ar_last_name, ar_middle_name)
+                                                                   VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), :first_name, :last_name, :middle_name);');
+                                        $stmt->bindValue(':login', $username, PDO::PARAM_STR);
                                         $stmt->bindValue(':first_name', $first_name, PDO::PARAM_STR);
                                         $stmt->bindValue(':last_name', $last_name, PDO::PARAM_STR);
                                         $stmt->bindValue(':middle_name', $middle_name, PDO::PARAM_STR);
                                         $stmt->execute();
-                                        $count = $stmt->fetchColumn();
-                                        if ($count === 0) {
-                                            $stmt = $pdo->prepare('INSERT INTO authors (ar_owner, ar_first_name, ar_last_name, ar_middle_name)
-                                                                   VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), :first_name, :last_name, :middle_name);');
-                                            $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                                            $stmt->bindValue(':first_name', $first_name, PDO::PARAM_STR);
-                                            $stmt->bindValue(':last_name', $last_name, PDO::PARAM_STR);
-                                            $stmt->bindValue(':middle_name', $middle_name, PDO::PARAM_STR);
-                                            $stmt->execute();
-                                            $id_author = $pdo->lastInsertId();
-                                        } else {
-                                            $stmt = $pdo->prepare('SELECT ar_id FROM authors
+                                        $id_author = $pdo->lastInsertId();
+                                    } else {
+                                        $stmt = $pdo->prepare('SELECT ar_id FROM authors
                                                                    WHERE ar_first_name = :first_name AND ar_last_name = :last_name AND ar_middle_name = :middle_name ');
-                                            $stmt->bindValue(':first_name', $first_name, PDO::PARAM_STR);
-                                            $stmt->bindValue(':last_name', $last_name, PDO::PARAM_STR);
-                                            $stmt->bindValue(':middle_name', $middle_name, PDO::PARAM_STR);
-                                            $stmt->execute();
-                                            $id_author = $stmt->fetchColumn();
-                                        }
-                                        //книги-авторы
-                                        $stmt = $pdo->prepare('INSERT INTO books_authors (bkar_bk_id, bkar_ar_id)
-                                                                   VALUES (:id_books, :id_authors);');
-                                        $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
-                                        $stmt->bindValue(':id_authors', $id_author, PDO::PARAM_INT);
+                                        $stmt->bindValue(':first_name', $first_name, PDO::PARAM_STR);
+                                        $stmt->bindValue(':last_name', $last_name, PDO::PARAM_STR);
+                                        $stmt->bindValue(':middle_name', $middle_name, PDO::PARAM_STR);
                                         $stmt->execute();
-
+                                        $id_author = $stmt->fetchColumn();
                                     }
+                                    //книги-авторы
+                                    $stmt = $pdo->prepare('INSERT INTO books_authors (bkar_bk_id, bkar_ar_id)
+                                                                   VALUES (:id_books, :id_authors);');
+                                    $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
+                                    $stmt->bindValue(':id_authors', $id_author, PDO::PARAM_INT);
+                                    $stmt->execute();
+
                                 }
-
-                                $res["data"] = array(
-                                    //имя файла с книгой
-                                    "hash_name" => $filename,
-                                );
-
-                                /****** Поиск дублей ******/
-
-                                $sql = "select checkDoubles($id_book) result";
-
-                                foreach ($pdo->query($sql) as $row) {
-                                    $result = $row['result'];
-                                }
-
-                                fwrite($handle, $result);
-
-                            } else { //конец инсерта
-                                //Ошибка обновления БД
-                                $res["success"] = false;
-                                $res["error"] = "dbe";
                             }
+
+                            $res["data"] = array(
+                                //имя файла с книгой
+                                "hash_name" => $filename,
+                                "id" => $filename,
+                            );
+
+                            /****** Поиск дублей ******/
+
+                            $sql = "select checkDoubles($id_book) result";
+
+                            foreach ($pdo->query($sql) as $row) {
+                                $result = $row['result'];
+                            }
+
+                            switch ($result) {
+                                case 1:
+                                    $res["success"] = false;
+                                    $res["error"] = "cle";
+                                    break;
+                            }
+
+                        } else { //конец инсерта
+                            //Ошибка обновления БД
+                            $res["success"] = false;
+                            $res["error"] = "dbe";
+                        }
                     } else {
                         //Требуется описание книги
                         $res["success"] = false;
@@ -1588,6 +1574,23 @@ if (isset($_POST["cmd"])) {
                     } else {
                         $res["data"] = $bi;
                     }
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "dbe";
+                }
+            }
+            break;
+        case "del_author":
+            if ($pdo and $_SESSION["user"]) {
+                
+                $id = $_POST['id'];
+                $check = $_POST['check'];
+                $sql = "select delAuthor($id, $check) result";
+                foreach ($pdo->query($sql) as $row) {
+                    $result = $row['result'];
+                }
+                if ($result) {
+                    $res["data"] = $result;
                 } else {
                     $res["success"] = false;
                     $res["error"] = "dbe";

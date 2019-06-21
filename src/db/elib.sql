@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost
--- Время создания: Июн 11 2019 г., 15:03
+-- Время создания: Июн 21 2019 г., 15:39
 -- Версия сервера: 5.7.20
 -- Версия PHP: 7.2.0
 
@@ -27,10 +27,10 @@ DELIMITER $$
 -- Функции
 --
 CREATE DEFINER=`root`@`%` FUNCTION `checkDoubles` (`f_bk_id` INT) RETURNS TINYINT(1) BEGIN 
+  DECLARE cnt tinyint;
   DECLARE result tinyint;
-  
   select count(1)
-  into result
+  into cnt
   from books b_new,
        books b_old
   where b_old.bk_doc_id = b_new.bk_doc_id
@@ -44,26 +44,61 @@ CREATE DEFINER=`root`@`%` FUNCTION `checkDoubles` (`f_bk_id` INT) RETURNS TINYIN
          FROM books_authors
          WHERE bkar_bk_id = f_bk_id)
     
-    /*and not exists (select 1
-                    from books_authors bkar_new
-                    where bkar_new.bkar_bk_id = f_bk_id
-                      and not exists (select 1
-                                      from books_authors bkar_old
-                                      where bkar_old.bkar_bk_id = b_old.bk_id
-                                        and bkar_old.bkar_ar_id = bkar_new.bkar_ar_id))
-
-    and not exists (select 1
-                    from books_authors bkar_old
-                    where bkar_old.bkar_bk_id = b_old.bk_id
-                      and not exists (select 1
-                                      from books_authors bkar_new
-                                      where bkar_new.bkar_bk_id = f_bk_id
-                                        and bkar_new.bkar_ar_id = bkar_old.bkar_ar_id))*/
+    
     and b_new.bk_id = f_bk_id
     and b_old.bk_id != f_bk_id;
+    
+    if cnt > 0 then
+    set result = 1;
+  end if;   
   
- 
   RETURN result;
+END$$
+
+CREATE DEFINER=`root`@`%` FUNCTION `delAuthor` (`id` INT, `check` VARCHAR(3)) RETURNS TINYINT(1) BEGIN
+  declare v_cnt int;
+  DECLARE result tinyint;
+  DECLARE done INT DEFAULT FALSE;
+  DECLARE a, b INT;
+  DECLARE cur1 CURSOR FOR
+    SELECT bkar_id, bkar_bk_id
+    FROM books_authors
+    WHERE bkar_ar_id = ID;
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+  OPEN cur1;
+
+  read_loop: LOOP
+    FETCH cur1 INTO a, b;
+    IF done THEN
+      LEAVE read_loop;
+    END IF;
+    -- нет соавтора
+    set v_cnt = 0;
+    select count(1)
+    into v_cnt
+    from books_authors
+    where bkar_bk_id = B
+      and bkar_ar_id != ID;
+    if v_cnt = 0 then
+      delete from books_genres
+      where bkge_bk_id = B;
+      delete from books_authors
+      where bkar_id = A;
+      delete from books
+      where bk_id = b;
+    end if;
+  END LOOP;
+
+  CLOSE cur1;
+  delete from authors
+  where ar_id = ID;
+  if v_cnt = 0 then
+    set result = 1;
+  else
+    set result = 0;
+  end if;
+  return result;
 END$$
 
 DELIMITER ;
@@ -277,8 +312,7 @@ INSERT INTO `genres` (`ge_id`, `ge_gg_id`, `ge_code`, `ge_title`) VALUES
 (105, 15, 'home_garden', 'Сад и огород'),
 (106, 15, 'home_diy', 'Сделай сам'),
 (107, 15, 'home_sport', 'Спорт'),
-(108, 15, 'home_sex', 'Эротика, Секс'),
-(109, 15, 'home', 'Прочиее домоводство (то, что не вошло в другие категории)');
+(108, 15, 'home_sex', 'Эротика, Секс');
 
 -- --------------------------------------------------------
 
@@ -621,31 +655,31 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `authors`
 --
 ALTER TABLE `authors`
-  MODIFY `ar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `ar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
 
 --
 -- AUTO_INCREMENT для таблицы `books`
 --
 ALTER TABLE `books`
-  MODIFY `bk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=169;
+  MODIFY `bk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=447;
 
 --
 -- AUTO_INCREMENT для таблицы `books_authors`
 --
 ALTER TABLE `books_authors`
-  MODIFY `bkar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=188;
+  MODIFY `bkar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=485;
 
 --
 -- AUTO_INCREMENT для таблицы `books_genres`
 --
 ALTER TABLE `books_genres`
-  MODIFY `bkge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=298;
+  MODIFY `bkge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=816;
 
 --
 -- AUTO_INCREMENT для таблицы `genres`
 --
 ALTER TABLE `genres`
-  MODIFY `ge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
+  MODIFY `ge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
 
 --
 -- AUTO_INCREMENT для таблицы `genres_groups`
@@ -657,7 +691,7 @@ ALTER TABLE `genres_groups`
 -- AUTO_INCREMENT для таблицы `series`
 --
 ALTER TABLE `series`
-  MODIFY `se_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `se_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
 
 --
 -- AUTO_INCREMENT для таблицы `users`

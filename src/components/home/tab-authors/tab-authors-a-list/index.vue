@@ -161,7 +161,7 @@
       size="lg"
       no-close-on-backdrop
       title="Удаление автора"
-      @ok="delHandleOk"
+      @ok="delAuthorHandleOk"
       @shown="hideMenu"
       ok-title="Удалить"
       ok-variant="danger"
@@ -361,17 +361,24 @@ export default {
       this.$refs.scModalRef.show();
     },
     scHandleOk() {
-      // const self = this;
-      // this.callApi(
-      //   this.$store.getters.prefix + "/static/api.php",
-      //   {
-      //     cmd: "del_author",
-      //     id: this.authorID,
-      //     check: this.status
-      //   },
-      //   "",
-      //   function(rd) {}
-      // );
+      
+    },
+    delAuthorHandleOk() {
+      const self = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "del_author",
+          id: Number(this.authorID),
+          check: this.status
+        },
+        "",
+        function(rd) {
+          if (rd == 1) {
+            store.commit("setStimulusValue", Math.random());
+          }
+        }
+      );
     },
     // modal 2-3 end
     itemClickHandler(item) {
@@ -425,19 +432,7 @@ export default {
     hideMenu() {
       this.aMenu = false;
     },
-    delHandleOk() {
-      const self = this;
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "del_author",
-          id: this.authorID,
-          check: this.status
-        },
-        "",
-        function(rd) {}
-      );
-    },
+    
     sortText() {
       this.bAsc = false;
       this.bDesc = false;
