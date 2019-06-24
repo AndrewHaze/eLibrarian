@@ -63,13 +63,15 @@
               </b-btn>
             </div>
             <b-collapse id="collapse-1" class="collapse-wrap" v-model="showCollapse1">
-              
               <b-form-group
                 id="collapse-1-input-group-1"
                 label-for="collapse1-input-1"
                 label-size="sm"
               >
-                <span slot="label" title="Обязательное поле">Название<span class="label-asterix">*</span>:</span>
+                <span slot="label" title="Обязательное поле">
+                  Название
+                  <span class="label-asterix">*</span>:
+                </span>
                 <b-form-input
                   id="collapse-1-input-1"
                   type="text"
@@ -100,7 +102,10 @@
                 label-for="collapse-1-select-1"
                 label-size="sm"
               >
-                <span slot="label" title="Обязательное поле">Авторы<span class="label-asterix">*</span>:</span>
+                <span slot="label" title="Обязательное поле">
+                  Авторы
+                  <span class="label-asterix">*</span>:
+                </span>
                 <multiselect
                   id="collapse-1-select-1"
                   :multiple="true"
@@ -208,7 +213,12 @@
                     label-for="collapse-3-input-1"
                     label-size="sm"
                   >
-                    <b-form-input id="collapse-3-input-1" type="date" v-model="form.bk_date" size="sm"></b-form-input>
+                    <b-form-input
+                      id="collapse-3-input-1"
+                      type="date"
+                      v-model="form.bk_date"
+                      size="sm"
+                    ></b-form-input>
                   </b-form-group>
                 </b-col>
                 <!-- Разделитель -->
@@ -918,7 +928,7 @@ export default {
       s2OptionsOrigLang: []
     };
   },
-  mounted () {
+  mounted() {
     const self = this;
 
     window.addEventListener("resize", this.handleResize);
@@ -926,49 +936,14 @@ export default {
     if (this.mHeight > 1200) {
       this.mHeight = 1200;
     }
-    
-    ///////////////////////////// драг&дроп обложки (начало) ////////////////////////////////////
-    var dropArea = document.getElementById("drop-area");
-    ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
-      dropArea.addEventListener(eventName, preventDefaults, false);
-    });
-
-    function preventDefaults(e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-
-    ["dragenter", "dragover"].forEach(eventName => {
-      dropArea.addEventListener(eventName, highlight, false);
-    });
-
-    ["dragleave", "drop"].forEach(eventName => {
-      dropArea.addEventListener(eventName, unhighlight, false);
-    });
-
-    function highlight(e) {
-      dropArea.classList.add("highlight");
-    }
-
-    function unhighlight(e) {
-      dropArea.classList.remove("highlight");
-    }
-
-    dropArea.addEventListener("drop", handleDrop, false);
-
-    function handleDrop(e) {
-      self.coverImage = URL.createObjectURL(e.dataTransfer.files[0]);
-      self.isCover = true;
-    }
-    ///////////////////////////// драг&дроп обложки (конец) ////////////////////////////////////
 
     //список языков
-    
+
     this.callApi(
       this.$store.getters.prefix + "/static/api.php",
       {
         cmd: "lg_list",
-        dat: "",
+        dat: ""
       },
       "",
       function(rd) {
@@ -981,7 +956,7 @@ export default {
       this.$store.getters.prefix + "/static/api.php",
       {
         cmd: "bg_list",
-        dat: "",
+        dat: ""
       },
       "",
       function(rd) {
@@ -1000,6 +975,41 @@ export default {
     },
     shownBookEditor() {
       document.getElementById("book" + this.bkID).scrollTop = 0;
+      ///////////////////////////// драг&дроп обложки (начало) ////////////////////////////////////
+      const self = this;
+      var dropArea = document.getElementById("drop-area");
+      ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      ["dragenter", "dragover"].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+      });
+
+      ["dragleave", "drop"].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+      });
+
+      function highlight(e) {
+        dropArea.classList.add("highlight");
+      }
+
+      function unhighlight(e) {
+        dropArea.classList.remove("highlight");
+      }
+
+      dropArea.addEventListener("drop", handleDrop, false);
+
+      function handleDrop(e) {
+        self.coverImage = URL.createObjectURL(e.dataTransfer.files[0]);
+        self.isCover = true;
+      }
+      ///////////////////////////// драг&дроп обложки (конец) ////////////////////////////////////
     },
     showBookEditor() {
       //id текущей книги
