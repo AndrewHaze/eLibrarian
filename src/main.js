@@ -29,13 +29,13 @@ Vue.mixin({
       console.log('Message: ', m);
       console.log('Data: ', d);
       console.log("***************************");
-      this.makeToast('danger')
       return;
     },
-    makeToast(variant = null) {
-      this.$bvToast.toast('Toast body content', {
-        title: `Variant ${variant || 'default'}`,
+    makeToast(message, variant = null) {
+      this.$bvToast.toast(message, {
+        title: this.$store.getters.appTitle,
         variant: variant,
+        //autoHideDelay: 2000,
         solid: true
       })
     },
