@@ -582,6 +582,7 @@ export default {
           if (rd) {
             store.commit("setDeleteBookFlag", true);
             store.commit("setStimulusValue", Math.random());
+            self.makeToast('Книга удалена!', 'success')
           }
           self.isLoading = false;
         }

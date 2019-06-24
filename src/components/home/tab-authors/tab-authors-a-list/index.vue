@@ -376,6 +376,9 @@ export default {
         function(rd) {
           if (rd == 1) {
             store.commit("setStimulusValue", Math.random());
+            self.makeToast('Автор '+self.authorName+' и все его книги удалены!','info')
+          } else {
+            self.makeToast('Ошибка удаления!','danger')
           }
         }
       );
