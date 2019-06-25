@@ -83,17 +83,22 @@ $hover-color: rgba(221, 221, 221, 0.4);
   }
 }
 
-.info-modal-icon {
-  color: #007bff;
+.info-modal-icon,
+.question-modal-icon,
+.exclamation-modal-icon {
   font-size: 2.6rem;
   margin: 0 0 0.25rem;
 }
 
+.info-modal-icon,
 .question-modal-icon {
   color: #007bff;
-  font-size: 2.6rem;
-  margin: 0 0 0 0.25rem;
 }
+
+.exclamation-modal-icon {
+  color: #dc3545;
+}
+
 
 .table-wrap {
   user-select: none;

@@ -66,7 +66,7 @@
             </b-btn>
           </b-button-group>
           <b-button-group class="mx-1" size="sm">
-            <b-btn variant="danger" title="Удалить Автора" v-b-modal.a-modal4>
+            <b-btn variant="danger" title="Удалить Автора" @click="deleteAuthorClick">
               <font-awesome-icon icon="user-times"/>
             </b-btn>
           </b-button-group>
@@ -158,6 +158,7 @@
     </b-modal>
     <b-modal
       id="a-modal4"
+      ref="a-modal4"
       size="lg"
       no-close-on-backdrop
       title="Удаление автора"
@@ -173,15 +174,35 @@
         </b-col>
         <b-col>
           <h4>Вы действительно хотите удалить выбранного автора и все его книги из библиотеки?</h4>
-          <b-form-checkbox
+          <!-- <b-form-checkbox
             id="checkbox1"
             class="mt-2"
             v-model="status"
             value="yes"
             unchecked-value="no"
-          >Так же удалить все написанные в соавторстве книги</b-form-checkbox>
+          >Так же удалить все написанные в соавторстве книги</b-form-checkbox>-->
         </b-col>
       </b-row>
+    </b-modal>
+    <b-modal
+      id="a-modal5"
+      ref="a-modal5"
+      size="lg"
+      no-close-on-backdrop
+      title="Удаление автора"
+      @shown="hideMenu"
+    >
+      <b-row>
+        <b-col md="1">
+          <font-awesome-icon class="exclamation-modal-icon" icon="exclamation-circle"/>
+        </b-col>
+        <b-col>
+          <h4>Вы не можете удалить выбранного автора из библиотеки, так как он является соавтором!<br/><div class="mt-2">Cначало удалите эти книги.</div></h4>
+        </b-col>
+      </b-row>
+      <template slot="modal-footer" slot-scope="{ cancel }">
+        <b-button @click="cancel()">Отмена</b-button>
+      </template>
     </b-modal>
   </div>
 </template>
@@ -238,7 +259,7 @@ export default {
       authorID: "",
       //кого заменяем
       authorName: "",
-      status: "no",
+      //status: "no", //Выпиленый чек в окне удаления
       aAsc: true,
       aDesc: false,
       bAsc: false,
@@ -301,6 +322,49 @@ export default {
       this.modalOkText = "Объединить";
       this.authorOperation = "combine";
     },
+    deleteAuthorClick() {
+      const self = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "check_author",
+          id: Number(this.authorID)
+        },
+        "",
+        function(rd) {
+          if (rd == 0) {
+            //нет соавторов
+            self.$refs["a-modal4"].show();
+          } else {
+            //есть соавторов
+            self.$refs["a-modal5"].show();
+          }
+        }
+      );
+    },
+    delAuthorHandleOk() {
+      const self = this;
+      this.callApi(
+        this.$store.getters.prefix + "/static/api.php",
+        {
+          cmd: "del_author",
+          id: Number(this.authorID)
+          //check: this.status
+        },
+        "",
+        function(rd) {
+          if (rd == 1) {
+            store.commit("setStimulusValue", Math.random());
+            self.makeToast(
+              "Автор " + self.authorName + " и все его книги удалены!",
+              "info"
+            );
+          } else {
+            self.makeToast("Ошибка удаления!", "danger");
+          }
+        }
+      );
+    },
     handleResize() {
       this.mHeight = window.innerHeight - shiftL;
       if (this.mHeight > 1200) {
@@ -360,29 +424,7 @@ export default {
     modal3HandleOk() {
       this.$refs.scModalRef.show();
     },
-    scHandleOk() {
-      
-    },
-    delAuthorHandleOk() {
-      const self = this;
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "del_author",
-          id: Number(this.authorID),
-          check: this.status
-        },
-        "",
-        function(rd) {
-          if (rd == 1) {
-            store.commit("setStimulusValue", Math.random());
-            self.makeToast('Автор '+self.authorName+' и все его книги удалены!','info')
-          } else {
-            self.makeToast('Ошибка удаления!','danger')
-          }
-        }
-      );
-    },
+    scHandleOk() {},
     // modal 2-3 end
     itemClickHandler(item) {
       //сбросим атрибуты по всему массиву
@@ -435,7 +477,7 @@ export default {
     hideMenu() {
       this.aMenu = false;
     },
-    
+
     sortText() {
       this.bAsc = false;
       this.bDesc = false;
@@ -483,7 +525,7 @@ export default {
       if (element) {
         element.isActive = true;
       } else {
-          store.commit("setAuthorID", -1);
+        store.commit("setAuthorID", -1);
       }
     }
   }

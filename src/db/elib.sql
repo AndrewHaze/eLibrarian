@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost
--- Время создания: Июн 21 2019 г., 15:39
+-- Время создания: Июн 25 2019 г., 15:54
 -- Версия сервера: 5.7.20
 -- Версия PHP: 7.2.0
 
@@ -73,21 +73,22 @@ CREATE DEFINER=`root`@`%` FUNCTION `delAuthor` (`id` INT, `check` VARCHAR(3)) RE
     IF done THEN
       LEAVE read_loop;
     END IF;
-    -- нет соавтора
+    -- ищем соавтора
     set v_cnt = 0;
     select count(1)
     into v_cnt
     from books_authors
     where bkar_bk_id = B
       and bkar_ar_id != ID;
-    if v_cnt = 0 then
+    -- если нет
+    IF v_cnt = 0 THEN
       delete from books_genres
       where bkge_bk_id = B;
       delete from books_authors
       where bkar_id = A;
       delete from books
       where bk_id = b;
-    end if;
+    END IF;
   END LOOP;
 
   CLOSE cur1;
@@ -116,6 +117,17 @@ CREATE TABLE `authors` (
   `ar_last_name` varchar(255) NOT NULL,
   `ar_middle_name` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Дамп данных таблицы `authors`
+--
+
+INSERT INTO `authors` (`ar_id`, `ar_owner`, `ar_first_name`, `ar_last_name`, `ar_middle_name`) VALUES
+(4, 1, 'Ли', 'Чайлд', ''),
+(8, 1, 'Стив', 'Эриксон', ''),
+(13, 1, 'Алексей', 'Иванов', 'Викторович'),
+(19, 1, 'Якоб', 'Гримм', ''),
+(20, 1, 'Вильгельм', 'Гримм', '');
 
 -- --------------------------------------------------------
 
@@ -559,6 +571,32 @@ CREATE TABLE `series` (
   `se_title` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Дамп данных таблицы `series`
+--
+
+INSERT INTO `series` (`se_id`, `se_title`) VALUES
+(1, 'История Российского государства в повестях и романах'),
+(2, 'История Российского государства'),
+(3, 'Осьминог'),
+(4, 'Джек Ричер'),
+(5, 'Киты по штирборту'),
+(6, 'Воздушный стрелок'),
+(7, 'S-T-I-K-S'),
+(8, 'Малазан'),
+(9, 'Малазанская «Книга Павших»'),
+(10, 'Американские боги'),
+(11, 'Бригадный генерал'),
+(12, 'Осколок империи'),
+(13, 'яяяяяя'),
+(14, 'Тобол'),
+(15, 'Читер'),
+(16, 'Хроники Арции'),
+(17, 'Отблески Этерны'),
+(18, 'Азиатская сага'),
+(19, 'Повести о Шерлоке Холмсе'),
+(20, 'Сэр Найджел');
+
 -- --------------------------------------------------------
 
 --
@@ -655,25 +693,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT для таблицы `authors`
 --
 ALTER TABLE `authors`
-  MODIFY `ar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
+  MODIFY `ar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT для таблицы `books`
 --
 ALTER TABLE `books`
-  MODIFY `bk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=447;
+  MODIFY `bk_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT для таблицы `books_authors`
 --
 ALTER TABLE `books_authors`
-  MODIFY `bkar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=485;
+  MODIFY `bkar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT для таблицы `books_genres`
 --
 ALTER TABLE `books_genres`
-  MODIFY `bkge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=816;
+  MODIFY `bkge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
 
 --
 -- AUTO_INCREMENT для таблицы `genres`
@@ -691,7 +729,7 @@ ALTER TABLE `genres_groups`
 -- AUTO_INCREMENT для таблицы `series`
 --
 ALTER TABLE `series`
-  MODIFY `se_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
+  MODIFY `se_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT для таблицы `users`

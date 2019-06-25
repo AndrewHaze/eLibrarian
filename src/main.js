@@ -10,10 +10,10 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import axios from "axios"
 import Loading from './components/lib/loading'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faTh, faStream, faTable, faCheck, faHeart, faBell, faTrashAlt, faBookReader, faEdit, faStar, faStarHalfAlt, faInfoCircle, faCalendarCheck, faTag, faAddressCard, faUserFriends, faUserMinus, faUserTimes, faTimes, faQuestionCircle, faChevronUp, faChevronDown, faPlus, faMinus, faCalendar, faCalendarWeek, faCalendarDay, faCalendarAlt, faClock } from '@fortawesome/free-solid-svg-icons'
+import { faTh, faStream, faTable, faCheck, faHeart, faBell, faTrashAlt, faBookReader, faEdit, faStar, faStarHalfAlt, faInfoCircle, faCalendarCheck, faTag, faAddressCard, faUserFriends, faUserMinus, faUserTimes, faTimes, faQuestionCircle, faChevronUp, faChevronDown, faPlus, faMinus, faCalendar, faCalendarWeek, faCalendarDay, faCalendarAlt, faClock, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faTh, faStream, faTable, faCheck, faHeart, faBell, faTrashAlt, faBookReader, faEdit, faStar, faStarHalfAlt, faInfoCircle, faCalendarCheck, faTag, faAddressCard, faUserFriends, faUserMinus, faUserTimes, faTimes, faQuestionCircle, faChevronUp, faChevronDown, faPlus, faMinus, faCalendar, faCalendarWeek, faCalendarDay, faCalendarAlt, faClock)
+library.add(faTh, faStream, faTable, faCheck, faHeart, faBell, faTrashAlt, faBookReader, faEdit, faStar, faStarHalfAlt, faInfoCircle, faCalendarCheck, faTag, faAddressCard, faUserFriends, faUserMinus, faUserTimes, faTimes, faQuestionCircle, faChevronUp, faChevronDown, faPlus, faMinus, faCalendar, faCalendarWeek, faCalendarDay, faCalendarAlt, faClock, faExclamationCircle)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.component('loading', Loading)
 
@@ -41,7 +41,7 @@ Vue.mixin({
     },
     callApi(url, prms, hct, callback) {
       axios({
-        method: "post", //отправка файла pdf
+        method: "post", 
         url: this.$store.getters.prefix + "/static/api.php",
         data: { cmd: 'check' },
         withCredentials: true, //передаем куки
@@ -89,6 +89,7 @@ Vue.mixin({
         doc.compatMode == "CSS1Compat" ? doc.documentElement : doc.body;
       return elem.clientHeight;
     },
+    //проверка поддержки хранилища браузером
     storageAvailable: function (type) {
       try {
         var storage = window[type],

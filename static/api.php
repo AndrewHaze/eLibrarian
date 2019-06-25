@@ -1580,12 +1580,26 @@ if (isset($_POST["cmd"])) {
                 }
             }
             break;
+        case "check_author":
+            if ($pdo and $_SESSION["user"]) {
+                $id = $_POST['id'];
+                $stmt = $pdo->query("SELECT COUNT(1)
+                                     FROM books_authors bkar1,
+                                     books_authors bkar2
+                                     WHERE bkar1.bkar_ar_id = $id
+                                       AND bkar2.bkar_bk_id = bkar1.bkar_bk_id
+                                       AND bkar2.bkar_ar_id != $id");
+                $count = $stmt->fetchColumn();
+                $res["data"] = $count;
+            } else {
+                $res["success"] = false;
+                $res["error"] = "PDO Error";
+            }
+            break;
         case "del_author":
             if ($pdo and $_SESSION["user"]) {
-                
                 $id = $_POST['id'];
-                $check = $_POST['check'];
-                $sql = "select delAuthor($id, $check) result";
+                $sql = "select delAuthor($id, '$check') result";
                 foreach ($pdo->query($sql) as $row) {
                     $result = $row['result'];
                 }
