@@ -9,31 +9,31 @@
           <div class="ln-header">Книги</div>
           <div class="ln-list">
             <div id="li1" class="ln-list-item" @click="itemClick(1)">
-              <font-awesome-icon icon="clock" style="color: #069adc"/>Последние открытые
+              <font-awesome-icon icon="clock" style="color: #069adc" />Последние открытые
             </div>
             <div id="li2" class="ln-list-item" @click="itemClick(2)">
-              <font-awesome-icon icon="check" style="color: #30e52a"/>Прочитаные
+              <font-awesome-icon icon="check" style="color: #30e52a" />Прочитаные
             </div>
             <div id="li3" class="ln-list-item" @click="itemClick(3)">
-              <font-awesome-icon icon="calendar-check" style="color: #ffa500"/>Запланированные
+              <font-awesome-icon icon="calendar-check" style="color: #ffa500" />Запланированные
             </div>
             <div id="li4" class="ln-list-item" @click="itemClick(4)">
-              <font-awesome-icon icon="heart" style="color: #c91212"/>Избранные
+              <font-awesome-icon icon="heart" style="color: #c91212" />Избранные
             </div>
           </div>
           <div class="ln-header">Новые поступления</div>
           <div class="ln-list">
             <div id="li5" class="ln-list-item" @click="itemClick(5)">
-              <font-awesome-icon icon="calendar-week" style="color: #00bcd4"/>За неделю
+              <font-awesome-icon icon="calendar-week" style="color: #00bcd4" />За неделю
             </div>
             <div id="li6" class="ln-list-item" @click="itemClick(6)">
-              <font-awesome-icon icon="calendar-alt" style="color: #00bcd4"/>За месяц
+              <font-awesome-icon icon="calendar-alt" style="color: #00bcd4" />За месяц
             </div>
             <div id="li7" class="ln-list-item" @click="itemClick(7)">
-              <font-awesome-icon icon="calendar" style="color: #00bcd4"/>За год
+              <font-awesome-icon icon="calendar" style="color: #00bcd4" />За год
             </div>
             <div id="li8" class="ln-list-item" @click="itemClick(8)">
-              <font-awesome-icon icon="calendar-day" style="color: #00bcd4"/>За период
+              <font-awesome-icon icon="calendar-day" style="color: #00bcd4" />За период
             </div>
           </div>
           <div class="datepicker-wrap" v-if="isDatapickers">
@@ -92,15 +92,21 @@ export default {
   watch: {
     date1: function() {
       store.commit("setDateFrom", moment(this.date1).format("YYYY-MM-DD"));
-      store.commit("setLibrarySID", 8  +Number(moment(this.date1).format("YYYYMMDD"))/100000000);
+      store.commit(
+        "setLibrarySID",
+        8 + Number(moment(this.date1).format("YYYYMMDD")) / 100000000
+      );
     },
     date2: function() {
       store.commit("setDateTo", moment(this.date2).format("YYYY-MM-DD"));
-      store.commit("setLibrarySID", 8 + Number(moment(this.date2).format("YYYYMMDD"))/100000000);
+      store.commit(
+        "setLibrarySID",
+        8 + Number(moment(this.date2).format("YYYYMMDD")) / 100000000
+      );
     },
     currentSLI: function(val) {
       if (val != -1) {
-        this.itemClick(val)
+        this.itemClick(val);
       }
     }
   },
@@ -127,6 +133,7 @@ export default {
 
     itemClick(item) {
       this.getLibraryS();
+      item = Math.trunc(item); //убираем: Number(moment(this.date2).format("YYYYMMDD")) / 100000000
       let elem = document.getElementById("li" + item);
       elem.classList.add("active");
       if (item === 8) {

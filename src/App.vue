@@ -85,7 +85,7 @@ export default {
     if ((this.storageAvailable('localStorage')) && localStorage.InfoPanel) {
       store.commit("setblLook", ['on']);
       this.selectedCheckbox = ['on'];
-    } else this.selectedCheckbox = null;
+    } else this.selectedCheckbox = '';
   },
   methods: {
     logout: function() {
