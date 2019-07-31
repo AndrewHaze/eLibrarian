@@ -105,6 +105,7 @@ export default {
       );
     },
     currentSLI: function(val) {
+      console.log(val)
       if (val != -1) {
         this.itemClick(val);
       }
@@ -133,10 +134,10 @@ export default {
 
     itemClick(item) {
       this.getLibraryS();
-      item = Math.trunc(item); //убираем: Number(moment(this.date2).format("YYYYMMDD")) / 100000000
-      let elem = document.getElementById("li" + item);
+      let round_item = Math.trunc(item); //убираем: Number(moment(this.date2).format("YYYYMMDD")) / 100000000
+      let elem = document.getElementById("li" + round_item);
       elem.classList.add("active");
-      if (item === 8) {
+      if (round_item  === 8) {
         this.isDatapickers = true;
         store.commit("setDateFrom", moment(this.date1).format("YYYY-MM-DD"));
         store.commit("setDateTo", moment(this.date2).format("YYYY-MM-DD"));
