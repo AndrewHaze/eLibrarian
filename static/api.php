@@ -32,9 +32,7 @@ if (isset($_POST["cmd"])) {
         case "exist": //есть такой пользователь?
             if ($pdo) {
                 $username = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE ur_login = :login');
-                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                $stmt->execute();
+                $stmt = $pdo->query("SELECT COUNT(*) FROM users WHERE ur_login = '$username'");
                 $count = $stmt->fetchColumn();
                 if ($count > 0) {
                     $res["data"] = false;
@@ -51,10 +49,8 @@ if (isset($_POST["cmd"])) {
                 $username = $_POST["usr"];
                 $password = $_POST["psw"];
                 $hash = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare('INSERT INTO `users` ( `ur_login`, `ur_hash`) VALUES (:login, :hash);');
-                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                $stmt->bindValue(':hash', $hash, PDO::PARAM_STR);
-                $stmt->execute();
+                $stmt = $pdo->exec("INSERT INTO `users` ( `ur_login`, `ur_hash`) VALUES ('$username', '$hash');");
+                //добавить проверку
                 $_SESSION['user'] = $username;
                 $res["data"] = $_SESSION['user'];
             } else {
@@ -66,9 +62,7 @@ if (isset($_POST["cmd"])) {
             if ($pdo) {
                 $username = $_POST["usr"];
                 $password = $_POST["psw"];
-                $stmt = $pdo->prepare('SELECT ur_hash FROM users WHERE ur_login = :login ');
-                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                $stmt->execute();
+                $stmt = $pdo->query("SELECT ur_hash FROM users WHERE ur_login = '$username'");
                 $hash = $stmt->fetchColumn();
                 if (password_verify($password, $hash)) {
                     $_SESSION['user'] = $username;
@@ -91,18 +85,13 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $b_id = $_POST["id"];
-                $b_state = $_POST["state"];
-                $stmt = $pdo->prepare('UPDATE `books`
-                SET bk_read = :b_state
-                WHERE bk_id = :b_id AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = :login);');
-                $stmt->bindValue(':b_state', $b_state, PDO::PARAM_INT);
-                $stmt->bindValue(':b_id', $b_id, PDO::PARAM_INT);
-                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                if ($stmt->execute()) {
+                $b_state = intval($_POST["state"]);
+                $stmt = $pdo->exec("UPDATE `books` SET bk_read = $b_state WHERE bk_id = $b_id AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = '$username');");
+                if ($stmt > 0) {
                     $res["data"] = true;
                 } else {
                     $res["success"] = false;
-                    $res["error"] = "DB Update Error " . $username . ' - ' . $b_state;
+                    $res["error"] = "DB Update Error " . $b_id . ' - ' . $b_state;
                 }
             }
             break;
@@ -110,14 +99,11 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $b_id = $_POST["id"];
-                $b_state = $_POST["state"];
-                $stmt = $pdo->prepare('UPDATE `books`
-                SET bk_favorites = :b_state
-                WHERE bk_id = :b_id AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = :login);');
-                $stmt->bindValue(':b_state', $b_state, PDO::PARAM_INT);
-                $stmt->bindValue(':b_id', $b_id, PDO::PARAM_INT);
-                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                if ($stmt->execute()) {
+                $b_state = intval($_POST["state"]);
+                $stmt = $pdo->exec("UPDATE `books`
+                SET bk_favorites = $b_state
+                WHERE bk_id = $b_id AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = '$username');");
+                if ($stmt > 0) {
                     $res["data"] = true;
                 } else {
                     $res["success"] = false;
@@ -129,14 +115,11 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $b_id = $_POST["id"];
-                $b_state = $_POST["state"];
-                $stmt = $pdo->prepare('UPDATE `books`
-                SET bk_to_plan = :b_state
-                WHERE bk_id = :b_id AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = :login);');
-                $stmt->bindValue(':b_state', $b_state, PDO::PARAM_INT);
-                $stmt->bindValue(':b_id', $b_id, PDO::PARAM_INT);
-                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                if ($stmt->execute()) {
+                $b_state = intval($_POST["state"]);
+                $stmt = $pdo->exec("UPDATE `books`
+                SET bk_to_plan = $b_state
+                WHERE bk_id = $b_id AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = '$username');");
+                if ($stmt > 0) {
                     $res["data"] = true;
                 } else {
                     $res["success"] = false;
@@ -149,13 +132,10 @@ if (isset($_POST["cmd"])) {
                 $username = $_SESSION["user"];
                 $b_id = $_POST["id"];
                 $b_state = $_POST["state"];
-                $stmt = $pdo->prepare('UPDATE `books`
-                SET bk_stars = :b_state
-                WHERE bk_id = :b_id AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = :login);');
-                $stmt->bindValue(':b_state', $b_state, PDO::PARAM_INT);
-                $stmt->bindValue(':b_id', $b_id, PDO::PARAM_INT);
-                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                if ($stmt->execute()) {
+                $stmt = $pdo->exec("UPDATE `books`
+                SET bk_stars = $b_state
+                WHERE bk_id = $b_id AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = '$username');");
+                if ($stmt > 0) {
                     $res["data"] = true;
                 } else {
                     $res["success"] = false;
@@ -169,34 +149,29 @@ if (isset($_POST["cmd"])) {
                 $dat = $_POST["dat"];
                 switch ($dat) {
                     case "authors":
-                        $stmt = $pdo->prepare('SELECT DISTINCT SUBSTR(ar_last_name, 1, 1) FROM authors, books_authors, books
+                        $stmt = $pdo->query("SELECT DISTINCT SUBSTR(ar_last_name, 1, 1) FROM authors, books_authors, books
                                            WHERE ar_id = bkar_ar_id AND bkar_bk_id = bk_id
-                                             AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = :login) ORDER BY 1');
-                        $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                        $stmt->execute();
+                                             AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = '$username') ORDER BY 1");
                         $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
                         foreach ($result as $value) {
                             array_push($res["data"], array("text" => $value, "value" => $value));
                         }
                         break;
                     case "series":
-                        $stmt = $pdo->prepare('SELECT DISTINCT SUBSTR(se_title, 1, 1) FROM books, series
+                        $stmt = $pdo->query("SELECT DISTINCT SUBSTR(se_title, 1, 1) FROM books, series
                                            WHERE se_id = bk_se_id
-                                             AND se_title != "яяяяяя"
-                                             AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = :login) ORDER BY 1');
-                        $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                        $stmt->execute();
+                                             AND se_title != 'яяяяяя'
+                                             AND bk_ur_id = (SELECT ur_id FROM users WHERE ur_login = '$username') ORDER BY 1");
                         $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
                         foreach ($result as $value) {
                             array_push($res["data"], array("text" => $value, "value" => $value));
                         }
                         break;
                     case "genres":
-                        $stmt = $pdo->prepare('SELECT SUBSTR(gg_title, 1, 1) FROM genres_groups
+                        $stmt = $pdo->query("SELECT SUBSTR(gg_title, 1, 1) FROM genres_groups
                                                UNION
                                                SELECT SUBSTR(ge_title, 1, 1) FROM genres
-                                               ORDER BY 1');
-                        $stmt->execute();
+                                               ORDER BY 1");
                         $result = $stmt->fetchAll(PDO::FETCH_COLUMN);
                         foreach ($result as $value) {
                             array_push($res["data"], array("text" => $value, "value" => $value));
@@ -209,24 +184,22 @@ if (isset($_POST["cmd"])) {
         case "a_list": //список авторов
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
-                $stmt = $pdo->prepare('SELECT ar_id, ar_last_name, ar_middle_name, ar_first_name, COUNT(*) cnt
+                $stmt = $pdo->query("SELECT ar_id, ar_last_name, ar_middle_name, ar_first_name, COUNT(*) cnt
                                        FROM authors, books_authors, books, users
                                        WHERE ar_id = bkar_ar_id
                                          AND bkar_bk_id = bk_id
                                          AND bk_ur_id = ur_id
-                                         AND ur_login = :login
+                                         AND ur_login = '$username'
                                       GROUP BY ar_id, ar_last_name, ar_middle_name, ar_first_name
-                                      ORDER BY ar_last_name, ar_middle_name, ar_first_name');
-                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                $stmt->execute();
+                                      ORDER BY ar_last_name, ar_middle_name, ar_first_name");
                 $result = $stmt->fetchAll();
                 foreach ($result as $value) {
                     array_push($res["data"],
                         array(
-                            "id" => "ai" . $value[ar_id],
-                            "books" => $value[cnt],
+                            "id" => "ai" . $value['ar_id'],
+                            "books" => $value['cnt'],
                             //Склеиваем и удаляем лишнии пробелы + все заглавные
-                            "author" => preg_replace('/^ +| +$|( ) +/m', '$1', ucwords($value[ar_last_name] . ' ' . $value[ar_first_name] . ' ' . $value[ar_middle_name])),
+                            "author" => preg_replace('/^ +| +$|( ) +/m', '$1', ucwords($value['ar_last_name'] . ' ' . $value['ar_first_name'] . ' ' . $value['ar_middle_name'])),
                             "isActive" => false,
                         ));
                 }
@@ -236,30 +209,27 @@ if (isset($_POST["cmd"])) {
         case "author": //выбраный автор
             if ($pdo and $_SESSION["user"]) {
                 $ai = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT ar_last_name, ar_middle_name, ar_first_name
+                $stmt = $pdo->query("SELECT ar_last_name, ar_middle_name, ar_first_name
                                        FROM authors
-                                       WHERE ar_id = :ai');
-                $stmt->bindValue(':ai', $ai, PDO::PARAM_INT);
-                $stmt->execute();
+                                       WHERE ar_id = $ai");
                 $result = $stmt->fetch();
-                $res["data"] = ucwords($result[ar_last_name] . ' ' . $result[ar_first_name] . ' ' . $result[ar_middle_name]);
+                $res["data"] = ucwords($result['ar_last_name'] . ' ' . $result['ar_first_name'] . ' ' . $result['ar_middle_name']);
 
             }
             break;
         case "series": //серия выбранной книги
             if ($pdo and $_SESSION["user"]) {
                 $b_id = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT se_title, bk_number
+                $stmt = $pdo->query("SELECT se_title, bk_number
                                         FROM books, series
-                                        WHERE bk_id = :b_id
-                                          AND se_id = bk_se_id');
-                $stmt->bindValue(':b_id', $b_id, PDO::PARAM_INT);
+                                        WHERE bk_id = $b_id
+                                          AND se_id = bk_se_id");
                 if ($stmt->execute()) {
                     $result = $stmt->fetch();
                     if ($result[se_title] == 'яяяяяя') {
                         $res["data"] = '';
                     } else {
-                        $res["data"] = ucwords($result[se_title]) . ' №' . $result[bk_number];
+                        $res["data"] = ucwords($result['se_title']) . ' №' . $result['bk_number'];
                     }
                 } else {
                     $res["success"] = false;
@@ -271,23 +241,21 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $ai = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT DISTINCT se_id, se_title
+                $stmt = $pdo->query("SELECT DISTINCT se_id, se_title
                                         FROM books, books_authors, series, users
-                                        WHERE bkar_ar_id = :ai
+                                        WHERE bkar_ar_id = $ai
                                          AND bkar_bk_id = bk_id
                                          AND se_id = bk_se_id
                                          AND bk_ur_id = ur_id
-                                         AND ur_login = :login
-                                         ORDER BY se_title');
-                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                $stmt->bindValue(':ai', $ai, PDO::PARAM_INT);
-                if ($stmt->execute()) {
+                                         AND ur_login = '$username'
+                                         ORDER BY se_title");
+                if ($stmt) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
                         array_push($res["data"],
                             array(
-                                "id" => "se" . $value[se_id],
-                                "seriesTitle" => $value[se_title],
+                                "id" => "se" . $value['se_id'],
+                                "seriesTitle" => $value['se_title'],
                             ));
                     }
                 } else {
@@ -302,7 +270,7 @@ if (isset($_POST["cmd"])) {
                 unset($condition);
                 switch ($_POST["dat"]) {
                     case 1:
-                        $condition = " ";
+                        $condition = ' ';
                         break;
                     case 2:
                         $condition = " AND bk_read = 1 ";
@@ -329,21 +297,20 @@ if (isset($_POST["cmd"])) {
                     default:
                         $condition = " ";
                 }
-                $stmt = $pdo->prepare('SELECT DISTINCT se_id, se_title
+                $stmt = $pdo->query("SELECT DISTINCT se_id, se_title
                                         FROM books, series, users
-                                       WHERE se_id = bk_se_id'
+                                       WHERE se_id = bk_se_id"
                     . $condition .
-                    'AND bk_ur_id = ur_id
-                                         AND ur_login = :login
-                                         ORDER BY se_title');
-                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                if ($stmt->execute()) {
+                    "AND bk_ur_id = ur_id
+                                         AND ur_login = '$username'
+                                         ORDER BY se_title");
+                if ($stmt) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
                         array_push($res["data"],
                             array(
-                                "id" => "se" . $value[se_id],
-                                "seriesTitle" => $value[se_title],
+                                "id" => "se" . $value['se_id'],
+                                "seriesTitle" => $value['se_title'],
                             ));
                     }
                 } else {
@@ -519,18 +486,14 @@ if (isset($_POST["cmd"])) {
                                               se_title,
                                               (SELECT GROUP_CONCAT(ar_last_name, " ", ar_first_name, " ", ar_middle_name
                                                       ORDER BY ar_last_name, ar_first_name, ar_middle_name ASC SEPARATOR ", ")
-                                                FROM books_authors, authors, users
+                                                FROM books_authors, authors
                                               WHERE bkar_bk_id = bk_id
                                                 AND ar_id = bkar_ar_id
-                                                AND bk_ur_id = ur_id
-                                                AND ur_login = :login2
                                               ) list_authors,
                                               (SELECT GROUP_CONCAT(ge_title ORDER BY ge_title ASC SEPARATOR ", ")
-                                                FROM books_genres, genres, users
+                                                FROM books_genres, genres
                                               WHERE bkge_bk_id = bk_id
                                                 AND ge_id = bkge_ge_id
-                                                AND bk_ur_id = ur_id
-                                                AND ur_login = :login3
                                               ) list_genres
                                         FROM books_authors, books, series, users
                                        WHERE bkar_ar_id = :ai
@@ -540,8 +503,6 @@ if (isset($_POST["cmd"])) {
                                          AND ur_login = :login1
                                          ORDER BY se_title, bk_number, bk_title');
                 $stmt->bindValue(':login1', $username, PDO::PARAM_STR);
-                $stmt->bindValue(':login2', $username, PDO::PARAM_STR);
-                $stmt->bindValue(':login3', $username, PDO::PARAM_STR);
                 $stmt->bindValue(':ai', $ai, PDO::PARAM_INT);
                 if ($stmt->execute()) {
                     $result = $stmt->fetchAll();
@@ -1481,32 +1442,17 @@ if (isset($_POST["cmd"])) {
                                     $first_name = trim($author[0]) ?: "";
                                     $last_name = trim($author[1]) ?: "";
                                     $middle_name = trim($author[2]) ?: "";
-
-                                    $stmt = $pdo->prepare('SELECT COUNT(*) FROM authors
-                                                               WHERE ar_first_name = :first_name AND ar_last_name = :last_name AND ar_middle_name = :middle_name ');
-                                    $stmt->bindValue(':first_name', $first_name, PDO::PARAM_STR);
-                                    $stmt->bindValue(':last_name', $last_name, PDO::PARAM_STR);
-                                    $stmt->bindValue(':middle_name', $middle_name, PDO::PARAM_STR);
-                                    $stmt->execute();
-                                    $count = $stmt->fetchColumn();
-                                    if ($count === 0) {
-                                        $stmt = $pdo->prepare('INSERT INTO authors (ar_owner, ar_first_name, ar_last_name, ar_middle_name)
-                                                                   VALUES ((SELECT ur_id FROM users WHERE ur_login = :login), :first_name, :last_name, :middle_name);');
-                                        $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                                        $stmt->bindValue(':first_name', $first_name, PDO::PARAM_STR);
-                                        $stmt->bindValue(':last_name', $last_name, PDO::PARAM_STR);
-                                        $stmt->bindValue(':middle_name', $middle_name, PDO::PARAM_STR);
-                                        $stmt->execute();
+                                    //Поиск автора -
+                                    $stmt = $pdo->query("SELECT ar_id FROM authors
+                                                                   WHERE ar_first_name = '$first_name' AND ar_last_name = '$last_name' AND ar_middle_name = '$middle_name' ");
+                                    $id_author = $stmt->fetchColumn();
+                                    //
+                                    if (empty($id_author)) {
+                                        $stmt = $pdo->exec("INSERT INTO authors (ar_owner, ar_first_name, ar_last_name, ar_middle_name)
+                                                                   VALUES ((SELECT ur_id FROM users WHERE ur_login = '$username'), '$first_name', '$last_name', '$middle_name');");
                                         $id_author = $pdo->lastInsertId();
-                                    } else {
-                                        $stmt = $pdo->prepare('SELECT ar_id FROM authors
-                                                                   WHERE ar_first_name = :first_name AND ar_last_name = :last_name AND ar_middle_name = :middle_name ');
-                                        $stmt->bindValue(':first_name', $first_name, PDO::PARAM_STR);
-                                        $stmt->bindValue(':last_name', $last_name, PDO::PARAM_STR);
-                                        $stmt->bindValue(':middle_name', $middle_name, PDO::PARAM_STR);
-                                        $stmt->execute();
-                                        $id_author = $stmt->fetchColumn();
                                     }
+                                    //
                                     //книги-авторы
                                     $stmt = $pdo->prepare('INSERT INTO books_authors (bkar_bk_id, bkar_ar_id)
                                                                    VALUES (:id_books, :id_authors);');
@@ -1605,6 +1551,20 @@ if (isset($_POST["cmd"])) {
                 }
                 if ($result) {
                     $res["data"] = $result;
+                } else {
+                    $res["success"] = false;
+                    $res["error"] = "dbe";
+                }
+            }
+            break;
+        case "synonym_author":
+            if ($pdo and $_SESSION["user"]) {
+                $id1 = $_POST['id1'];
+                $id2 = $_POST['id2'];
+                $sql = "update authors set ar_gr_id = $id2 where ar_id = $id1";
+                $cnt = $pdo->exec($sql);
+                if ($cnt > 0) {
+                    $res["data"] = $cnt;
                 } else {
                     $res["success"] = false;
                     $res["error"] = "dbe";
