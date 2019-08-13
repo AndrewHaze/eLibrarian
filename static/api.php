@@ -679,7 +679,7 @@ if (isset($_POST["cmd"])) {
                     $filter = null;
                 }
 
-                $filter = $filter."%";
+                $filter = $filter . "%";
 
                 if ($_POST["type"] === "branch") {
                     $branch_id = $_POST["id"];
@@ -1183,21 +1183,15 @@ if (isset($_POST["cmd"])) {
                             $sequence = "яяяяяя";
                         }
                         //Серия есть?
-                        $stmt = $pdo->prepare('SELECT COUNT(*) FROM series
-                                                WHERE se_title = :se_title ');
-                        $stmt->bindValue(':se_title', $sequence, PDO::PARAM_STR);
-                        $stmt->execute();
+                        $stmt = $pdo->query("SELECT COUNT(*) FROM series
+                                                WHERE se_title = '$sequence'");
                         $count = $stmt->fetchColumn();
                         if ($count === 0) { //Новая серия
-                            $stmt = $pdo->prepare('INSERT INTO series (se_title) VALUES (:se_title);');
-                            $stmt->bindValue(':se_title', $sequence, PDO::PARAM_STR);
-                            $stmt->execute();
+                            $stmt = $pdo->exec("INSERT INTO series (se_title) VALUES ('$sequence');");
                             $id_sequence = $pdo->lastInsertId();
                         } else { //Существующая серия
-                            $stmt = $pdo->prepare('SELECT se_id FROM series
-                                                    WHERE se_title = :se_title');
-                            $stmt->bindValue(':se_title', $sequence, PDO::PARAM_STR);
-                            $stmt->execute();
+                            $stmt = $pdo->query("SELECT se_id FROM series
+                                                    WHERE se_title = '$sequence'");
                             $id_sequence = $stmt->fetchColumn();
                         }
 
@@ -1284,8 +1278,9 @@ if (isset($_POST["cmd"])) {
                             }
                         }
 
-                        /********************************** MAIN QUERIES ***********************************************/
 
+                        /********************************** MAIN QUERIES ***********************************************/
+                        
                         $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id,
                                                                  bk_se_id,
                                                                  bk_number,
@@ -1388,11 +1383,8 @@ if (isset($_POST["cmd"])) {
                             if (count($genre_list) > 0) {
                                 foreach ($genre_list as $element) {
                                     $genre = $element->nodeValue;
-                                    $stmt = $pdo->prepare('INSERT INTO books_genres (bkge_bk_id, bkge_ge_id)
-                                                                   VALUES (:id_books, (SELECT ge_id FROM genres WHERE ge_code = :genre_code));');
-                                    $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
-                                    $stmt->bindValue(':genre_code', $genre, PDO::PARAM_STR);
-                                    $stmt->execute();
+                                    $stmt = $pdo->exec("INSERT INTO books_genres (bkge_bk_id, bkge_ge_id)
+                                                                   VALUES ($id_book, (SELECT ge_id FROM genres WHERE ge_code = '$genre'));");
                                 }
                             }
 
@@ -1420,11 +1412,8 @@ if (isset($_POST["cmd"])) {
                                     }
                                     //
                                     //книги-авторы
-                                    $stmt = $pdo->prepare('INSERT INTO books_authors (bkar_bk_id, bkar_ar_id)
-                                                                   VALUES (:id_books, :id_authors);');
-                                    $stmt->bindValue(':id_books', $id_book, PDO::PARAM_INT);
-                                    $stmt->bindValue(':id_authors', $id_author, PDO::PARAM_INT);
-                                    $stmt->execute();
+                                    $stmt = $pdo->exec("INSERT INTO books_authors (bkar_bk_id, bkar_ar_id)
+                                                                   VALUES ($id_book, $id_author);");
 
                                 }
                             }
