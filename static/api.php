@@ -351,52 +351,48 @@ if (isset($_POST["cmd"])) {
                     default:
                         $condition = " ";
                 }
-                $stmt = $pdo->prepare('SELECT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars, bk_file,
+                $stmt = $pdo->query("SELECT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars, bk_file,
                                               bk_number,
                                               se_title,
-                                              (SELECT GROUP_CONCAT(ar_last_name, " ", ar_first_name, " ", ar_middle_name
-                                                      ORDER BY ar_last_name, ar_first_name, ar_middle_name ASC SEPARATOR ", ")
+                                              (SELECT GROUP_CONCAT(ar_last_name, ' ', ar_first_name, ' ', ar_middle_name
+                                                      ORDER BY ar_last_name, ar_first_name, ar_middle_name ASC SEPARATOR ', ')
                                                 FROM books_authors, authors, users
                                               WHERE bkar_bk_id = bk_id
                                                 AND ar_id = bkar_ar_id
                                                 AND bk_ur_id = ur_id
-                                                AND ur_login = :login2
+                                                AND ur_login = '$username'
                                               ) list_authors,
-                                              (SELECT GROUP_CONCAT(ge_title ORDER BY ge_title ASC SEPARATOR ", ")
+                                              (SELECT GROUP_CONCAT(ge_title ORDER BY ge_title ASC SEPARATOR ', ')
                                                 FROM books_genres, genres, users
                                               WHERE bkge_bk_id = bk_id
                                                 AND ge_id = bkge_ge_id
                                                 AND bk_ur_id = ur_id
-                                                AND ur_login = :login3
+                                                AND ur_login = '$username'
                                               ) list_genres
                                         FROM books, series, users
                                        WHERE se_id = bk_se_id
-                                         AND bk_ur_id = ur_id'
+                                         AND bk_ur_id = ur_id"
                     . $condition .
-                    'AND ur_login = :login1
-                                         ORDER BY se_title, bk_number, bk_title');
-                $stmt->bindValue(':login1', $username, PDO::PARAM_STR);
-                $stmt->bindValue(':login2', $username, PDO::PARAM_STR);
-                $stmt->bindValue(':login3', $username, PDO::PARAM_STR);
-
-                if ($stmt->execute()) {
+                    "AND ur_login = '$username'
+                                         ORDER BY se_title, bk_number, bk_title");
+                if ($stmt) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
                         array_push($res["data"],
                             array(
-                                "id" => "bk" . $value[bk_id],
-                                "author" => ucwords($value[list_authors]),
-                                "title" => $value[bk_title],
-                                "cover" => base64_encode($value[bk_cover]),
-                                "genres" => $value[list_genres] ?: "Прочее",
-                                "annotation" => $value[bk_annotation],
-                                "seriesTitle" => $value[se_title],
-                                "seriesNumber" => $value[bk_number],
-                                "isRead" => $value[bk_read],
-                                "isToPlan" => $value[bk_to_plan],
-                                "isFavorites" => $value[bk_favorites],
-                                "howManyStars" => $value[bk_stars],
-                                "fileName" => $value[bk_file],
+                                "id" => "bk" . $value['bk_id'],
+                                "author" => ucwords($value['list_authors']),
+                                "title" => $value['bk_title'],
+                                "cover" => base64_encode($value['bk_cover']),
+                                "genres" => $value['list_genres'] ?: "Прочее",
+                                "annotation" => $value['bk_annotation'],
+                                "seriesTitle" => $value['se_title'],
+                                "seriesNumber" => $value['bk_number'],
+                                "isRead" => $value['bk_read'],
+                                "isToPlan" => $value['bk_to_plan'],
+                                "isFavorites" => $value['bk_favorites'],
+                                "howManyStars" => $value['bk_stars'],
+                                "fileName" => $value['bk_file'],
                                 "isActive" => false,
                             ));
                     }
@@ -409,40 +405,39 @@ if (isset($_POST["cmd"])) {
         case "book": //книга
             if ($pdo and $_SESSION["user"]) {
                 $bi = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT *
+                $stmt = $pdo->query("SELECT *
                                        FROM books
-                                       WHERE bk_id = :bi');
-                $stmt->bindValue(':bi', $bi, PDO::PARAM_INT);
-                if ($stmt->execute()) {
+                                       WHERE bk_id = $bi");
+                if ($stmt) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
                         array_push($res["data"],
                             array(
-                                "bk_title" => $value[bk_title],
-                                "bk_src_title" => $value[bk_src_title],
-                                "bk_cover" => base64_encode($value[bk_cover]),
-                                "bk_annotation" => $value[bk_annotation],
-                                "bk_seriesNumber" => $value[bk_number],
-                                "bk_file_name" => $value[bk_file],
-                                "bk_date" => $value[bk_date],
-                                "bk_keywords" => $value[bk_keywords],
-                                "bk_translators" => $value[bk_translators],
-                                "bk_doc_id" => $value[bk_doc_id],
-                                "bk_doc_authors" => $value[bk_doc_authors],
-                                "bk_doc_programms" => $value[bk_doc_programms],
-                                "bk_doc_date" => $value[bk_doc_date],
-                                "bk_doc_ocr_authors" => $value[bk_doc_ocr_authors],
-                                "bk_doc_ver" => $value[bk_doc_ver],
-                                "bk_doc_url" => $value[bk_doc_url],
-                                "bk_doc_history" => $value[bk_doc_history],
-                                "bk_pub_title" => $value[bk_pub_title],
-                                "bk_pub_publisher" => $value[bk_pub_publisher],
-                                "bk_pub_city" => $value[bk_pub_city],
-                                "bk_pub_year" => $value[bk_pub_year],
-                                "bk_pub_isbn" => $value[bk_pub_isbn],
-                                "bk_doc_file_name" => $value[bk_doc_file_name],
-                                "bk_doc_file_size" => $value[bk_doc_file_size],
-                                "bk_doc_file_date" => $value[bk_doc_file_date],
+                                "bk_title" => $value['bk_title'],
+                                "bk_src_title" => $value['bk_src_title'],
+                                "bk_cover" => base64_encode($value['bk_cover']),
+                                "bk_annotation" => $value['bk_annotation'],
+                                "bk_seriesNumber" => $value['bk_number'],
+                                "bk_file_name" => $value['bk_file'],
+                                "bk_date" => $value['bk_date'],
+                                "bk_keywords" => $value['bk_keywords'],
+                                "bk_translators" => $value['bk_translators'],
+                                "bk_doc_id" => $value['bk_doc_id'],
+                                "bk_doc_authors" => $value['bk_doc_authors'],
+                                "bk_doc_programms" => $value['bk_doc_programms'],
+                                "bk_doc_date" => $value['bk_doc_date'],
+                                "bk_doc_ocr_authors" => $value['bk_doc_ocr_authors'],
+                                "bk_doc_ver" => $value['bk_doc_ver'],
+                                "bk_doc_url" => $value['bk_doc_url'],
+                                "bk_doc_history" => $value['bk_doc_history'],
+                                "bk_pub_title" => $value['bk_pub_title'],
+                                "bk_pub_publisher" => $value['bk_pub_publisher'],
+                                "bk_pub_city" => $value['bk_pub_city'],
+                                "bk_pub_year" => $value['bk_pub_year'],
+                                "bk_pub_isbn" => $value['bk_pub_isbn'],
+                                "bk_doc_file_name" => $value['bk_doc_file_name'],
+                                "bk_doc_file_size" => $value['bk_doc_file_size'],
+                                "bk_doc_file_date" => $value['bk_doc_file_date'],
                             ));
                     }
                 } else {
@@ -454,21 +449,20 @@ if (isset($_POST["cmd"])) {
         case "b_authors": //авторы книги
             if ($pdo and $_SESSION["user"]) {
                 $bi = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT ar_id, ar_last_name, ar_middle_name, ar_first_name
+                $stmt = $pdo->query("SELECT ar_id, ar_last_name, ar_middle_name, ar_first_name
                 FROM authors, books_authors, books
-                WHERE bk_id = :bi
+                WHERE bk_id = $bi
                   AND bkar_bk_id = bk_id
                   AND ar_id = bkar_ar_id
-             ORDER BY ar_last_name, ar_middle_name, ar_first_name');
-                $stmt->bindValue(':bi', $bi, PDO::PARAM_INT);
-                if ($stmt->execute()) {
+             ORDER BY ar_last_name, ar_middle_name, ar_first_name");
+                if ($stmt) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
                         array_push($res["data"],
                             array(
-                                "id" => "ai" . $value[ar_id],
+                                "id" => "ai" . $value['ar_id'],
                                 //Склеиваем и удаляем лишнии пробелы + все заглавные
-                                "author" => preg_replace('/^ +| +$|( ) +/m', '$1', ucwords($value[ar_last_name] . ' ' . $value[ar_first_name] . ' ' . $value[ar_middle_name])),
+                                "author" => preg_replace('/^ +| +$|( ) +/m', '$1', ucwords($value['ar_last_name'] . ' ' . $value['ar_first_name'] . ' ' . $value['ar_middle_name'])),
                             ));
                     }
                 } else {
@@ -481,47 +475,45 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $ai = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars, bk_file,
+                $stmt = $pdo->query("SELECT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars, bk_file,
                                               bk_number,
                                               se_title,
-                                              (SELECT GROUP_CONCAT(ar_last_name, " ", ar_first_name, " ", ar_middle_name
-                                                      ORDER BY ar_last_name, ar_first_name, ar_middle_name ASC SEPARATOR ", ")
+                                              (SELECT GROUP_CONCAT(ar_last_name, ' ', ar_first_name, ' ', ar_middle_name
+                                                      ORDER BY ar_last_name, ar_first_name, ar_middle_name ASC SEPARATOR ', ')
                                                 FROM books_authors, authors
                                               WHERE bkar_bk_id = bk_id
                                                 AND ar_id = bkar_ar_id
                                               ) list_authors,
-                                              (SELECT GROUP_CONCAT(ge_title ORDER BY ge_title ASC SEPARATOR ", ")
+                                              (SELECT GROUP_CONCAT(ge_title ORDER BY ge_title ASC SEPARATOR ', ')
                                                 FROM books_genres, genres
                                               WHERE bkge_bk_id = bk_id
                                                 AND ge_id = bkge_ge_id
                                               ) list_genres
                                         FROM books_authors, books, series, users
-                                       WHERE bkar_ar_id = :ai
+                                       WHERE bkar_ar_id = $ai
                                          AND bkar_bk_id = bk_id
                                          AND se_id = bk_se_id
                                          AND bk_ur_id = ur_id
-                                         AND ur_login = :login1
-                                         ORDER BY se_title, bk_number, bk_title');
-                $stmt->bindValue(':login1', $username, PDO::PARAM_STR);
-                $stmt->bindValue(':ai', $ai, PDO::PARAM_INT);
-                if ($stmt->execute()) {
+                                         AND ur_login = '$username'
+                                         ORDER BY se_title, bk_number, bk_title");
+                if ($stmt) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
                         array_push($res["data"],
                             array(
-                                "id" => "bk" . $value[bk_id],
-                                "author" => ucwords($value[list_authors]),
-                                "title" => $value[bk_title],
-                                "cover" => base64_encode($value[bk_cover]),
-                                "genres" => $value[list_genres] ?: "Прочее",
-                                "annotation" => $value[bk_annotation],
-                                "seriesTitle" => $value[se_title],
-                                "seriesNumber" => $value[bk_number],
-                                "isRead" => $value[bk_read],
-                                "isToPlan" => $value[bk_to_plan],
-                                "isFavorites" => $value[bk_favorites],
-                                "howManyStars" => $value[bk_stars],
-                                "fileName" => $value[bk_file],
+                                "id" => "bk" . $value['bk_id'],
+                                "author" => ucwords($value['list_authors']),
+                                "title" => $value['bk_title'],
+                                "cover" => base64_encode($value['bk_cover']),
+                                "genres" => $value['list_genres'] ?: "Прочее",
+                                "annotation" => $value['bk_annotation'],
+                                "seriesTitle" => $value['se_title'],
+                                "seriesNumber" => $value['bk_number'],
+                                "isRead" => $value['bk_read'],
+                                "isToPlan" => $value['bk_to_plan'],
+                                "isFavorites" => $value['bk_favorites'],
+                                "howManyStars" => $value['bk_stars'],
+                                "fileName" => $value['bk_file'],
                                 "isActive" => false,
                             ));
                     }
@@ -535,32 +527,31 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $flag = $_POST["dat"]; //объем данных
-                $stmt = $pdo->prepare('SELECT se_id, se_title, COUNT(*) cnt
+                $stmt = $pdo->query("SELECT se_id, se_title, COUNT(*) cnt
                 FROM books,
                      series,
                      users
-                WHERE ur_login = :login
+                WHERE ur_login = '$username'
                   AND bk_ur_id = ur_id
                   AND se_id = bk_se_id
-                  AND se_title != "яяяяяя"
+                  AND se_title != 'яяяяяя'
                  GROUP BY se_id, se_title
-                ORDER BY se_title');
-                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                if ($stmt->execute()) {
+                ORDER BY se_title");
+                if ($stmt) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
                         if ($flag == 'simple') {
                             array_push($res["data"],
                                 array(
-                                    "id" => "se" . $value[se_id],
-                                    "seriesTitle" => $value[se_title],
+                                    "id" => "se" . $value['se_id'],
+                                    "seriesTitle" => $value['se_title'],
                                 ));
                         } else {
                             array_push($res["data"],
                                 array(
-                                    "id" => "se" . $value[se_id],
-                                    "seriesTitle" => $value[se_title],
-                                    "books" => $value[cnt],
+                                    "id" => "se" . $value['se_id'],
+                                    "seriesTitle" => $value['se_title'],
+                                    "books" => $value['cnt'],
                                     "isActive" => false,
                                 ));
                         }
@@ -575,36 +566,32 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 $username = $_SESSION["user"];
                 $si = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT DISTINCT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars, bk_file,
+                $stmt = $pdo->query("SELECT DISTINCT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars, bk_file,
                                               bk_number,
                                               se_title,
-                                              (SELECT GROUP_CONCAT(ar_last_name, " ", ar_first_name, " ", ar_middle_name
-                                                      ORDER BY ar_last_name, ar_first_name, ar_middle_name ASC SEPARATOR ", ")
+                                              (SELECT GROUP_CONCAT(ar_last_name, ' ', ar_first_name, ' ', ar_middle_name
+                                                      ORDER BY ar_last_name, ar_first_name, ar_middle_name ASC SEPARATOR ', ')
                                                 FROM books_authors, authors, users
                                               WHERE bkar_bk_id = bk_id
                                                 AND ar_id = bkar_ar_id
                                                 AND bk_ur_id = ur_id
-                                                AND ur_login = :login2
+                                                AND ur_login = '$username'
                                               ) list_authors,
-                                              (SELECT GROUP_CONCAT(ge_title ORDER BY ge_title ASC SEPARATOR ", ")
+                                              (SELECT GROUP_CONCAT(ge_title ORDER BY ge_title ASC SEPARATOR ', ')
                                                 FROM books_genres, genres, users
                                               WHERE bkge_bk_id = bk_id
                                                 AND ge_id = bkge_ge_id
                                                 AND bk_ur_id = ur_id
-                                                AND ur_login = :login3
+                                                AND ur_login = '$username'
                                               ) list_genres
                                         FROM books_authors, books, series, users
-                                       WHERE bk_se_id = :si
+                                       WHERE bk_se_id = $si
                                          AND bkar_bk_id = bk_id
                                          AND se_id = bk_se_id
                                          AND bk_ur_id = ur_id
-                                         AND ur_login = :login1
-                                         ORDER BY se_title, bk_number, bk_title');
-                $stmt->bindValue(':login1', $username, PDO::PARAM_STR);
-                $stmt->bindValue(':login2', $username, PDO::PARAM_STR);
-                $stmt->bindValue(':login3', $username, PDO::PARAM_STR);
-                $stmt->bindValue(':si', $si, PDO::PARAM_INT);
-                if ($stmt->execute()) {
+                                         AND ur_login = '$username'
+                                         ORDER BY se_title, bk_number, bk_title");
+                if ($stmt) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
                         array_push($res["data"],
@@ -634,17 +621,15 @@ if (isset($_POST["cmd"])) {
         case "ser": //выбраная серия
             if ($pdo and $_SESSION["user"]) {
                 $si = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT se_id, se_title
+                $stmt = $pdo->query("SELECT se_id, se_title
                                        FROM series
-                                       WHERE se_id = :si');
-                $stmt->bindValue(':si', $si, PDO::PARAM_INT);
-                $stmt->execute();
+                                       WHERE se_id = $si");
                 $result = $stmt->fetchAll();
                 foreach ($result as $value) {
                     array_push($res["data"],
                         array(
-                            "id" => "se" . $value[se_id],
-                            "seriesTitle" => $value[se_title],
+                            "id" => "se" . $value['se_id'],
+                            "seriesTitle" => $value['se_title'],
                             "isActive" => false,
                         ));
                 }
@@ -654,19 +639,17 @@ if (isset($_POST["cmd"])) {
         case "b_ser": //серия книги для BookEditor
             if ($pdo and $_SESSION["user"]) {
                 $bi = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT se_id, se_title
+                $stmt = $pdo->query("SELECT se_id, se_title
                                        FROM books, series
-                                       WHERE bk_id = :bi
+                                       WHERE bk_id = $bi
                                        AND se_id = bk_se_id
-                                       AND se_title != "яяяяяя"');
-                $stmt->bindValue(':bi', $bi, PDO::PARAM_INT);
-                $stmt->execute();
+                                       AND se_title != 'яяяяяя'");
                 $result = $stmt->fetchAll();
                 foreach ($result as $value) {
                     array_push($res["data"],
                         array(
-                            "id" => "se" . $value[se_id],
-                            "seriesTitle" => $value[se_title],
+                            "id" => "se" . $value['se_id'],
+                            "seriesTitle" => $value['se_title'],
                         ));
                 }
 
@@ -676,16 +659,16 @@ if (isset($_POST["cmd"])) {
             if ($pdo and $_SESSION["user"]) {
                 switch ($_POST["order"]) {
                     case 0:
-                        $order_str = ' ORDER BY 2, 4 ';
+                        $order_str = " ORDER BY 2, 4 ";
                         break;
                     case 1:
-                        $order_str = ' ORDER BY 2 DESC, 4';
+                        $order_str = " ORDER BY 2 DESC, 4";
                         break;
                     case 2:
-                        $order_str = ' ORDER BY 5 ASC, 2';
+                        $order_str = " ORDER BY 5 ASC, 2";
                         break;
                     case 3:
-                        $order_str = ' ORDER BY 5 DESC, 2';
+                        $order_str = " ORDER BY 5 DESC, 2";
                         break;
                 }
                 $username = $_SESSION["user"];
@@ -696,13 +679,15 @@ if (isset($_POST["cmd"])) {
                     $filter = null;
                 }
 
-                if ($_POST["type"] === 'branch') {
+                $filter = $filter."%";
+
+                if ($_POST["type"] === "branch") {
                     $branch_id = $_POST["id"];
                 } else {
                     $leaf_id = $_POST["id"];
                 }
 
-                $stmt = $pdo->prepare('SELECT gg_id, gg_title, ge_id, ge_title,
+                $stmt = $pdo->query("SELECT gg_id, gg_title, ge_id, ge_title,
                                             (SELECT COUNT(1)
                                             FROM books_genres, genres g2, books, users
                                             WHERE g2.ge_gg_id = gg_id
@@ -710,31 +695,24 @@ if (isset($_POST["cmd"])) {
                                             AND ge_id = bkge_ge_id
                                             AND bk_id = bkge_bk_id
                                             AND ur_id = bk_ur_id
-                                            AND ur_login = :login1
-                                            AND (gg_title LIKE :filter1_c1 OR g2.ge_title LIKE :filter2_c1)) cnt1,
+                                            AND ur_login = '$username'
+                                            AND (gg_title LIKE '$filter' OR g2.ge_title LIKE '$filter')) cnt1,
                                             (SELECT COUNT(1)
                                             FROM books_genres, books, users
                                             WHERE bkge_ge_id = ge_id
                                             AND bk_id = bkge_bk_id
                                             AND ur_id = bk_ur_id
-                                            AND ur_login = :login2) cnt2
+                                            AND ur_login = '$username') cnt2
                                        FROM genres_groups, genres g1
                                        WHERE ge_gg_id = gg_id
-                                       AND (gg_title LIKE :filter1 OR ge_title LIKE :filter2)' . $order_str);
+                                       AND (gg_title LIKE '$filter' OR ge_title LIKE '$filter')" . $order_str);
 
-                $stmt->bindValue(':filter1', $filter . "%", PDO::PARAM_STR);
-                $stmt->bindValue(':filter2', $filter . "%", PDO::PARAM_STR);
-                $stmt->bindValue(':filter1_c1', $filter . "%", PDO::PARAM_STR);
-                $stmt->bindValue(':filter2_c1', $filter . "%", PDO::PARAM_STR);
-                $stmt->bindValue(':login1', $username, PDO::PARAM_STR);
-                $stmt->bindValue(':login2', $username, PDO::PARAM_STR);
-                $stmt->execute();
                 $result = $stmt->fetchAll();
                 $g_group = '';
                 $gg_count = 0;
                 $gm_array = [];
                 foreach ($result as $value) {
-                    if ($value[gg_title] != $g_group) {
+                    if ($value['gg_title'] != $g_group) {
                         if ($g_group != '') {
                             array_push($gm_array,
                                 array(
@@ -753,25 +731,25 @@ if (isset($_POST["cmd"])) {
                                 $b_sopened = false;
                             }
                         }
-                        $g_group = $value[gg_title];
-                        $g_id = $value[gg_id];
+                        $g_group = $value['gg_title'];
+                        $g_id = $value['gg_id'];
                         $b_selected = ($g_id === $branch_id) ? true : false;
-                        $gg_count = $value[cnt1];
+                        $gg_count = $value['cnt1'];
                         $gc_array = [];
                     }
-                    $l_selected = ($value[ge_id] === $leaf_id) ? true : false;
+                    $l_selected = ($value['ge_id'] === $leaf_id) ? true : false;
 
                     if ($l_selected) {
                         $b_sopened = true;
                     }
                     array_push($gc_array,
                         array(
-                            "id" => $value[ge_id],
-                            "text" => str_replace(" (то, что не вошло в другие категории)", "", $value[ge_title]),
+                            "id" => $value['ge_id'],
+                            "text" => str_replace(" (то, что не вошло в другие категории)", "", $value['ge_title']),
                             "type" => 'leaf',
                             "selected" => $l_selected,
-                            "count" => $value[cnt2],
-                            "disabled" => ($value[cnt2] > 0) ? false : true,
+                            "count" => $value['cnt2'],
+                            "disabled" => ($value['cnt2'] > 0) ? false : true,
                         ));
                 }
                 //Последняя группа вне цикла
@@ -792,18 +770,15 @@ if (isset($_POST["cmd"])) {
         ////////////////////////////////////////////////////////////////////
         case "bg_list": //список жанров для BookEditor
             if ($pdo and $_SESSION["user"]) {
-                $username = $_SESSION["user"];
-                $stmt = $pdo->prepare('SELECT DISTINCT gg_title, ge_id, ge_code, ge_title
+                $stmt = $pdo->query("SELECT DISTINCT gg_title, ge_id, ge_code, ge_title
                                          FROM  genres, genres_groups
                                         WHERE gg_id = ge_gg_id
-                                     ORDER BY 1, 4');
-                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                $stmt->execute();
+                                     ORDER BY 1, 4");
                 $result = $stmt->fetchAll();
                 $g_group = '';
                 $gm_array = [];
                 foreach ($result as $value) {
-                    if ($value[gg_title] != $g_group) {
+                    if ($value['gg_title'] != $g_group) {
                         if ($g_group != '') {
                             array_push($gm_array,
                                 array(
@@ -811,14 +786,14 @@ if (isset($_POST["cmd"])) {
                                     "genres" => $gc_array,
                                 ));
                         }
-                        $g_group = $value[gg_title];
+                        $g_group = $value['gg_title'];
                         $gc_array = [];
                     }
                     array_push($gc_array,
                         array(
-                            "id" => $value[ge_id],
-                            "code" => $value[ge_code],
-                            "title" => str_replace(" (то, что не вошло в другие категории)", "", $value[ge_title]),
+                            "id" => $value['ge_id'],
+                            "code" => $value['ge_code'],
+                            "title" => str_replace(" (то, что не вошло в другие категории)", "", $value['ge_title']),
                         ));
                 }
                 //Последняя группа вне цикла
@@ -833,20 +808,19 @@ if (isset($_POST["cmd"])) {
         case "b_genres": //список серий в жанре
             if ($pdo and $_SESSION["user"]) {
                 $bi = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT ge_id, ge_code, ge_title
+                $stmt = $pdo->query("SELECT ge_id, ge_code, ge_title
                                          FROM books_genres, genres
-                                        WHERE bkge_bk_id = :bi
+                                        WHERE bkge_bk_id = $bi
                                           AND ge_id = bkge_ge_id
-                                     ORDER BY ge_title');
-                $stmt->bindValue(':bi', $bi, PDO::PARAM_INT);
-                if ($stmt->execute()) {
+                                     ORDER BY ge_title");
+                if ($stmt) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
                         array_push($res["data"],
                             array(
-                                "id" => $value[ge_id],
-                                "code" => $value[ge_code],
-                                "title" => str_replace(" (то, что не вошло в другие категории)", "", $value[ge_title]),
+                                "id" => $value['ge_id'],
+                                "code" => $value['ge_code'],
+                                "title" => str_replace(" (то, что не вошло в другие категории)", "", $value['ge_title']),
                             ));
                     }
                 } else {
@@ -860,43 +834,41 @@ if (isset($_POST["cmd"])) {
                 $username = $_SESSION["user"];
                 $gi = $_POST["id"];
                 if ($_POST["type"] === 'branch') {
-                    $stmt = $pdo->prepare('SELECT DISTINCT se_id, se_title
+                    $stmt = $pdo->query("SELECT DISTINCT se_id, se_title
                     FROM books,
                          genres_groups,
                          genres,
                          books_genres,
                          series,
                          users
-                    WHERE gg_id = :gi
+                    WHERE gg_id = $gi
                       AND ge_gg_id = gg_id
                       AND bkge_ge_id = ge_id
                       AND bk_id = bkge_bk_id
                       AND se_id = bk_se_id
-                      AND ur_login = :login
+                      AND ur_login = '$username'
                       AND bk_ur_id = ur_id
-                    ORDER BY se_title');
+                    ORDER BY se_title");
                 } else {
-                    $stmt = $pdo->prepare('SELECT DISTINCT se_id, se_title
+                    $stmt = $pdo->query("SELECT DISTINCT se_id, se_title
                 FROM books,
                      books_genres,
                      series,
                      users
-                WHERE bkge_ge_id = :gi
+                WHERE bkge_ge_id = $gi
                   AND bk_id = bkge_bk_id
                   AND se_id = bk_se_id
-                  AND ur_login = :login
+                  AND ur_login = '$username'
                   AND bk_ur_id = ur_id
-                ORDER BY se_title');
+                ORDER BY se_title");
                 }
-                $stmt->bindValue(':login', $username, PDO::PARAM_STR);
-                $stmt->bindValue(':gi', $gi, PDO::PARAM_INT);
-                if ($stmt->execute()) {
+                if ($stmt) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
                         array_push($res["data"],
                             array(
-                                "id" => "se" . $value[se_id],
-                                "seriesTitle" => $value[se_title],
+                                "id" => "se" . $value['se_id'],
+                                "seriesTitle" => $value['se_title'],
                                 "isActive" => false,
                             ));
                     }
@@ -915,83 +887,79 @@ if (isset($_POST["cmd"])) {
                     $filter = null;
                 }
                 if ($_POST["type"] === 'branch') {
-                    $stmt = $pdo->prepare('SELECT DISTINCT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars, bk_file,
+                    $stmt = $pdo->query("SELECT DISTINCT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars, bk_file,
                                               bk_number,
                                               se_title,
-                                              (SELECT GROUP_CONCAT(ar_last_name, " ", ar_first_name, " ", ar_middle_name
-                                                      ORDER BY ar_last_name, ar_first_name, ar_middle_name ASC SEPARATOR ", ")
+                                              (SELECT GROUP_CONCAT(ar_last_name, ' ', ar_first_name, ' ', ar_middle_name
+                                                      ORDER BY ar_last_name, ar_first_name, ar_middle_name ASC SEPARATOR ', ')
                                                 FROM books_authors, authors, users
                                               WHERE bkar_bk_id = bk_id
                                                 AND ar_id = bkar_ar_id
                                                 AND bk_ur_id = ur_id
-                                                AND ur_login = :login2
+                                                AND ur_login = '$username'
                                               ) list_authors,
-                                              (SELECT GROUP_CONCAT(ge_title ORDER BY ge_title ASC SEPARATOR ", ")
+                                              (SELECT GROUP_CONCAT(ge_title ORDER BY ge_title ASC SEPARATOR ', ')
                                                 FROM books_genres, genres, users
                                               WHERE bkge_bk_id = bk_id
                                                 AND ge_id = bkge_ge_id
                                                 AND bk_ur_id = ur_id
-                                                AND ur_login = :login3
+                                                AND ur_login = '$username'
                                               ) list_genres
                                         FROM  books, books_genres, genres_groups, genres, series, users
-                                        WHERE gg_id = :gi
+                                        WHERE gg_id = $gi
                                          AND ge_gg_id = gg_id
                                          AND bkge_ge_id = ge_id
                                          AND bk_id = bkge_bk_id
                                          AND se_id = bk_se_id
                                          AND bk_ur_id = ur_id
-                                         AND ur_login = :login1
-                                         ORDER BY se_title, bk_number, bk_title');
+                                         AND ur_login = '$username'
+                                         ORDER BY se_title, bk_number, bk_title");
 
                 } else {
-                    $stmt = $pdo->prepare('SELECT DISTINCT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars, bk_file,
+                    $stmt = $pdo->query("SELECT DISTINCT bk_id, bk_title, bk_cover, bk_annotation, bk_read, bk_to_plan, bk_favorites, bk_stars, bk_file,
                                               bk_number,
                                               se_title,
-                                              (SELECT GROUP_CONCAT(ar_last_name, " ", ar_first_name, " ", ar_middle_name
-                                                      ORDER BY ar_last_name, ar_first_name, ar_middle_name ASC SEPARATOR ", ")
+                                              (SELECT GROUP_CONCAT(ar_last_name, ' ', ar_first_name, ' ', ar_middle_name
+                                                      ORDER BY ar_last_name, ar_first_name, ar_middle_name ASC SEPARATOR ', ')
                                                 FROM books_authors, authors, users
                                               WHERE bkar_bk_id = bk_id
                                                 AND ar_id = bkar_ar_id
                                                 AND bk_ur_id = ur_id
-                                                AND ur_login = :login2
+                                                AND ur_login = '$username'
                                               ) list_authors,
-                                              (SELECT GROUP_CONCAT(ge_title ORDER BY ge_title ASC SEPARATOR ", ")
+                                              (SELECT GROUP_CONCAT(ge_title ORDER BY ge_title ASC SEPARATOR ', ')
                                                 FROM books_genres, genres, users
                                               WHERE bkge_bk_id = bk_id
                                                 AND ge_id = bkge_ge_id
                                                 AND bk_ur_id = ur_id
-                                                AND ur_login = :login3
+                                                AND ur_login = '$username'
                                               ) list_genres
                                         FROM  books, books_genres, series, users
-                                        WHERE bkge_ge_id = :gi
+                                        WHERE bkge_ge_id = $gi
                                          AND bk_id = bkge_bk_id
                                          AND se_id = bk_se_id
                                          AND bk_ur_id = ur_id
-                                         AND ur_login = :login1
-                                         ORDER BY se_title, bk_number, bk_title');
+                                         AND ur_login = '$username'
+                                         ORDER BY se_title, bk_number, bk_title");
                 }
-                $stmt->bindValue(':login1', $username, PDO::PARAM_STR);
-                $stmt->bindValue(':login2', $username, PDO::PARAM_STR);
-                $stmt->bindValue(':login3', $username, PDO::PARAM_STR);
-                $stmt->bindValue(':gi', $gi, PDO::PARAM_INT);
-                if ($stmt->execute()) {
+                if ($stmt) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
                         array_push($res["data"],
                             array(
-                                "id" => "bk" . $value[bk_id],
-                                "author" => ucwords($value[list_authors]),
-                                "title" => $value[bk_title],
-                                "cover" => base64_encode($value[bk_cover]),
-                                "genres" => $value[list_genres] ?: "Прочее",
-                                "annotation" => $value[bk_annotation],
-                                "seriesTitle" => $value[se_title],
-                                "seriesNumber" => $value[bk_number],
-                                "isRead" => $value[bk_read],
-                                "isToPlan" => $value[bk_to_plan],
-                                "isFavorites" => $value[bk_favorites],
-                                "howManyStars" => $value[bk_stars],
-                                "fileName" => $value[bk_file],
+                                "id" => "bk" . $value['bk_id'],
+                                "author" => ucwords($value['list_authors']),
+                                "title" => $value['bk_title'],
+                                "cover" => base64_encode($value['bk_cover']),
+                                "genres" => $value['list_genres'] ?: "Прочее",
+                                "annotation" => $value['bk_annotation'],
+                                "seriesTitle" => $value['se_title'],
+                                "seriesNumber" => $value['bk_number'],
+                                "isRead" => $value['bk_read'],
+                                "isToPlan" => $value['bk_to_plan'],
+                                "isFavorites" => $value['bk_favorites'],
+                                "howManyStars" => $value['bk_stars'],
+                                "fileName" => $value['bk_file'],
                                 "isActive" => false,
                             ));
                     }
@@ -1003,16 +971,16 @@ if (isset($_POST["cmd"])) {
             break;
         case "lg_list": //все языки
             if ($pdo and $_SESSION["user"]) {
-                $stmt = $pdo->prepare('SELECT DISTINCT lg_id, lg_name
+                $stmt = $pdo->query("SELECT DISTINCT lg_id, lg_name
                 FROM languages
-                ORDER BY lg_name');
-                if ($stmt->execute()) {
+                ORDER BY lg_name");
+                if ($stmt) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
                         array_push($res["data"],
                             array(
-                                "lg_id" => "lg" . $value[lg_id],
-                                "lg_name" => $value[lg_name],
+                                "lg_id" => "lg" . $value['lg_id'],
+                                "lg_name" => $value['lg_name'],
                             ));
                     }
                 } else {
@@ -1024,18 +992,17 @@ if (isset($_POST["cmd"])) {
         case "b_lang": //язык книги
             if ($pdo and $_SESSION["user"]) {
                 $bi = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT DISTINCT lg_id, lg_name
+                $stmt = $pdo->query("SELECT DISTINCT lg_id, lg_name
                 FROM books, languages
-                WHERE bk_id = :bi
-                AND lg_id = bk_lang');
-                $stmt->bindValue(':bi', $bi, PDO::PARAM_INT);
-                if ($stmt->execute()) {
+                WHERE bk_id = $bi
+                AND lg_id = bk_lang");
+                if ($stmt) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
                         array_push($res["data"],
                             array(
-                                "id" => $value[lg_id],
-                                "lg_name" => $value[lg_name],
+                                "id" => $value['lg_id'],
+                                "lg_name" => $value['lg_name'],
                             ));
                     }
                 } else {
@@ -1047,18 +1014,17 @@ if (isset($_POST["cmd"])) {
         case "b_lang_src": //язык оригинала книги
             if ($pdo and $_SESSION["user"]) {
                 $bi = $_POST["dat"];
-                $stmt = $pdo->prepare('SELECT DISTINCT lg_id, lg_name
+                $stmt = $pdo->query("SELECT DISTINCT lg_id, lg_name
                 FROM books, languages
-                WHERE bk_id = :bi
-                AND lg_id = bk_src_lang ');
-                $stmt->bindValue(':bi', $bi, PDO::PARAM_INT);
-                if ($stmt->execute()) {
+                WHERE bk_id = $bi
+                AND lg_id = bk_src_lang ");
+                if ($stmt) {
                     $result = $stmt->fetchAll();
                     foreach ($result as $value) {
                         array_push($res["data"],
                             array(
-                                "id" => $value[lg_id],
-                                "lg_name" => $value[lg_name],
+                                "id" => $value['lg_id'],
+                                "lg_name" => $value['lg_name'],
                             ));
                     }
                 } else {
