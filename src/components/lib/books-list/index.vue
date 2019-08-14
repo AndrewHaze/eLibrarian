@@ -5,6 +5,7 @@
       :class="{ rightpading: infoPanel }"
       v-if="(!curSLibrary && !curAuthor && !curSeries && !curGenres)"
     >Ничего не выбрано...</div>
+
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
       <div class="data-wrap" v-if="isData">
         <div
@@ -32,7 +33,7 @@
               @mouseleave="mouseLeaveBook"
             >
               <div class="cover" :class="{ nocover: bItem.cover === '' }">
-                <img v-if="bItem.cover" :src="'data:image/jpg;base64,'+bItem.cover">
+                <img v-if="bItem.cover" :src="'data:image/jpg;base64,'+bItem.cover" />
               </div>
               <div class="info">
                 <div class="book-authors">{{ strAuthor(bItem.author) }}</div>
@@ -44,18 +45,18 @@
               <div class="mark-group">
                 <div class="mg-left">
                   <span v-if="bItem.isRead" title="Прочитано">
-                    <font-awesome-icon icon="check" style="color: #30e52a"/>
+                    <font-awesome-icon icon="check" style="color: #30e52a" />
                   </span>
                   <span v-if="bItem.isToPlan" title="Запланировано">
-                    <font-awesome-icon icon="calendar-check" style="color: #ffa500"/>
+                    <font-awesome-icon icon="calendar-check" style="color: #ffa500" />
                   </span>
                   <span v-if="bItem.isFavorites" title="Понравилось">
-                    <font-awesome-icon icon="heart" style="color: #c91212"/>
+                    <font-awesome-icon icon="heart" style="color: #c91212" />
                   </span>
                 </div>
                 <div class="mg-right" :title="'Оценка: '+ bItem.howManyStars">
                   <template v-for="n in 5">
-                    <font-awesome-icon icon="star" :class="{ star: (bItem.howManyStars >= n) }"/>
+                    <font-awesome-icon icon="star" :class="{ star: (bItem.howManyStars >= n) }" />
                   </template>
                 </div>
               </div>
@@ -70,13 +71,13 @@
             <div class="tbl-header" :class="{ thPad: isPad }">
               <div class="tbl-table-row">
                 <div class="tbl-table-cell cell-1">
-                  <font-awesome-icon icon="check"/>
+                  <font-awesome-icon icon="check" />
                 </div>
                 <div class="tbl-table-cell cell-2">
-                  <font-awesome-icon icon="calendar-check"/>
+                  <font-awesome-icon icon="calendar-check" />
                 </div>
                 <div class="tbl-table-cell cell-3">
-                  <font-awesome-icon icon="heart"/>
+                  <font-awesome-icon icon="heart" />
                 </div>
                 <div class="tbl-table-cell cell-4">Название</div>
                 <div class="tbl-table-cell cell-5">Серия</div>
@@ -97,7 +98,7 @@
                 @mouseleave="mouseLeaveBook"
               >
                 <div class="tbl-table-cell cell-1" title="Прочитано">
-                  <font-awesome-icon v-if="bItem.isRead" icon="check" style="color: #30e52a"/>
+                  <font-awesome-icon v-if="bItem.isRead" icon="check" style="color: #30e52a" />
                 </div>
                 <div class="tbl-table-cell cell-2" title="Запланировано">
                   <font-awesome-icon
@@ -107,7 +108,7 @@
                   />
                 </div>
                 <div class="tbl-table-cell cell-3" title="Понравилось">
-                  <font-awesome-icon v-if="bItem.isFavorites" icon="heart" style="color: #c91212"/>
+                  <font-awesome-icon v-if="bItem.isFavorites" icon="heart" style="color: #c91212" />
                 </div>
                 <div class="tbl-table-cell cell-4">{{ bItem.title }}</div>
                 <div class="tbl-table-cell cell-5">
@@ -119,7 +120,7 @@
                 <div class="tbl-table-cell cell-7">{{ bItem.genres }}</div>
                 <div class="tbl-table-cell cell-8" :title="'Оценка: '+ bItem.howManyStars">
                   <template v-for="n in 5">
-                    <font-awesome-icon icon="star" :class="{ star: (bItem.howManyStars >= n) }"/>
+                    <font-awesome-icon icon="star" :class="{ star: (bItem.howManyStars >= n) }" />
                   </template>
                 </div>
               </div>
@@ -131,9 +132,9 @@
         v-else
         class="for-nothing-selected"
         :class="{ rightpading: infoPanel }"
-      >Ничего не выбрано...</div>
+      >Ничего не найдено...</div>
       <div v-if="isLoading" :class="[{rightmargin: infoPanel}, 'loading-screen']">
-        <b-spinner variant="warning"/>
+        <b-spinner variant="warning" />
       </div>
     </div>
     <transition name="slide">
@@ -143,7 +144,7 @@
         <div class="title">{{ selectedItem.title }}</div>
         <div class="series" v-if="selectedSeries != ''">{{ selectedSeries }}</div>
         <div class="cover" :class="{ nocover: selectedItem.cover === '' }">
-          <img v-if="selectedItem.cover" :src="'data:image/jpg;base64,'+selectedItem.cover">
+          <img v-if="selectedItem.cover" :src="'data:image/jpg;base64,'+selectedItem.cover" />
         </div>
         <div class="annotation">
           <span v-html="hyphenate(selectedItem.annotation)"></span>
@@ -170,15 +171,15 @@
         <b-button-toolbar key-nav aria-label="Toolbar with button groups">
           <b-button-group class="mx-1" size="sm">
             <b-btn variant="primary" title="Открыть книгу для чтения" @click="openReaderClick">
-              <font-awesome-icon icon="book-reader"/>
+              <font-awesome-icon icon="book-reader" />
             </b-btn>
             <b-btn variant="primary" title="Править информацию о книге" v-b-modal.bookEditor>
-              <font-awesome-icon icon="edit"/>
+              <font-awesome-icon icon="edit" />
             </b-btn>
           </b-button-group>
           <b-button-group class="mx-1" size="sm">
             <b-btn variant="danger" title="Удалить книгу" v-b-modal="sid+'-modal3'">
-              <font-awesome-icon icon="trash-alt"/>
+              <font-awesome-icon icon="trash-alt" />
             </b-btn>
           </b-button-group>
           <b-button-group class="mx-1" size="sm">
@@ -188,7 +189,7 @@
               :pressed="Boolean(isRead)"
               @click="readButtonClick"
             >
-              <font-awesome-icon icon="check"/>
+              <font-awesome-icon icon="check" />
             </b-btn>
             <b-btn
               variant="success"
@@ -196,7 +197,7 @@
               :pressed="Boolean(isToPlan)"
               @click="toPlanButtonClick"
             >
-              <font-awesome-icon icon="calendar-check"/>
+              <font-awesome-icon icon="calendar-check" />
             </b-btn>
             <b-btn
               variant="success"
@@ -204,12 +205,12 @@
               :pressed="Boolean(isFavorites)"
               @click="favoritesButtonClick"
             >
-              <font-awesome-icon icon="heart"/>
+              <font-awesome-icon icon="heart" />
             </b-btn>
           </b-button-group>
           <b-dropdown class="mx-1" right size="sm" variant="success" title="Оценить книгу">
             <template slot="button-content">
-              <font-awesome-icon icon="star-half-alt"/>
+              <font-awesome-icon icon="star-half-alt" />
             </template>
             <b-dropdown-item
               class="star"
@@ -217,7 +218,7 @@
               title="Оценить книгу на 1"
               :active="howManyStars === 1"
             >
-              <font-awesome-icon icon="star"/>
+              <font-awesome-icon icon="star" />
             </b-dropdown-item>
             <b-dropdown-item
               class="star"
@@ -226,7 +227,7 @@
               :active="howManyStars === 2"
             >
               <template v-for="n in 2">
-                <font-awesome-icon icon="star"/>
+                <font-awesome-icon icon="star" />
               </template>
             </b-dropdown-item>
             <b-dropdown-item
@@ -236,7 +237,7 @@
               :active="howManyStars === 3"
             >
               <template v-for="n in 3">
-                <font-awesome-icon icon="star"/>
+                <font-awesome-icon icon="star" />
               </template>
             </b-dropdown-item>
             <b-dropdown-item
@@ -246,7 +247,7 @@
               :active="howManyStars === 4"
             >
               <template v-for="n in 4">
-                <font-awesome-icon icon="star"/>
+                <font-awesome-icon icon="star" />
               </template>
             </b-dropdown-item>
             <b-dropdown-item
@@ -256,7 +257,7 @@
               :active="howManyStars === 5"
             >
               <template v-for="n in 5">
-                <font-awesome-icon icon="star"/>
+                <font-awesome-icon icon="star" />
               </template>
             </b-dropdown-item>
             <b-dropdown-divider></b-dropdown-divider>
@@ -278,7 +279,7 @@
     >
       <b-row>
         <b-col md="1">
-          <font-awesome-icon class="question-modal-icon" icon="question-circle"/>
+          <font-awesome-icon class="question-modal-icon" icon="question-circle" />
         </b-col>
         <b-col>
           <h4>Вы действительно хотите удалить выбранную книгу из библиотеки?</h4>
@@ -582,7 +583,7 @@ export default {
           if (rd) {
             store.commit("setDeleteBookFlag", true);
             store.commit("setStimulusValue", Math.random());
-            self.makeToast('Книга удалена!', 'success')
+            self.makeToast("Книга удалена!", "success");
           }
           self.isLoading = false;
         }
@@ -846,6 +847,7 @@ export default {
 
 <style lang="scss">
 $line-color: #dee2e6;
+$title-line-color: #4c4c4c;
 $header-font-color: #495057;
 $selected-color: #ddd;
 $hover-color: rgba(221, 221, 221, 0.4);
@@ -1010,7 +1012,7 @@ $ip-width: 21rem;
       &::before {
         position: absolute;
         content: "";
-        border-bottom: 1px solid $line-color;
+        border-bottom: 1px solid $title-line-color;
         left: 0;
         right: 0.5rem;
         top: 0.85rem;
@@ -1244,7 +1246,8 @@ $ip-width: 21rem;
   }
 }
 
-.star {
+.star,
+.star > .dropdown-item {
   color: #ffd700 !important;
 
   &:hover,
