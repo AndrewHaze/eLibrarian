@@ -1042,6 +1042,7 @@ if (isset($_POST["cmd"])) {
             break;
         case "proc": //Загрузка книг в БД
             if ($pdo and $_SESSION["user"]) {
+                $pdo->beginTransaction();
                 $username = $_SESSION["user"];
                 $filename = $_POST["file"];
                 $filesize = filesize("uploads/" . $filename);
@@ -1278,9 +1279,8 @@ if (isset($_POST["cmd"])) {
                             }
                         }
 
-
                         /********************************** MAIN QUERIES ***********************************************/
-                        
+
                         $stmt = $pdo->prepare('INSERT INTO books (bk_ur_id,
                                                                  bk_se_id,
                                                                  bk_number,
@@ -1424,6 +1424,8 @@ if (isset($_POST["cmd"])) {
                                 "id" => $filename,
                             );
 
+                            $roll_back = false;
+
                             /****** Поиск дублей ******/
 
                             $sql = "select checkDoubles($id_book) result";
@@ -1436,13 +1438,23 @@ if (isset($_POST["cmd"])) {
                                 case 1:
                                     $res["success"] = false;
                                     $res["error"] = "cle";
+                                    $roll_back = true;
                                     break;
+                            }
+
+                            /****************************/
+
+                            if ($roll_back) {
+                                $pdo->rollBack();
+                            } else {
+                                $pdo->commit();
                             }
 
                         } else { //конец инсерта
                             //Ошибка обновления БД
                             $res["success"] = false;
                             $res["error"] = "dbe";
+                            $pdo->rollBack();
                         }
                     } else {
                         //Требуется описание книги
