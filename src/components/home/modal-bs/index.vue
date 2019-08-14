@@ -5,6 +5,8 @@
     @shown="showBookScanner"
     @hidden="bookScannerHidden"
     no-close-on-backdrop
+    no-close-on-esc
+    hide-header-close
     hide-footer
     size="max"
     title="Импорт книг"
@@ -12,14 +14,17 @@
     <b-container fluid>
       <b-row class="mb-3">
         <b-col>
-          <b-button-toolbar class="justify-content-between" key-nav aria-label="Toolbar with button groups">
+          <b-button-toolbar
+            class="justify-content-between"
+            key-nav
+            aria-label="Toolbar with button groups"
+          >
             <div>
-            <b-button variant="success" @click="openFiles" class="mr-2">Добавить файлы</b-button>
-            <b-button variant="danger" :disabled="buttonStartProc" @click="startProc">Запуск</b-button>
-            
+              <b-button variant="success" :disabled="buttonBlock" @click="openFiles" class="mr-2">Добавить файлы</b-button>
+              <b-button variant="danger" :disabled="buttonStartProc" @click="startProc">Запуск</b-button>
             </div>
-            <b-button class="float-right" variant="secondary" @click="hideModal">Закрыть</b-button>
-            <input id="fi1" type="file" multiple @change="handleFileChange" accept=".fb2, .zip">
+            <b-button class="float-right" variant="secondary" :disabled="buttonBlock" @click="hideModal">Закрыть</b-button>
+            <input id="fi1" type="file" multiple @change="handleFileChange" accept=".fb2, .zip" />
           </b-button-toolbar>
         </b-col>
       </b-row>
@@ -37,7 +42,7 @@
                 @change="toggleAll"
                 :title="allSelected ? 'Снять всё' : 'Выбрать всё'"
               ></b-form-checkbox>
-              <font-awesome-icon icon="info-circle" style="color: #35a0da"/>
+              <font-awesome-icon icon="info-circle" style="color: #35a0da" />
               <div class="list-header-body" @click="sortListInputFiles">
                 Имя файла
                 <span class="list-header-sort-desc" :class="{ active: iDesc }">&#8593;</span>
@@ -67,68 +72,104 @@
         <b-col class="col-7 right-col">
           <div class="hm">Обработанные файлы</div>
           <div class="list-header">
-            <font-awesome-icon icon="info-circle" style="color: #35a0da"/>
+            <font-awesome-icon icon="info-circle" style="color: #35a0da" />
             <div class="list-header-body" @click="sortListProcessingFiles">
               Имя файла
               <span class="list-header-sort-desc" :class="{ active: pDesc }">&#8593;</span>
               <span class="list-header-sort-asc" :class="{ active: pAsc }">&#8595;</span>
             </div>
           </div>
-            <div v-if="bCount > 0" class="animation-wrap" :style="{ bottom: pHeight-45 + 'px' }">
-              <div class="lds-ring">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-              </div>
+          <div v-if="bCount > 0" class="animation-wrap" :style="{ bottom: pHeight-45 + 'px' }">
+            <div class="lds-ring">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
             </div>
-            <div class="f-list" :style="{ maxHeight: pHeight + 'px', minHeight: pHeight + 'px' }">
-              <ListItems
-                v-for="listItem in listProcessingFiles"
-                :listItem="listItem"
-                :key="listItem.id"
-              />
-            </div>
+          </div>
+          <div class="f-list" :style="{ maxHeight: pHeight + 'px', minHeight: pHeight + 'px' }">
+            <ListItems
+              v-for="listItem in listProcessingFiles"
+              :listItem="listItem"
+              :key="listItem.id"
+            />
+          </div>
           <div class="info-panel" :style="{ maxHeight: pHeight + 'px', minHeight: pHeight + 'px' }">
             <div class="ip-legend">
               <div class="hm">Обозначения</div>
               <div class="ip-body">
                 <ul>
                   <li>
-                    <img :src="this.$store.getters.prefix + '/static/assets/raw.png'">Загружен для обработки
+                    <span>
+                      <img :src="this.$store.getters.prefix + '/static/assets/raw.png'" />Загружен для обработки
+                    </span>
+                    <span>{{statusCounters['raw']}}</span>
                   </li>
                   <li>
-                    <img :src="this.$store.getters.prefix + '/static/assets/add.png'">Успешно добавлен
+                    <span>
+                      <img :src="this.$store.getters.prefix + '/static/assets/add.png'" />Успешно добавлен
+                    </span>
+                    <span>{{statusCounters['add']}}</span>
                   </li>
                   <li>
-                    <img :src="this.$store.getters.prefix + '/static/assets/upd.png'">Обновлено
+                    <span>
+                      <img :src="this.$store.getters.prefix + '/static/assets/upd.png'" />Обновлено
+                    </span>
+                    <span>{{statusCounters['upd']}}</span>
                   </li>
                   <li>
-                    <img :src="this.$store.getters.prefix + '/static/assets/cle.png'">Дубликат (идентичный)
+                    <span>
+                      <img :src="this.$store.getters.prefix + '/static/assets/cle.png'" />Дубликат (идентичный)
+                    </span>
+                    <span>{{statusCounters['cle']}}</span>
                   </li>
                   <li>
-                    <img :src="this.$store.getters.prefix + '/static/assets/clo.png'">Дубликат (старее)
+                    <span>
+                      <img :src="this.$store.getters.prefix + '/static/assets/clo.png'" />Дубликат (старее)
+                    </span>
+                    <span>{{statusCounters['clo']}}</span>
                   </li>
                   <li>
-                    <img :src="this.$store.getters.prefix + '/static/assets/cli.png'">Дубликат (ID отличается)
+                    <span>
+                      <img :src="this.$store.getters.prefix + '/static/assets/cli.png'" />Дубликат (ID отличается)
+                    </span>
+                    <span>{{statusCounters['cli']}}</span>
                   </li>
                   <li>
-                    <img :src="this.$store.getters.prefix + '/static/assets/clt.png'">Дубликат (Название отличается)
+                    <span>
+                      <img :src="this.$store.getters.prefix + '/static/assets/clt.png'" />Дубликат (Название отличается)
+                    </span>
+                    <span>{{statusCounters['clt']}}</span>
                   </li>
                   <li>
-                    <img :src="this.$store.getters.prefix + '/static/assets/cln.png'">Дубликат (новее)
+                    <span>
+                      <img :src="this.$store.getters.prefix + '/static/assets/cln.png'" />Дубликат (новее)
+                    </span>
+                    <span>{{statusCounters['cln']}}</span>
                   </li>
                   <li>
-                    <img :src="this.$store.getters.prefix + '/static/assets/per.png'">Ошибка разбора
+                    <span>
+                      <img :src="this.$store.getters.prefix + '/static/assets/per.png'" />Ошибка разбора
+                    </span>
+                    <span>{{statusCounters['per']}}</span>
                   </li>
                   <li>
-                    <img :src="this.$store.getters.prefix + '/static/assets/dma.png'">Повреждённый архив
+                    <span>
+                      <img :src="this.$store.getters.prefix + '/static/assets/dma.png'" />Повреждённый архив
+                    </span>
+                    <span>{{statusCounters['dma']}}</span>
                   </li>
                   <li>
-                    <img :src="this.$store.getters.prefix + '/static/assets/dbe.png'">Ошибка обновления БД
+                    <span>
+                      <img :src="this.$store.getters.prefix + '/static/assets/dbe.png'" />Ошибка обновления БД
+                    </span>
+                    <span>{{statusCounters['dbe']}}</span>
                   </li>
                   <li>
-                    <img :src="this.$store.getters.prefix + '/static/assets/ndf.png'">Требуется описание книги
+                    <span>
+                      <img :src="this.$store.getters.prefix + '/static/assets/ndf.png'" />Требуется описание книги
+                    </span>
+                    <span>{{statusCounters['ndf']}}</span>
                   </li>
                 </ul>
               </div>
@@ -229,7 +270,7 @@ $header-bk-color: #abafb4;
       .ip-body {
         overflow: auto;
         flex: 1 1 auto;
-        padding: 0.2rem 1rem 0.4rem 0.5rem;
+        padding: 0.2rem 0.3rem 0.4rem;
         border: 1px solid $line-color;
 
         & > ul {
@@ -238,11 +279,14 @@ $header-bk-color: #abafb4;
           padding: 0;
 
           & > li {
+            display: flex;
+            justify-content: space-between;
             word-wrap: normal;
             white-space: nowrap;
+            font-size: 0.9rem;
             line-height: 1.6;
 
-            & > img {
+            & > span > img {
               height: 20px;
               width: 20px;
               margin-right: 6px;
@@ -250,6 +294,9 @@ $header-bk-color: #abafb4;
               //border: 1px solid darkgray;
               //border-radius: 2px;
               background-color: #f5f5fd;
+            }
+            & > span + span {
+              margin-left: 10px;
             }
           }
         }
@@ -459,6 +506,7 @@ export default {
       allSelected: false,
       indeterminate: false,
       buttonStartProc: true,
+      buttonBlock: false,
       iAsc: false,
       iDesc: false,
       fCount: -1, //счетчик добавляемых файлов
@@ -466,7 +514,22 @@ export default {
       listProcessingFiles: [],
       pAsc: false,
       pDesc: false,
-      bCount: -1 //счетчик обработанных файлов
+      bCount: -1, //счетчик обработанных файлов
+      statusCounters: {
+        add: 0,
+        cle: 0,
+        cli: 0,
+        cln: 0,
+        clo: 0,
+        clt: 0,
+        dbe: 0,
+        dma: 0,
+        err: 0,
+        ndf: 0,
+        per: 0,
+        raw: 0,
+        upd: 0
+      }
     };
   },
   mounted: function() {
@@ -487,7 +550,7 @@ export default {
     },
     countLPF: function() {
       return this.listProcessingFiles.length;
-    },
+    }
   },
   methods: {
     handleResize() {
@@ -501,9 +564,11 @@ export default {
       document.getElementById("fi1").click();
     },
     handleFileChange(e) {
+      this.buttonBlock = true;
       let filesList = e.target.files || e.dataTransfer.files;
       if (!filesList.length) return;
       this.fCount = filesList.length;
+
       for (let i = 0; i < filesList.length; i++) {
         const self = this;
         let formData = new FormData();
@@ -521,6 +586,7 @@ export default {
           .then(response => {
             let rd = response.data;
             if (rd.success) {
+              self.statusCounters["raw"]++;
               self.listInputFiles.push({
                 text: rd.data.base_name,
                 disabled: false,
@@ -562,13 +628,17 @@ export default {
     },
     showBookScanner() {
       this.listInputFiles = [];
-      document.getElementById('fi1').value = '';
+      document.getElementById("fi1").value = "";
       this.listProcessingFiles = [];
       this.mbsItems = [];
       this.fCount = -1;
       this.bCount = -1;
+      for (let key in this.statusCounters) {
+        this.statusCounters[key] = 0;
+      }
       this.iAsc = false;
       this.iDesc = false;
+      this.buttonBlock = false;
       //Вызов функции из глобального миксина
       this.callApi(
         this.$store.getters.prefix + "/static/api.php",
@@ -583,7 +653,7 @@ export default {
     bookScannerHidden() {
       this.$parent.updateAll();
     },
-    hideModal(){
+    hideModal() {
       this.$refs.modal.hide();
     },
     multi2one(arr) {
@@ -595,7 +665,22 @@ export default {
     },
     removeClasses(obj) {
       //удаляем классы по списку из array
-      let array = ["add", "raw", "err", "dma", "ndf", "per", "dbe", "cle"];
+      let array = [
+        "add",
+        "raw",
+        "upd",
+        "err",
+        "dma",
+        "ndf",
+        "per",
+        "dbe",
+        "cle",
+        "cle",
+        "cln",
+        "clt",
+        "cli",
+        "clo"
+      ];
       let clsList = obj.className.split(" "); //Получаем массив классов
       let result = [];
       for (let i = 0; i < clsList.length; i++) {
@@ -650,6 +735,8 @@ export default {
     },
     startProc() {
       this.buf = this.listInputFiles;
+      this.buttonBlock = true;
+      this.buttonStartProc = true;
       this.bCount = this.selected.length; //количество отмеченных
       for (let i = 0; i < this.buf.length; i++) {
         let idx = this.selected.indexOf(this.buf[i].value);
@@ -664,7 +751,7 @@ export default {
               cmd: "proc",
               file: self.buf[i].value,
               name: self.buf[i].text,
-              date: self.buf[i].filedate,
+              date: self.buf[i].filedate
             },
             withCredentials: true, //передаем куки
             headers: {
@@ -675,9 +762,10 @@ export default {
               let rd = response.data;
               if (rd.success) {
                 self.buf[i].status = "add";
+                self.statusCounters["add"]++;
+                self.statusCounters["raw"]--;
                 self.listProcessingFiles.push({
                   text: self.buf[i].text,
-                  //text: rd.data.test,
                   value: rd.data.hash_name,
                   status: "add"
                 });
@@ -688,6 +776,12 @@ export default {
                   errCode = "dbe";
                 }
                 self.buf[i].status = errCode;
+                self.statusCounters[errCode]++;
+
+                if (self.statusCounters["raw"] >= 1) {
+                  self.statusCounters["raw"]--;
+                }
+
                 console.log("success:", rd.success, " error: ", rd.error);
                 self.listProcessingFiles.push({
                   text: self.buf[i].text,
@@ -699,6 +793,8 @@ export default {
             })
             .catch(error => {
               self.buf[i].status = rd.error;
+              self.statusCounters[rd.error]++;
+              self.statusCounters["raw"]--;
               self.listProcessingFiles.push({
                 text: self.buf[i].text,
                 value: self.buf[i].value,
@@ -767,7 +863,7 @@ export default {
             case "cle":
               c[i].classList.add("cle");
               c[i].setAttribute("title", "Дубликат (идентичный)");
-              break;  
+              break;
           }
         }
       });
@@ -775,6 +871,7 @@ export default {
     fCount(val) {
       if (val === 0) {
         this.sortListInputFiles();
+        this.buttonBlock = false;
       }
     },
     bCount(val) {
@@ -783,6 +880,7 @@ export default {
         this.listInputFiles = [];
         this.listInputFiles = this.buf;
         this.sortListProcessingFiles();
+        this.buttonBlock = false;
       }
     }
   }
