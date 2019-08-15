@@ -105,7 +105,6 @@ export default {
       );
     },
     currentSLI: function(val) {
-      console.log(val)
       if (val != -1) {
         this.itemClick(val);
       }

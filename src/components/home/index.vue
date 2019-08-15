@@ -14,6 +14,7 @@
       </b-modal>
       <modal-books-scanner></modal-books-scanner>
       <modal-book-editor></modal-book-editor>
+      <modal-author-editor></modal-author-editor>
       <b-row class="z100">
         <b-col>
           <b-tabs v-model="tabIndex">
@@ -44,6 +45,7 @@ $line-color: #dee2e6;
 $header-font-color: #495057;
 $selected-color: #ddd;
 $hover-color: rgba(221, 221, 221, 0.4);
+$header-bk-color: #abafb4;
 
 %flex {
   display: flex;
@@ -82,6 +84,184 @@ $hover-color: rgba(221, 221, 221, 0.4);
     max-width: none !important;
   }
 }
+
+/** be & ae modals — begin **/
+
+input[type="file"] {
+  display: none;
+}
+
+.highlight {
+  border: 2px dashed purple;
+  border-radius: 0.2rem;
+  padding: 1px;
+}
+
+.cover-wrap {
+  text-align: center;
+  padding-right: 1.5rem !important;
+  position: relative;
+  min-height: 100%;
+  .cover-wrap-sticky {
+    position: sticky;
+    top: 0;
+  }
+  .img-thumbnail {
+    width: 100%;
+  }
+}
+
+.colappse-header {
+  font-weight: 600;
+  overflow: hidden;
+  &::after,
+  &::before {
+    display: inline-block;
+    content: "";
+    vertical-align: middle;
+    box-sizing: border-box;
+    width: 100%;
+    height: 1px;
+    background: #737b83;
+    border: solid #fff;
+    border-width: 0 2px;
+  }
+  &::after {
+    margin-right: -100%;
+  }
+  &::before {
+    margin-left: -100%;
+  }
+  span {
+    padding-right: 0.3rem;
+  }
+  .btn-circle {
+    position: absolute;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    padding: 4px 0 4px 1px;
+    font-size: 12px;
+    line-height: 0;
+    border-radius: 10px;
+    background-color: #fff;
+    margin-top: 5px;
+    // &:focus {
+    //   box-shadow: none;
+    // }
+    &:hover {
+      background-color: #737b83;
+    }
+  }
+}
+.collapse-wrap {
+  padding: 0.5rem 1rem 0;
+  .col-fix-2btn {
+    display: flex;
+    flex-flow: column;
+    justify-content: flex-end;
+    max-width: 5.65rem;
+    padding-bottom: 0.1rem;
+    .ad-btn-group {
+      max-height: 32px;
+      margin-bottom: 15px;
+      .btn {
+        padding: 0.2rem 0.5rem !important;
+        font-size: 0.9rem;
+        &:focus {
+          box-shadow: none;
+        }
+      }
+    }
+  }
+
+  .form-group {
+    > label {
+      white-space: nowrap;
+      .label-asterix {
+        color: red;
+      }
+    }
+  }
+}
+
+//Bootstrap form-control-sm скин для multiselect
+.multiselect {
+  * {
+    font-size: 0.875rem;
+  }
+  min-height: 0;
+  .multiselect__tags {
+    display: flex;
+    align-items: center;
+    min-height: 31px;
+    padding: 0 30px 0 8px;
+    border-color: #ced4da;
+    border-radius: 0.2rem;
+    overflow: hidden;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    .multiselect__placeholder {
+      margin: 0;
+      line-height: 1;
+      padding-top: 3px;
+      min-height: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .multiselect__tags-wrap {
+      display: flex;
+      flex-flow: row wrap;
+      align-items: center;
+      height: 100%;
+      padding-top: 4px;
+      .multiselect__tag {
+        padding: 3px 26px 4px 10px;
+        margin: 0 4px 4px 0;
+        .multiselect__tag-icon {
+          line-height: 19px;
+        }
+      }
+    }
+    .multiselect__input,
+    .multiselect__single {
+      margin: 0;
+      line-height: 18px;
+      padding-left: 0;
+    }
+    input {
+      margin: 0;
+    }
+  }
+  .multiselect__select {
+    height: 100%;
+    width: 30px;
+  }
+  .multiselect__content-wrapper {
+    border-color: #ced4da;
+    .multiselect__option {
+      min-height: 0;
+      padding: 6px 12px;
+    }
+    .multiselect__option--selected {
+      font-weight: 600;
+    }
+    span:after {
+      line-height: 11px;
+      padding: 8px;
+    }
+    .multiselect__option--group {
+      text-align: center;
+      font-weight: 600;
+    }
+  }
+}
+.multiselect--active .multiselect__tags {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/** be & ae modals — end **/
 
 .info-modal-icon,
 .question-modal-icon,
@@ -256,6 +436,7 @@ import store from "../../store";
 import Login from "../login";
 import ModalBooksScanner from "./modal-bs";
 import ModalBookEditor from "./modal-be";
+import ModalAuthorEditor from "./modal-ae";
 import AuthorsTab from "./tab-authors";
 import GenresTab from "./tab-genres";
 import SeriesTab from "./tab-series";
@@ -267,6 +448,7 @@ export default {
     Login,
     ModalBooksScanner,
     ModalBookEditor,
+    ModalAuthorEditor,
     AuthorsTab,
     GenresTab,
     SeriesTab,

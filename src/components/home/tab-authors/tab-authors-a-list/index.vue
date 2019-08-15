@@ -43,8 +43,8 @@
       >
         <b-button-toolbar key-nav aria-label="Toolbar with button groups">
           <b-button-group class="mx-1" size="sm">
-            <b-btn variant="primary" title="Редактировать информацию об авторе">
-              <font-awesome-icon icon="address-card"/>
+            <b-btn variant="primary" title="Редактировать информацию об авторе" v-b-modal.authorEditor>
+              <font-awesome-icon icon="address-card" />
             </b-btn>
           </b-button-group>
           <b-button-group class="mx-1" size="sm">
@@ -54,7 +54,7 @@
               @click="synonymAuthorClick"
               v-b-modal.a-modal2
             >
-              <font-awesome-icon icon="user-friends"/>
+              <font-awesome-icon icon="user-friends" />
             </b-btn>
             <b-btn
               variant="warning"
@@ -62,12 +62,12 @@
               @click="combineAuthorClick"
               v-b-modal.a-modal2
             >
-              <font-awesome-icon icon="user-minus"/>
+              <font-awesome-icon icon="user-minus" />
             </b-btn>
           </b-button-group>
           <b-button-group class="mx-1" size="sm">
             <b-btn variant="danger" title="Удалить Автора" @click="deleteAuthorClick">
-              <font-awesome-icon icon="user-times"/>
+              <font-awesome-icon icon="user-times" />
             </b-btn>
           </b-button-group>
         </b-button-toolbar>
@@ -90,10 +90,10 @@
       <b-row class="justify-content-end">
         <b-col md="6" class="mb-3">
           <b-input-group size="sm">
-            <b-form-input v-model="filter" placeholder="Фильтр"/>
+            <b-form-input v-model="filter" placeholder="Фильтр" />
             <b-input-group-append>
               <b-btn :disabled="!filter" @click="filter = ''">
-                <font-awesome-icon icon="times"/>
+                <font-awesome-icon icon="times" />
               </b-btn>
             </b-input-group-append>
           </b-input-group>
@@ -138,7 +138,7 @@
     >
       <b-row>
         <b-col md="1">
-          <font-awesome-icon class="question-modal-icon" icon="question-circle"/>
+          <font-awesome-icon class="question-modal-icon" icon="question-circle" />
         </b-col>
         <b-col>
           <h5 v-if="authorOperation == 'synonym'">
@@ -170,7 +170,7 @@
     >
       <b-row>
         <b-col md="1">
-          <font-awesome-icon class="question-modal-icon" icon="question-circle"/>
+          <font-awesome-icon class="question-modal-icon" icon="question-circle" />
         </b-col>
         <b-col>
           <h4>Вы действительно хотите удалить выбранного автора и все его книги из библиотеки?</h4>
@@ -194,10 +194,14 @@
     >
       <b-row>
         <b-col md="1">
-          <font-awesome-icon class="exclamation-modal-icon" icon="exclamation-circle"/>
+          <font-awesome-icon class="exclamation-modal-icon" icon="exclamation-circle" />
         </b-col>
         <b-col>
-          <h4>Вы не можете удалить выбранного автора из библиотеки, так как он является соавтором!<br/><div class="mt-2">Cначало удалите эти книги.</div></h4>
+          <h4>
+            Вы не можете удалить выбранного автора из библиотеки, так как он является соавтором!
+            <br />
+            <div class="mt-2">Cначало удалите эти книги.</div>
+          </h4>
         </b-col>
       </b-row>
       <template slot="modal-footer" slot-scope="{ cancel }">
@@ -282,6 +286,7 @@ export default {
       filter: null,
       //на кого заменяем
       selectedAuthorInModal: "",
+      selectedAuthorIdInModal: "",
       disabledOkInModal: true,
       //для запоминания Eventa в onRowClicked
       modalEvent: [],
@@ -403,6 +408,7 @@ export default {
     onRowClicked(item, index, event) {
       this.removeSelectionInModalTable();
       this.selectedAuthorInModal = item.author;
+      this.selectedAuthorIdInModal = item.id.substr(2);
       this.modalEvent = event;
       event.target.className += "active";
       this.disabledOkInModal = false;
@@ -411,20 +417,45 @@ export default {
       this.modal2Items = [];
       for (let i = 0; i < this.aItems.length; i++) {
         if (this.aItems[i].author != this.authorName) {
-          this.modal2Items.push({ author: this.aItems[i].author });
+          this.modal2Items.push({ id: this.aItems[i].id, author: this.aItems[i].author });
         }
       }
       this.aMenu = false;
     },
     modal2Shown() {
       this.selectedAuthorInModal = "";
+      this.selectedAuthorIdInModal = "";
       this.selectedInModal = false;
       this.removeSelectionInModalTable();
     },
     modal3HandleOk() {
       this.$refs.scModalRef.show();
     },
-    scHandleOk() {},
+    scHandleOk() {
+      if (this.authorOperation == "synonym") {
+        const self = this;
+        this.callApi(
+          this.$store.getters.prefix + "/static/api.php",
+          {
+            cmd: "synonym_author",
+            id1: Number(this.authorID),
+            id2: Number(this.selectedAuthorIdInModal)
+          },
+          "",
+          function(rd) {
+            if (rd > 0) {
+              store.commit("setStimulusValue", Math.random());
+              self.makeToast(
+                "Автор " + self.authorName + " теперь является синонимом автора" + self.selectedAuthorInModal,
+                "info"
+              );
+            } else {
+              self.makeToast("Сбой операции!", "danger");
+            }
+          }
+        );
+      }
+    },
     // modal 2-3 end
     itemClickHandler(item) {
       //сбросим атрибуты по всему массиву
