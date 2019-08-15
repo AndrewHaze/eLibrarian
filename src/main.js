@@ -57,6 +57,7 @@ Vue.mixin({
         })
         .catch(error => {
           this.setServerError(error.message, error.stack);
+          this.makeToast(error.message, "danger");
           this.errored = true;
         });
       axios({
@@ -72,6 +73,7 @@ Vue.mixin({
           let rspData = response.data;
           if (!rspData.success) {
             this.setServerError(rspData.error, "");
+            this.makeToast(rspData.error, "danger");
           } else {
             callback(rspData.data);
           }
@@ -79,6 +81,7 @@ Vue.mixin({
         .catch(error => {
           this.setServerError(error.message, error.stack);
           this.errored = true;
+          this.makeToast(error.message, "danger");
         })             
         .finally(() => (this.loading = false));
     },
