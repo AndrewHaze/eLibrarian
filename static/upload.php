@@ -6,7 +6,6 @@ require_once "functions.php";
 
 set_cors();
 
-session_name($_POST["uid"]);
 session_start();
 $handle = fopen("uploads/bookparsing.log", "w");
 $res = array("data" => array(), "success" => true, "error" => "");
