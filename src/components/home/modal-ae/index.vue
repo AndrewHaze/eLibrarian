@@ -300,48 +300,17 @@ export default {
   },
   mounted() {
     const self = this;
-
     window.addEventListener("resize", this.handleResize);
     this.mHeight = window.innerHeight - shiftL;
     if (this.mHeight > 1200) {
       this.mHeight = 1200;
     }
-
-    //список языков
-
-    this.callApi(
-      this.$store.getters.prefix + "/static/api.php",
-      {
-        cmd: "lg_list",
-        dat: ""
-      },
-      "",
-      function(rd) {
-        self.s2OptionsLang = rd;
-        self.s2OptionsOrigLang = rd;
-      }
-    );
-    //Список жанров
-    this.callApi(
-      this.$store.getters.prefix + "/static/api.php",
-      {
-        cmd: "bg_list",
-        dat: ""
-      },
-      "",
-      function(rd) {
-        self.s2OptionsGenres = rd;
-      }
-    );
-    self.form.bk_authors = null;
-    self.form.bk_genres = null;
   },
   beforeDestroy: function() {
     window.removeEventListener("resize", this.handleResize);
   },
   methods: {
     closeAuthorEditor() {
-      this.form.bk_genres = "";
     },
     shownAuthorEditor() {
       document.getElementById("author" + this.atID).scrollTop = 0;
@@ -411,79 +380,6 @@ export default {
           self.form.ar_bibliography = rd[0].ar_bibliography;
         }
       );
-      //список всех авторов
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "a_list",
-          dat: "simple"
-        },
-        "",
-        function(rd) {
-          self.s2OptionsAuthors = rd; //возвр. данные (Responce)
-        }
-      );
-      //список всех серий
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "sa_list",
-          dat: "simple"
-        },
-        "",
-        function(rd) {
-          self.s2OptionsSeries = rd;
-        }
-      );
-      //Серия
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "b_ser",
-          dat: self.atID
-        },
-        "",
-        function(rd) {
-          self.form.bk_series = rd; //возвр. данные (Responce)
-        }
-      );
-      //Язык
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "b_lang",
-          dat: self.atID
-        },
-        "",
-        function(rd) {
-          self.form.bk_language = rd; //возвр. данные (Responce)
-        }
-      );
-      //Язык оригинала
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "b_lang_src",
-          dat: self.atID
-        },
-        "",
-        function(rd) {
-          self.form.bk_orig_language = rd; //возвр. данные (Responce)
-        }
-      );
-
-      //жанры книги
-      this.callApi(
-        this.$store.getters.prefix + "/static/api.php",
-        {
-          cmd: "b_genres",
-          dat: self.atID
-        },
-        "",
-        function(rd) {
-          self.form.bk_genres = rd; //возвр. данные (Responce)
-        }
-      );
     },
     handleResize() {
       this.mHeight = window.innerHeight - shiftL;
@@ -493,7 +389,7 @@ export default {
       this.pHeight = this.mHeight / 2 - shiftR;
     },
     openFiles() {
-      document.getElementById("cover-loader").click();
+      document.getElementById("photo-loader").click();
     },
     handleFileChange(e) {
       e.preventDefault();
@@ -502,7 +398,7 @@ export default {
     },
     deleteCover() {
       this.isPhoto = false;
-      this.photoImage = "/static/assets/nocover.jpg";
+      this.photoImage = "/static/assets/nophoto.jpg";
     },
     convertImageToBase64() {
       const self = this;
