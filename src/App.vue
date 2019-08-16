@@ -7,8 +7,8 @@
         <b-collapse is-nav id="nav_dropdown_collapse">
           <b-navbar-nav v-if="isProfileLoaded">
             <!-- Navbar dropdowns -->
-            <b-nav-item v-if="!isReader" v-b-modal.bookScanner>Импорт книг</b-nav-item>
-            <b-nav-item v-if="isReader" @click="backClick">Назад</b-nav-item>
+            <b-nav-item v-show="!isReader" v-b-modal.bookScanner>Импорт книг</b-nav-item>
+            <b-nav-item v-show="isReader" @click="backClick">Назад</b-nav-item>
           </b-navbar-nav>
         </b-collapse>
         <b-navbar-brand href="#">{{this.$store.getters.appTitle}}</b-navbar-brand>
@@ -85,7 +85,7 @@ export default {
     if ((this.storageAvailable('localStorage')) && localStorage.InfoPanel) {
       store.commit("setblLook", ['on']);
       this.selectedCheckbox = ['on'];
-    } else this.selectedCheckbox = '';
+    } else this.selectedCheckbox = null;
   },
   methods: {
     logout: function() {
