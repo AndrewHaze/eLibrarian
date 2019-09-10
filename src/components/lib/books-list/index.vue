@@ -38,7 +38,7 @@
               <div class="info">
                 <div class="book-authors">{{ strAuthor(bItem.author) }}</div>
                 <div class="book-title">
-                  <span v-html="hyphenate(bItem.title)"></span>
+                  <span v-html="smartHyphenate(bItem.title, 12)"></span>
                 </div>
                 <div>{{ strGenres(bItem.genres) }}</div>
               </div>
@@ -533,6 +533,20 @@ export default {
         }
       );
     },
+    smartHyphenate(text, val) {
+      const self = this;
+      let words = text.split(" ");
+      let result = "";
+      words.forEach(function(item) {
+        if (item.length > val) {
+          result += self.hyphenate(item) + " ";
+        } else {
+          result += item + " ";
+        }
+      });
+      return result;
+    },
+    //переносы
     hyphenate(text) {
       let RusA = "[абвгдеёжзийклмнопрстуфхцчшщъыьэюя]";
       let RusV = "[аеёиоуыэюя]";
