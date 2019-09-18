@@ -9,9 +9,64 @@
     <div v-else :id="sid" :class="{ rightmargin: infoPanel }">
       <div class="data-wrap" v-if="isData">
         <div
-          :id="sid+'_cover-book-list'"
-          class="cover-book-list"
-          v-if="look === 'cover' && !isLoading"
+          :id="sid+'_cover-v-book-list'"
+          class="cover-v-book-list"
+          v-if="look === 'cover_v' && !isLoading"
+          @scroll="onScroll"
+        >
+          <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
+            <div class="series-title" v-if="sItem.seriesTitle === 'яяяяяя'">
+              <span>Без серии</span>
+            </div>
+            <div class="series-title" v-else>
+              <span>{{ sItem.seriesTitle }}</span>
+            </div>
+            <div
+              class="item"
+              v-for="bItem in bListItems"
+              :id="sid+'_'+bItem.id"
+              :key="sid+'_'+bItem.id"
+              v-if="bItem.seriesTitle == sItem.seriesTitle"
+              :class="{active: bItem.isActive}"
+              @click="itemClickHandler"
+              @mouseover="mouseOverBook"
+              @mouseleave="mouseLeaveBook"
+            >
+              <div class="cover" :class="{ nocover: bItem.cover === '' }">
+                <img v-if="bItem.cover" :src="'data:image/jpg;base64,'+bItem.cover" />
+              </div>
+              <div class="mark-group">
+                <div class="mg-left" :title="'Оценка: '+ bItem.howManyStars">
+                  <template v-for="n in 5">
+                    <font-awesome-icon icon="star" :class="{ star: (bItem.howManyStars >= n) }" />
+                  </template>
+                </div>
+                <div class="mg-right">
+                  <span v-if="bItem.isRead" title="Прочитано">
+                    <font-awesome-icon icon="check" style="color: #30e52a" />
+                  </span>
+                  <span v-if="bItem.isToPlan" title="Запланировано">
+                    <font-awesome-icon icon="calendar-check" style="color: #ffa500" />
+                  </span>
+                  <span v-if="bItem.isFavorites" title="Понравилось">
+                    <font-awesome-icon icon="heart" style="color: #c91212" />
+                  </span>
+                </div>
+              </div>
+              <div class="info">
+                <div class="book-authors">{{ strAuthor(bItem.author) }}</div>
+                <div class="book-title">
+                  <span v-html="smartHyphenate(bItem.title, 15)"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--******************************************************************************************-->
+        <div
+          :id="sid+'_cover-h-book-list'"
+          class="cover-h-book-list"
+          v-if="look === 'cover_h' && !isLoading"
           @scroll="onScroll"
         >
           <div class="series-wrap" v-for="sItem in sListItems" :key="sItem.id">
@@ -868,6 +923,7 @@ $hover-color: rgba(221, 221, 221, 0.4);
 $item-mr: 0.5rem;
 $item-pd: 0.5rem;
 $ip-width: 21rem;
+$v-item-width: 216px;
 
 .content section {
   position: relative;
@@ -995,7 +1051,8 @@ $ip-width: 21rem;
   height: 100%;
 }
 
-.cover-book-list {
+.cover-v-book-list,
+.cover-h-book-list {
   display: block;
   height: 100%;
   padding-left: 0.2rem;
@@ -1006,7 +1063,6 @@ $ip-width: 21rem;
     display: flex;
     user-select: none;
   }
-
   .series-wrap {
     flex-flow: row wrap;
 
@@ -1042,103 +1098,192 @@ $ip-width: 21rem;
     .series-wrap + .series-wrap {
       border-bottom: 1px solid $line-color;
     }
+  }
+}
 
-    .item {
-      position: relative;
-      flex-flow: row nowrap;
-      width: 333px;
-      max-height: 236px;
-      margin: $item-mr;
-      padding: $item-pd;
+.cover-v-book-list {
+  .item {
+    position: relative;
+    flex-flow: column nowrap;
+    width: $v-item-width;
+    margin: $item-mr;
+    padding: $item-pd;
+    transition: background-color 0.2s;
+    overflow: hidden;
+    cursor: pointer;
+    
+
+    &:hover {
+      background-color: rgba(221, 221, 221, 0.4);
       transition: background-color 0.2s;
+      
+    }
+
+    .cover {
+      height: $v-item-width * 1.4;
+      width: 100%;
+      justify-content: center;
       overflow: hidden;
-      cursor: pointer;
-      &:after {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 3rem;
-        background-image: linear-gradient(to bottom, transparent, #fff);
+      z-index: 1;
+      > img {
+        height: 100%;
+        width: 100%;
+      }
+    }
+
+    .nocover {
+      background-image: url("/static/assets/covertexture.jpg");
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    .info {
+      position: relative;
+      flex-flow: column nowrap;
+      line-height: 1.3;
+      * {
+        hyphens: auto;
       }
 
-      &:hover {
-        background-color: rgba(221, 221, 221, 0.4);
-        transition: background-color 0.2s;
-        &::after {
-          background-image: linear-gradient(
-            to bottom,
-            transparent,
-            rgba(221, 221, 221, 0.8)
-          );
-        }
+      .book-authors {
+        color: #4c4c4c;
+        margin-top: .3rem;
       }
 
-      .cover {
-        width: 160px;
-        min-width: 160px;
-        height: 220px;
-        margin-right: 1rem;
-        justify-content: center;
+      .book-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0.3rem 0 0.3rem;
+        line-height: 1.1;
+        max-width: 75%;
+        max-height: 2.8rem;
         overflow: hidden;
-        z-index: 1;
-        > img {
-          height: 100%;
-        }
+        text-overflow: ellipsis;
       }
+    }
 
-      .nocover {
-        background-image: url("/static/assets/covertexture.jpg");
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-      }
+    .mark-group {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      z-index: 1;
+      padding: 0.45rem 0 .3rem;
+      border-bottom: 1px solid $line-color;
 
-      .info {
-        position: relative;
-        flex-flow: column nowrap;
-        line-height: 1.3;
-        * {
-          hyphens: auto;
-        }
-
-        .book-authors {
-          color: #4c4c4c;
-        }
-
-        .book-title {
-          font-size: 1.2rem;
-          font-weight: 600;
-          margin: 0.3rem 0 0.3rem;
-          line-height: 1.1;
-          max-width: 75%;
-        }
-      }
-
-      .mark-group {
-        position: absolute;
-        left: 185px;
-        right: 0;
-        bottom: 0.3rem;
+      .mg-left {
+        color: #eee;
         display: flex;
-        justify-content: space-between;
-        font-size: 0.8rem;
-        z-index: 1;
+      }
 
-        .mg-left {
-          span + span {
-            margin-left: 0.2rem;
-          }
+      .mg-right {
+        span {
+          line-height: 0.9;
         }
+        span + span {
+          margin-left: 0.2rem;
+        }
+      }
+    }
+  }
+}
 
-        .mg-right {
-          color: #eee;
-          padding-right: 0.5rem;
-          display: flex;
-          align-items: flex-end;
-          padding-bottom: 0.2rem;
+.cover-h-book-list {
+  .item {
+    position: relative;
+    flex-flow: row nowrap;
+    width: 333px;
+    max-height: 236px;
+    margin: $item-mr;
+    padding: $item-pd;
+    transition: background-color 0.2s;
+    overflow: hidden;
+    cursor: pointer;
+    &:after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 3rem;
+      background-image: linear-gradient(to bottom, transparent, #fff);
+    }
+
+    &:hover {
+      background-color: rgba(221, 221, 221, 0.4);
+      transition: background-color 0.2s;
+      &::after {
+        background-image: linear-gradient(
+          to bottom,
+          transparent,
+          rgba(221, 221, 221, 0.8)
+        );
+      }
+    }
+
+    .cover {
+      width: 160px;
+      min-width: 160px;
+      height: 220px;
+      margin-right: 1rem;
+      justify-content: center;
+      overflow: hidden;
+      z-index: 1;
+      > img {
+        height: 100%;
+      }
+    }
+
+    .nocover {
+      background-image: url("/static/assets/covertexture.jpg");
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    .info {
+      position: relative;
+      flex-flow: column nowrap;
+      line-height: 1.3;
+      * {
+        hyphens: auto;
+      }
+
+      .book-authors {
+        color: #4c4c4c;
+      }
+
+      .book-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0.3rem 0 0.3rem;
+        line-height: 1.1;
+        max-width: 75%;
+      }
+    }
+
+    .mark-group {
+      position: absolute;
+      left: 185px;
+      right: 0;
+      bottom: 0.3rem;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      z-index: 1;
+
+      .mg-left {
+        span + span {
+          margin-left: 0.2rem;
         }
+      }
+
+      .mg-right {
+        color: #eee;
+        padding-right: 0.5rem;
+        display: flex;
+        align-items: flex-end;
+        padding-bottom: 0.2rem;
       }
     }
   }
