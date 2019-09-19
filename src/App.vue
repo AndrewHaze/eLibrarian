@@ -30,8 +30,11 @@
               size="sm"
               name="radiosBtnDefault2"
             >
-              <b-form-radio value="cover" title="Режим отображения: «Плитка»">
-                <font-awesome-icon icon="th"/>
+            <b-form-radio value="cover_v" title="Режим отображения: «Вертикальная плитка»">
+                <font-awesome-icon icon="grip-vertical"/>
+              </b-form-radio>
+              <b-form-radio value="cover_h" title="Режим отображения: «Горизонтальная плитка»">
+                <font-awesome-icon icon="grip-horizontal"/>
               </b-form-radio>
               <b-form-radio value="tree" title="Режим отображения: «Дерево»">
                 <font-awesome-icon icon="stream"/>
@@ -81,7 +84,7 @@ export default {
     if ((this.storageAvailable('localStorage')) && localStorage.lookOfBookList) {
       store.commit("setblLook", localStorage.lookOfBookList);
       this.picked = localStorage.lookOfBookList;
-    } else this.picked = "cover";
+    } else this.picked = "cover_h";
     if ((this.storageAvailable('localStorage')) && localStorage.InfoPanel) {
       store.commit("setblLook", ['on']);
       this.selectedCheckbox = ['on'];
