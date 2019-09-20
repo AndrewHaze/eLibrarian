@@ -68,7 +68,7 @@ $header-bk-color: #abafb4;
 // для табов
 .content {
   height: 100%;
-  overflow-y: auto;
+  //overflow-y: auto;
 }
 
 .control-element {

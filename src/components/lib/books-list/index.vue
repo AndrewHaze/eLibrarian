@@ -54,9 +54,10 @@
                 </div>
               </div>
               <div class="info">
-                <div class="book-authors">{{ strAuthor(bItem.author) }}</div>
+                <!-- если true, сделать инициалы -->
+                <div class="book-authors">{{ strAuthor(bItem.author, true) }}</div>
                 <div class="book-title">
-                  <span v-html="smartHyphenate(bItem.title, 15)"></span>
+                  <span v-html="titleProc(bItem.title)"></span>
                 </div>
               </div>
             </div>
@@ -375,7 +376,9 @@ export default {
       isPad: false,
       bMenu: false,
       bMenuX: 0,
-      bMenuY: 0
+      bMenuY: 0,
+      //*********
+      fpTitle: "" //для подрезания заголовков
     };
   },
   watch: {
@@ -630,10 +633,32 @@ export default {
       text = text.replace(re6, "$1" + Hyphen + "$2");
       return text;
     },
-    strAuthor(val) {
-      if (val.length > 200) {
+    //подрезаем заголовок
+    titleProc(val) {
+      return this.smartHyphenate(val, 15);
+    },
+    strAuthor(val, flag) {
+      let arr1, arr2, result = '';
+      if (flag) {
+        arr1 = val.split(",");
+        arr1.forEach(arr1_item => {
+          arr2 = arr1_item.trim().split(" ");
+          arr2.forEach((arr2_item, arr2_idx) => {
+            switch (arr2_idx) {
+              case 0:
+                result += arr2_item + " ";
+                break
+              default:
+                result += arr2_item.substr(0, 1) + ". ";
+            }
+          });
+          result = result.trim() + ", ";
+        });
+        result = result.slice(0, -2)
+      } else result = val;
+      if (result.length > 200) {
         return "Коллектив авторов";
-      } else return val;
+      } else return result;
     },
     strGenres(val) {
       return val.replace(" (то, что не вошло в другие категории)", "");
@@ -928,7 +953,7 @@ $v-item-width: 216px;
 .content section {
   position: relative;
   margin-left: -0.5rem;
-  overflow: hidden;
+  //overflow: hidden;
 }
 
 .for-nothing-selected {
@@ -1111,12 +1136,10 @@ $v-item-width: 216px;
     transition: background-color 0.2s;
     overflow: hidden;
     cursor: pointer;
-    
 
     &:hover {
       background-color: rgba(221, 221, 221, 0.4);
       transition: background-color 0.2s;
-      
     }
 
     .cover {
@@ -1148,7 +1171,7 @@ $v-item-width: 216px;
 
       .book-authors {
         color: #4c4c4c;
-        margin-top: .3rem;
+        margin-top: 0.3rem;
       }
 
       .book-title {
@@ -1156,10 +1179,8 @@ $v-item-width: 216px;
         font-weight: 600;
         margin: 0.3rem 0 0.3rem;
         line-height: 1.1;
-        max-width: 75%;
         max-height: 2.8rem;
         overflow: hidden;
-        text-overflow: ellipsis;
       }
     }
 
@@ -1168,7 +1189,7 @@ $v-item-width: 216px;
       justify-content: space-between;
       font-size: 0.8rem;
       z-index: 1;
-      padding: 0.45rem 0 .3rem;
+      padding: 0.45rem 0 0.3rem;
       border-bottom: 1px solid $line-color;
 
       .mg-left {

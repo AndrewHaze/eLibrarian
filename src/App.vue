@@ -84,7 +84,7 @@ export default {
     if ((this.storageAvailable('localStorage')) && localStorage.lookOfBookList) {
       store.commit("setblLook", localStorage.lookOfBookList);
       this.picked = localStorage.lookOfBookList;
-    } else this.picked = "cover_h";
+    } else this.picked = "cover_v";
     if ((this.storageAvailable('localStorage')) && localStorage.InfoPanel) {
       store.commit("setblLook", ['on']);
       this.selectedCheckbox = ['on'];

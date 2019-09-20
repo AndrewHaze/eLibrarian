@@ -410,7 +410,7 @@ if (isset($_POST["cmd"])) {
                         array_push($res["data"],
                             array(
                                 "id" => "bk" . $value['bk_id'],
-                                "author" => ucwords($value['list_authors']),
+                                "author" => ucwords(str_replace (' ,',',',$value['list_authors'])),
                                 "title" => $value['bk_title'],
                                 "cover" => base64_encode($value['bk_cover']),
                                 "genres" => $value['list_genres'] ?: "Прочее",
@@ -531,7 +531,7 @@ if (isset($_POST["cmd"])) {
                         array_push($res["data"],
                             array(
                                 "id" => "bk" . $value['bk_id'],
-                                "author" => ucwords($value['list_authors']),
+                                "author" => ucwords(str_replace (' ,',',',$value['list_authors'])),
                                 "title" => $value['bk_title'],
                                 "cover" => base64_encode($value['bk_cover']),
                                 "genres" => $value['list_genres'] ?: "Прочее",
@@ -626,7 +626,7 @@ if (isset($_POST["cmd"])) {
                         array_push($res["data"],
                             array(
                                 "id" => "bk" . $value['bk_id'],
-                                "author" => ucwords($value['list_authors']),
+                                "author" => ucwords(str_replace (' ,',',',$value['list_authors'])),
                                 "title" => $value['bk_title'],
                                 "cover" => base64_encode($value['bk_cover']),
                                 "genres" => $value['list_genres'] ?: "Прочее",
@@ -977,7 +977,7 @@ if (isset($_POST["cmd"])) {
                         array_push($res["data"],
                             array(
                                 "id" => "bk" . $value['bk_id'],
-                                "author" => ucwords($value['list_authors']),
+                                "author" => ucwords(str_replace (' ,',',',$value['list_authors'])),
                                 "title" => $value['bk_title'],
                                 "cover" => base64_encode($value['bk_cover']),
                                 "genres" => $value['list_genres'] ?: "Прочее",
